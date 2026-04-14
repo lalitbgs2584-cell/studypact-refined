@@ -7,11 +7,9 @@ import { submitVerification } from "@/lib/actions/verification";
 import { db } from "@/lib/db";
 import { getPeerReviewMetrics, getPeerReviewThreshold } from "@/lib/peer-review";
 import { cn } from "@/lib/utils";
-import { getWorkspace, requireSession } from "@/lib/workspace";
+import { getWorkspace, requireSession, type Membership } from "@/lib/workspace";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-
-type Membership = Awaited<ReturnType<typeof getWorkspace>>["memberships"][number];
 
 export default async function UploadsPage() {
   const session = await requireSession();

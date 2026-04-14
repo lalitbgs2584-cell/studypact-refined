@@ -33,6 +33,8 @@ export async function getUserGroups(userId: string) {
   });
 }
 
+export type Membership = Awaited<ReturnType<typeof getUserGroups>>[number];
+
 export async function getActiveGroupId(userId: string) {
   const groups = await getUserGroups(userId);
   const cookieStore = await cookies();
