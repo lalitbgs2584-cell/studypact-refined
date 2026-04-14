@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { pusherServer } from "@/lib/pusher";
+import { emitGroupEvent } from "../socket-server";
+
 
 export async function resolveFlaggedSubmission(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -120,9 +121,7 @@ export async function resolveFlaggedSubmission(formData: FormData) {
     };
   });
 
-  if (pusherServer) {
-    pusherServer.trigger(`group-${result.groupId}`, "new-verification", { checkInId, status: result.status }).catch(console.error);
-  }
+  emitGroupEvent(result.groupId, "new-verification", { checkInId, status: result.status });
 
   revalidatePath(`/groups/${groupId}/settings`);
   revalidatePath(`/groups/${groupId}`);

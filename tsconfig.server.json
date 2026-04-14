@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "outDir": ".server-dist",
+    "esModuleInterop": true,
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["server.ts", "lib/socket-server.ts"],
+  "ts-node": {
+    "transpileOnly": true,
+    "esm": false,
+    "require": ["tsconfig-paths/register"]
+  }
+}

@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { pusherServer } from "@/lib/pusher";
+import { emitGroupEvent } from "../socket-server";
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import { ACTIVE_GROUP_COOKIE } from "@/lib/workspace";
@@ -110,11 +110,9 @@ export async function createTask(formData: FormData) {
     data: taskCopies,
   });
 
-  if (pusherServer && targetGroupIds.length > 0) {
+  if (targetGroupIds.length > 0) {
     for (const targetGroupId of targetGroupIds) {
-      pusherServer.trigger(`group-${targetGroupId}`, "new-task", {
-        title,
-      }).catch(console.error);
+      emitGroupEvent(targetGroupId, "new-task", { title });
     }
   }
 

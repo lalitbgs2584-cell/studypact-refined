@@ -2,43 +2,54 @@
 
 import { useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { getSocketClient } from "@/lib/socket-client";
+import type { Socket } from "socket.io-client";
 
 export function RealtimeGroupSync({ groupId }: { groupId: string }) {
   const router = useRouter();
-  const esRef = useRef<EventSource | null>(null);
+  const socketRef = useRef<Socket | null>(null);
+  const joinedRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!groupId) return;
 
-    function connect() {
-      const es = new EventSource(`/api/events/${groupId}`);
-      esRef.current = es;
+    const socket = getSocketClient();
+    socketRef.current = socket;
 
-      es.onmessage = (e) => {
-        try {
-          const data = JSON.parse(e.data) as { type: string };
-          if (data.type !== "connected") {
-            router.refresh();
-          }
-        } catch {
-          // ignore malformed messages
-        }
-      };
+    const handleEvent = () => {
+      router.refresh();
+    };
 
-      es.onerror = () => {
-        es.close();
-        // Reconnect after 3 seconds on error
-        setTimeout(connect, 3_000);
-      };
+    // Join the group room
+    if (joinedRef.current !== groupId) {
+      if (joinedRef.current) {
+        socket.emit("leave-group", joinedRef.current);
+      }
+      socket.emit("join-group", groupId);
+      joinedRef.current = groupId;
     }
 
-    connect();
+    // Listen for group events
+    socket.on("new-task", handleEvent);
+    socket.on("new-submission", handleEvent);
+    socket.on("new-verification", handleEvent);
 
     return () => {
-      esRef.current?.close();
-      esRef.current = null;
+      socket.off("new-task", handleEvent);
+      socket.off("new-submission", handleEvent);
+      socket.off("new-verification", handleEvent);
     };
   }, [groupId, router]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (socketRef.current && joinedRef.current) {
+        socketRef.current.emit("leave-group", joinedRef.current);
+        joinedRef.current = null;
+      }
+    };
+  }, []);
 
   return null;
 }

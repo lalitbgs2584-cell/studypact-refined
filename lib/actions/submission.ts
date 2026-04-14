@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { pusherServer } from "@/lib/pusher";
+import { emitGroupEvent } from "../socket-server";
+
 
 export async function submitProof(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -121,9 +122,7 @@ export async function submitProof(formData: FormData) {
     });
   }
 
-  if (pusherServer) {
-    pusherServer.trigger(`group-${proofGroupId}`, "new-submission", {}).catch(console.error);
-  }
+  emitGroupEvent(proofGroupId, "new-submission", {});
 
   revalidatePath("/dashboard");
   revalidatePath("/tasks");

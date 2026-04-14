@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getPeerReviewMetrics } from "@/lib/peer-review";
-import { pusherServer } from "@/lib/pusher";
+import { emitGroupEvent } from "../socket-server";
 
 const FINAL_STATUSES = new Set<CheckInStatus>([CheckInStatus.APPROVED, CheckInStatus.REJECTED]);
 
@@ -203,9 +203,7 @@ export async function submitVerification(formData: FormData) {
     revalidatePath(`/groups/${outcome.groupId}/task/${outcome.taskId}`);
   }
 
-  if (pusherServer) {
-    pusherServer.trigger(`group-${outcome.groupId}`, "new-verification", { checkInId, status: outcome.status }).catch(console.error);
-  }
+  emitGroupEvent(outcome.groupId, "new-verification", { checkInId, status: outcome.status });
 
   redirect(outcome.taskId ? `/groups/${outcome.groupId}/task/${outcome.taskId}` : "/uploads");
 }

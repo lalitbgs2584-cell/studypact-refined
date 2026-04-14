@@ -3,7 +3,7 @@
 import { TaskStatus } from "@prisma/client";
 
 import { db } from "@/lib/db";
-import { pusherServer } from "@/lib/pusher";
+import { emitGroupEvent } from "@/lib/socket-server";
 
 type OverdueTaskRow = {
   id: string;
@@ -116,13 +116,8 @@ export async function GET(req: Request) {
       });
     }
 
-    const cronPusher = pusherServer;
-    if (cronPusher) {
-      await Promise.all(
-        result.affectedGroupIds.map((groupId) =>
-          cronPusher.trigger(`group-${groupId}`, "new-verification", { source: "cron" }).catch(console.error)
-        )
-      );
+    for (const groupId of result.affectedGroupIds) {
+      emitGroupEvent(groupId, "new-verification", { source: "cron" });
     }
 
     return NextResponse.json({
