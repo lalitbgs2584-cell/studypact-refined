@@ -63,7 +63,7 @@ export default async function VerifyProofPage({ params }: { params: Promise<{ gr
 
       <Card>
         <CardContent className="space-y-4 p-6 md:p-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+          <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
             <ShieldCheck className="h-3.5 w-3.5" />
             {canVote ? "Vote on Proof" : "Voting Closed"}
           </div>
@@ -81,16 +81,16 @@ export default async function VerifyProofPage({ params }: { params: Promise<{ gr
             <CardDescription className="text-white/50">Before / after evidence from the submitter.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-white/80">{task.checkIn.proofText || task.checkIn.reflection || "No summary provided."}</div>
+            <div className="rounded-[4px] bg-secondary/30 p-4 text-white/80">{task.checkIn.proofText || task.checkIn.reflection || "No summary provided."}</div>
             <div className="grid gap-3 md:grid-cols-2">
               {task.checkIn.startFiles[0] ? (
-                <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                <div className="overflow-hidden rounded-[4px] bg-secondary/30">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={task.checkIn.startFiles[0].url} alt={task.checkIn.startFiles[0].name} className="h-44 w-full object-cover" />
                 </div>
               ) : null}
               {task.checkIn.endFiles[0] ? (
-                <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                <div className="overflow-hidden rounded-[4px] bg-secondary/30">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={task.checkIn.endFiles[0].url} alt={task.checkIn.endFiles[0].name} className="h-44 w-full object-cover" />
                 </div>
@@ -107,7 +107,7 @@ export default async function VerifyProofPage({ params }: { params: Promise<{ gr
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/30 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Quorum</div>
               <div className="mt-1 font-semibold text-white">
                 {reviewMetrics.approved
@@ -126,16 +126,16 @@ export default async function VerifyProofPage({ params }: { params: Promise<{ gr
             </div>
 
             {task.checkIn.reviewNote ? (
-              <div className="rounded-2xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary-foreground">Final note: {task.checkIn.reviewNote}</div>
+              <div className="rounded-[4px] bg-primary/10 p-4 text-sm text-primary-foreground">Final note: {task.checkIn.reviewNote}</div>
             ) : null}
 
             {task.checkIn.verifications.length > 0 ? (
               <div className="space-y-2">
                 {task.checkIn.verifications.map((verification) => (
-                  <div key={verification.id} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
+                  <div key={verification.id} className="rounded-[4px] bg-secondary/25 px-4 py-3">
                     <div className="flex items-center justify-between gap-3">
                       <div className="font-medium text-white">{verification.reviewer.name}</div>
-                      <div className={cn("text-xs font-bold uppercase tracking-[0.2em]", verification.verdict === "APPROVE" ? "text-primary" : "text-red-300")}>
+                      <div className={cn("text-xs font-bold uppercase tracking-[0.2em]", verification.verdict === "APPROVE" ? "text-primary" : "text-accent")}>
                         {verification.verdict === "APPROVE" ? "Approve" : "Flag"}
                       </div>
                     </div>
@@ -144,7 +144,7 @@ export default async function VerifyProofPage({ params }: { params: Promise<{ gr
                 ))}
               </div>
             ) : (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No votes yet.</div>
+                <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No votes yet.</div>
             )}
 
             {canVote ? (
@@ -161,12 +161,12 @@ export default async function VerifyProofPage({ params }: { params: Promise<{ gr
                     id="note"
                     name="note"
                     placeholder="Give constructive feedback..."
-                    className="min-h-24 w-full rounded-2xl border border-white/10 bg-black/50 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
+                  className="min-h-24 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
                   />
                 </div>
 
                 {myVote ? (
-                  <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70">
+                  <div className="rounded-[4px] bg-secondary/30 px-4 py-3 text-sm text-white/70">
                     Your current vote: {myVote.verdict === "APPROVE" ? "Approve" : "Flag"}
                   </div>
                 ) : null}
@@ -176,7 +176,7 @@ export default async function VerifyProofPage({ params }: { params: Promise<{ gr
                     <CheckCircle2 className="h-4 w-4" />
                     Approve
                   </Button>
-                  <Button type="submit" name="verdict" value="FLAG" variant="outline" className="flex-1 gap-2 text-red-200">
+                  <Button type="submit" name="verdict" value="FLAG" variant="outline" className="flex-1 gap-2 text-accent">
                     <XCircle className="h-4 w-4" />
                     Flag
                   </Button>

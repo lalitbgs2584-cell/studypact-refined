@@ -5,6 +5,6 @@ export default async function CreateTaskPage({
 }: {
   params: Promise<{ groupId: string }>;
 }) {
-  const { groupId } = await params;
+  await params;
   redirect(`/tasks`);
 }

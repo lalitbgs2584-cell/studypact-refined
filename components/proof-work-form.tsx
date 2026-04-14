@@ -53,7 +53,7 @@ export function ProofWorkForm({
   const selectedHint = targets.find((target) => target.id === selectedTarget)?.hint;
 
   return (
-    <form action={action} className="space-y-6 rounded-lg border border-border bg-card p-5 backdrop-blur-xl md:p-6">
+    <form action={action} className="space-y-6 rounded-lg bg-card p-5 shadow-[0_0_40px_-30px_rgba(0,255,178,0.18)] backdrop-blur-xl md:p-6">
       <input type="hidden" name="groupId" value={groupId} />
 
       <div className="space-y-2">
@@ -67,7 +67,7 @@ export function ProofWorkForm({
           <select
             name={targetField}
             defaultValue={selectedTarget}
-            className="w-full rounded-[4px] border border-border bg-background p-3 text-sm text-foreground focus:border-ring focus:outline-none"
+            className="w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-foreground focus:border-ring focus:outline-none"
           >
             {targets.map((target) => (
               <option key={target.id} value={target.id}>
@@ -78,7 +78,7 @@ export function ProofWorkForm({
           {selectedHint ? <p className="text-xs text-muted-foreground">{selectedHint}</p> : null}
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-border bg-background/50 p-4 text-sm text-muted-foreground">
+        <div className="rounded-lg bg-background/50 p-4 text-sm text-muted-foreground">
           No active targets yet.
         </div>
       )}
@@ -89,12 +89,12 @@ export function ProofWorkForm({
           name="reflection"
           required
           placeholder="What did you learn or accomplish?"
-          className="min-h-[120px] w-full rounded-[4px] border border-border bg-background p-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
+        className="min-h-[120px] w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none"
         />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-3 rounded-lg border border-border bg-background/50 p-4">
+        <div className="space-y-3 rounded-lg bg-background/50 p-4">
           <div className="flex items-center justify-between">
             <Label className="text-muted-foreground">Before / Start</Label>
             {startFiles.length > 0 ? <span className="text-xs text-primary">Uploaded</span> : null}
@@ -102,13 +102,13 @@ export function ProofWorkForm({
           {startFiles.length > 0 ? (
             <div className="space-y-2">
               {startFiles.map((file, index) => (
-                <div key={file.url} className="relative overflow-hidden rounded-lg border border-border bg-background">
+                <div key={file.url} className="relative overflow-hidden rounded-lg bg-background">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={file.url} alt={file.name} className="h-44 w-full object-cover" />
                   <button
                     type="button"
                     onClick={() => setStartFiles((current) => current.filter((_, currentIndex) => currentIndex !== index))}
-                    className="absolute right-2 top-2 rounded-[4px] border border-border bg-background/80 p-1 text-foreground shadow-sm"
+                    className="absolute right-2 top-2 rounded-[4px] bg-background/80 p-1 text-foreground shadow-sm"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -124,12 +124,12 @@ export function ProofWorkForm({
                 }
               }}
               onUploadError={(error: Error) => alert(error.message)}
-              className="border-border bg-background/70 ut-button:bg-primary ut-button:hover:bg-primary/90 ut-label:text-primary"
+              className="bg-secondary/40 ut-button:bg-primary ut-button:hover:bg-primary/90 ut-label:text-primary"
             />
           )}
         </div>
 
-        <div className="space-y-3 rounded-lg border border-border bg-background/50 p-4">
+        <div className="space-y-3 rounded-lg bg-background/50 p-4">
           <div className="flex items-center justify-between">
             <Label className="text-muted-foreground">After / End</Label>
             {endFiles.length > 0 ? <span className="text-xs text-primary">Uploaded</span> : null}
@@ -137,13 +137,13 @@ export function ProofWorkForm({
           {endFiles.length > 0 ? (
             <div className="space-y-2">
               {endFiles.map((file, index) => (
-                <div key={file.url} className="relative overflow-hidden rounded-lg border border-border bg-background">
+                <div key={file.url} className="relative overflow-hidden rounded-lg bg-background">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={file.url} alt={file.name} className="h-44 w-full object-cover" />
                   <button
                     type="button"
                     onClick={() => setEndFiles((current) => current.filter((_, currentIndex) => currentIndex !== index))}
-                    className="absolute right-2 top-2 rounded-[4px] border border-border bg-background/80 p-1 text-foreground shadow-sm"
+                    className="absolute right-2 top-2 rounded-[4px] bg-background/80 p-1 text-foreground shadow-sm"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -159,13 +159,13 @@ export function ProofWorkForm({
                 }
               }}
               onUploadError={(error: Error) => alert(error.message)}
-              className="border-border bg-background/70 ut-button:bg-primary ut-button:hover:bg-primary/90 ut-label:text-primary"
+              className="bg-secondary/40 ut-button:bg-primary ut-button:hover:bg-primary/90 ut-label:text-primary"
             />
           )}
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 border-t border-border pt-4">
+      <div className="flex items-center justify-between gap-3 pt-4">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <CheckCircle className="h-4 w-4 text-primary" />
           JPG/PNG images only, with before and after proof required.

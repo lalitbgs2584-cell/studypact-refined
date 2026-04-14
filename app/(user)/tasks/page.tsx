@@ -11,10 +11,10 @@ import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
 const statusLabels: Record<string, { label: string; className: string }> = {
-  PENDING: { label: "Not Started", className: "bg-yellow-500/15 text-yellow-300 border-yellow-500/20" },
-  IN_PROGRESS: { label: "In Progress", className: "bg-primary/15 text-primary border-primary/20" },
-  COMPLETED: { label: "Completed", className: "bg-green-500/15 text-green-300 border-green-500/20" },
-  MISSED: { label: "Overdue", className: "bg-red-500/15 text-red-300 border-red-500/20" },
+  PENDING: { label: "Not Started", className: "bg-[#1A1A2E] text-[#AAAAAA]" },
+  IN_PROGRESS: { label: "In Progress", className: "bg-[#003D2B] text-[#00FFB2]" },
+  COMPLETED: { label: "Completed", className: "bg-[#003D2B] text-[#00FFB2]" },
+  MISSED: { label: "Overdue", className: "bg-[#3D1A0A] text-[#FF6B35]" },
 };
 
 export default async function TasksPage({
@@ -64,7 +64,7 @@ export default async function TasksPage({
     <div className="mx-auto max-w-6xl space-y-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+          <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
             <Sparkles className="h-3.5 w-3.5" />
             Tasks
           </div>
@@ -89,7 +89,7 @@ export default async function TasksPage({
           <CardContent className="flex items-center gap-4 p-5">
             <CalendarDays className="h-6 w-6 text-primary" />
             <div>
-              <div className="text-2xl font-black text-white">{personalTasks.length}</div>
+              <div className="text-2xl font-black text-primary">{personalTasks.length}</div>
               <div className="text-sm text-white/50">Personal tasks</div>
             </div>
           </CardContent>
@@ -98,7 +98,7 @@ export default async function TasksPage({
           <CardContent className="flex items-center gap-4 p-5">
             <Clock3 className="h-6 w-6 text-primary" />
             <div>
-              <div className="text-2xl font-black text-white">{groupTasks.length}</div>
+              <div className="text-2xl font-black text-primary">{groupTasks.length}</div>
               <div className="text-sm text-white/50">Group tasks in active context</div>
             </div>
           </CardContent>
@@ -107,7 +107,7 @@ export default async function TasksPage({
           <CardContent className="flex items-center gap-4 p-5">
             <CheckCircle2 className="h-6 w-6 text-primary" />
             <div>
-              <div className="text-2xl font-black text-white">
+              <div className="text-2xl font-black text-primary">
                 {taskCards.filter((task) => task.status === "COMPLETED").length}
               </div>
               <div className="text-sm text-white/50">Already completed</div>
@@ -142,7 +142,7 @@ export default async function TasksPage({
                 <textarea
                   id="task-details"
                   name="details"
-                  className="min-h-28 w-full rounded-2xl border border-white/10 bg-black/60 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
+                  className="min-h-28 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
                   placeholder="What should be done?"
                 />
               </div>
@@ -161,7 +161,7 @@ export default async function TasksPage({
                   <select
                     id="task-priority"
                     name="priority"
-                    className="w-full rounded-2xl border border-white/10 bg-black/60 p-3 text-sm text-white focus:border-primary focus:outline-none"
+                    className="w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white focus:border-primary focus:outline-none"
                   >
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
@@ -178,7 +178,7 @@ export default async function TasksPage({
                   <select
                     id="task-scope"
                     name="scope"
-                    className="w-full rounded-2xl border border-white/10 bg-black/60 p-3 text-sm text-white focus:border-primary focus:outline-none"
+                    className="w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white focus:border-primary focus:outline-none"
                   >
                     <option value="PERSONAL">Personal task</option>
                     <option value="GROUP">Group broadcast</option>
@@ -189,7 +189,7 @@ export default async function TasksPage({
                   <select
                     name="groupIds"
                     multiple
-                    className="min-h-28 w-full rounded-2xl border border-white/10 bg-black/60 p-3 text-sm text-white focus:border-primary focus:outline-none"
+                    className="min-h-28 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white focus:border-primary focus:outline-none"
                   >
                     {targetGroups.map((group) => (
                       <option key={group.id} value={group.id}>
@@ -226,7 +226,7 @@ export default async function TasksPage({
           </CardHeader>
           <CardContent className="space-y-4">
             {taskCards.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
+              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">
                 No tasks yet.
               </div>
             ) : (
@@ -242,7 +242,7 @@ export default async function TasksPage({
                         : "No proof yet";
 
                 return (
-                  <Card key={task.id} className="bg-black/35">
+                  <Card key={task.id} className="bg-black/35 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]">
                     <CardContent className="space-y-3 p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -251,7 +251,7 @@ export default async function TasksPage({
                             {task.group.name} • due {task.dueAt ? new Date(task.dueAt).toLocaleString() : new Date(task.day).toLocaleString()}
                           </div>
                         </div>
-                        <span className={cn("rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]", status.className)}>
+                        <span className={cn("rounded-[4px] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]", status.className)}>
                           {status.label}
                         </span>
                       </div>
@@ -259,10 +259,10 @@ export default async function TasksPage({
                       {task.details ? <p className="text-sm text-white/60">{task.details}</p> : null}
 
                       <div className="flex flex-wrap items-center gap-2 text-xs">
-                        <span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-white/60">
+                        <span className="rounded-[4px] bg-white/[0.05] px-2.5 py-1 text-white/60">
                           Priority: {task.priority}
                         </span>
-                        <span className="rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-white/60">
+                        <span className="rounded-[4px] bg-white/[0.05] px-2.5 py-1 text-white/60">
                           Proof: {proofStatus}
                         </span>
                       </div>
@@ -277,7 +277,7 @@ export default async function TasksPage({
                       </div>
 
                       {task.checkIn?.status === "REJECTED" && task.checkIn.reviewNote ? (
-                        <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">
+                        <div className="rounded-[4px] bg-accent/10 p-3 text-sm text-accent shadow-[0_0_24px_-22px_rgba(255,107,53,0.16)]">
                           Rejected: {task.checkIn.reviewNote}
                         </div>
                       ) : null}

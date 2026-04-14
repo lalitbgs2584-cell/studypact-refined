@@ -10,9 +10,12 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { ACTIVE_GROUP_COOKIE } from "@/lib/workspace";
 
-export async function setActiveGroup(groupId: string) {
+export async function setActiveGroup(groupIdInput: string | FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
+
+  const groupId = typeof groupIdInput === "string" ? groupIdInput : String(groupIdInput.get("groupId") || "");
+  if (!groupId) throw new Error("Missing groupId");
 
   const membership = await db.userGroup.findUnique({
     where: {
@@ -29,6 +32,7 @@ export async function setActiveGroup(groupId: string) {
   const cookieStore = await cookies();
   cookieStore.set(ACTIVE_GROUP_COOKIE, groupId, { path: "/", sameSite: "lax" });
   revalidatePath("/dashboard");
+  revalidatePath("/groups");
 }
 
 export async function createGroup(formData: FormData) {
@@ -68,7 +72,7 @@ export async function createGroup(formData: FormData) {
   const cookieStore = await cookies();
   cookieStore.set(ACTIVE_GROUP_COOKIE, group.id, { path: "/", sameSite: "lax" });
   revalidatePath("/groups");
-  redirect("/dashboard");
+  redirect("/groups");
 }
 
 export async function joinGroup(formData: FormData) {
@@ -126,7 +130,7 @@ export async function joinGroup(formData: FormData) {
   const cookieStore = await cookies();
   cookieStore.set(ACTIVE_GROUP_COOKIE, group.id, { path: "/", sameSite: "lax" });
   revalidatePath("/groups");
-  redirect("/dashboard");
+  redirect("/groups");
 }
 
 export async function removeGroupMember(formData: FormData) {
@@ -168,5 +172,6 @@ export async function removeGroupMember(formData: FormData) {
   revalidatePath("/proof-work");
   revalidatePath("/uploads");
   revalidatePath("/assignments");
-  redirect(`/tasks`);
+  revalidatePath("/groups");
+  redirect("/groups");
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, Users } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -46,19 +46,19 @@ export default async function GroupSettingsPage({ params }: { params: Promise<{ 
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-white/80">
+          <div className="rounded-[4px] bg-secondary/40 p-4 text-white/80 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
             {group.description || "No description provided."}
           </div>
           <div className="grid gap-3 md:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Members</div>
-              <div className="mt-1 text-xl font-black text-white">{group.users.length}</div>
+              <div className="mt-1 text-xl font-black text-primary">{group.users.length}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Your role</div>
               <div className="mt-1 text-xl font-black text-white">{isLeader ? "Leader" : "Member"}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Invite code</div>
               <div className="mt-1 font-mono text-xl font-black tracking-[0.25em] text-primary">{group.inviteCode.toUpperCase()}</div>
             </div>
@@ -75,9 +75,9 @@ export default async function GroupSettingsPage({ params }: { params: Promise<{ 
         </CardHeader>
         <CardContent className="space-y-2">
           {group.users.map((member) => (
-            <div key={member.userId} className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
+            <div key={member.userId} className="flex items-center justify-between rounded-[4px] bg-secondary/25 px-4 py-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-primary">
+                <div className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-primary/15 text-sm font-bold text-primary">
                   {member.user.name.charAt(0).toUpperCase()}
                 </div>
                 <div>

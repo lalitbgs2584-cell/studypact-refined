@@ -52,7 +52,7 @@ export default async function UploadsPage() {
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Card>
           <CardContent className="space-y-4 p-6 md:p-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+            <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Upload className="h-3.5 w-3.5" />
               Uploads
             </div>
@@ -73,21 +73,21 @@ export default async function UploadsPage() {
             <CardDescription className="text-white/50">The active group review queue.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">My uploads</div>
-              <div className="mt-1 text-2xl font-black text-white">{myUploads}</div>
+              <div className="mt-1 text-2xl font-black text-primary">{myUploads}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Pending</div>
-              <div className="mt-1 text-2xl font-black text-white">{pendingUploads}</div>
+              <div className="mt-1 text-2xl font-black text-primary">{pendingUploads}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Rejected</div>
-              <div className="mt-1 text-2xl font-black text-white">{rejectedUploads}</div>
+              <div className="mt-1 text-2xl font-black text-primary">{rejectedUploads}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Quorum</div>
-              <div className="mt-1 text-2xl font-black text-white">{quorumThreshold}</div>
+              <div className="mt-1 text-2xl font-black text-primary">{quorumThreshold}</div>
               <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/40">of {totalEligibleReviewers} eligible voters</div>
             </div>
           </CardContent>
@@ -101,7 +101,7 @@ export default async function UploadsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {uploads.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No uploads yet.</div>
+          <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No uploads yet.</div>
           ) : (
             uploads.map((upload) => {
               const metrics = getPeerReviewMetrics(upload.verifications, totalEligibleReviewers);
@@ -129,7 +129,10 @@ export default async function UploadsPage() {
               return (
                 <div
                   key={upload.id}
-                  className={cn("rounded-3xl border p-4", upload.userId === session.user.id ? "border-primary/20 bg-primary/5" : "border-white/10 bg-black/30")}
+                  className={cn(
+                    "rounded-[4px] p-4 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]",
+                    upload.userId === session.user.id ? "bg-primary/5" : "bg-secondary/25"
+                  )}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -138,27 +141,27 @@ export default async function UploadsPage() {
                         {upload.user.name} - {upload.createdAt.toLocaleString()}
                       </div>
                     </div>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                    <span className="rounded-[4px] bg-secondary/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
                       {statusLabel}
                     </span>
                   </div>
 
                   <div className="mt-4 grid gap-3 md:grid-cols-2">
                     {upload.startFiles[0] ? (
-                      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                      <div className="overflow-hidden rounded-[4px] bg-secondary/30">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={upload.startFiles[0].url} alt={upload.startFiles[0].name} className="h-44 w-full object-cover" />
                       </div>
                     ) : null}
                     {upload.endFiles[0] ? (
-                      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                      <div className="overflow-hidden rounded-[4px] bg-secondary/30">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={upload.endFiles[0].url} alt={upload.endFiles[0].name} className="h-44 w-full object-cover" />
                       </div>
                     ) : null}
                   </div>
 
-                  <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/70">{upload.proofText || "No summary provided."}</div>
+                  <div className="mt-4 rounded-[4px] bg-secondary/30 p-4 text-sm text-white/70">{upload.proofText || "No summary provided."}</div>
 
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-white/50">
                     <span>{reviewSummary}</span>
@@ -174,10 +177,8 @@ export default async function UploadsPage() {
                         <span
                           key={`${upload.id}-${verification.reviewerId}`}
                           className={cn(
-                            "rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]",
-                            verification.verdict === "APPROVE"
-                              ? "border-primary/30 bg-primary/10 text-primary"
-                              : "border-red-500/20 bg-red-500/10 text-red-200"
+                            "rounded-[4px] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]",
+                            verification.verdict === "APPROVE" ? "bg-primary/10 text-primary" : "bg-accent/10 text-accent"
                           )}
                         >
                           {verification.reviewer.name} - {verification.verdict === "APPROVE" ? "Approve" : "Flag"}
@@ -189,12 +190,12 @@ export default async function UploadsPage() {
                   {upload.reviewNote ? (
                     <div
                       className={cn(
-                        "mt-3 rounded-2xl border p-3 text-sm",
+                        "mt-3 rounded-[4px] p-3 text-sm",
                         upload.status === "APPROVED"
-                          ? "border-primary/20 bg-primary/10 text-primary-foreground"
+                          ? "bg-primary/10 text-primary-foreground"
                           : upload.status === "REJECTED"
-                            ? "border-red-500/20 bg-red-500/10 text-red-200"
-                            : "border-yellow-500/20 bg-yellow-500/10 text-yellow-100"
+                            ? "bg-accent/10 text-accent"
+                            : "bg-[#1A1A2E] text-[#AAAAAA]"
                       )}
                     >
                       {upload.status === "APPROVED" ? "Final note: " : upload.status === "REJECTED" ? "Rejection note: " : "Review note: "}
@@ -227,11 +228,11 @@ export default async function UploadsPage() {
                           id={`note-${upload.id}`}
                           name="note"
                           placeholder="Add a short explanation for your vote"
-                          className="min-h-24 w-full rounded-2xl border border-white/10 bg-black/50 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
+                          className="min-h-24 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
                         />
                       </div>
                       {currentVote ? (
-                        <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-white/70">
+                        <div className="rounded-[4px] bg-secondary/30 px-4 py-3 text-sm text-white/70">
                           Your current vote: {currentVote.verdict === "APPROVE" ? "Approve" : "Flag"}
                         </div>
                       ) : null}
@@ -240,7 +241,7 @@ export default async function UploadsPage() {
                           <CheckCircle2 className="h-4 w-4" />
                           Approve
                         </Button>
-                        <Button type="submit" name="verdict" value="FLAG" variant="outline" className="gap-2 text-red-200">
+                        <Button type="submit" name="verdict" value="FLAG" variant="outline" className="gap-2 text-accent">
                           <XCircle className="h-4 w-4" />
                           Flag
                         </Button>

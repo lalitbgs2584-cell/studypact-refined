@@ -47,7 +47,7 @@ export default function Home() {
       </header>
 
       <main className="relative z-10 flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
-        <div className="mb-8 rounded-[4px] border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.35em] text-primary backdrop-blur-md">
+        <div className="mb-8 rounded-[4px] bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.35em] text-primary backdrop-blur-md">
           A new era of accountability
         </div>
 
@@ -73,7 +73,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden border-primary/20 bg-primary/10 text-left shadow-[0_0_30px_rgba(0,255,178,0.08)] md:-translate-y-6">
+          <Card className="relative overflow-hidden bg-primary/10 text-left shadow-[0_0_30px_rgba(0,255,178,0.08)] md:-translate-y-6">
             <CardContent className="p-8">
               <div className="absolute right-0 top-0 h-24 w-24 translate-x-1/3 -translate-y-1/3 rounded-full bg-primary/15 blur-3xl" />
               <h3 className="relative z-10 mb-3 mt-4 text-2xl font-black tracking-tight text-primary">Prove It</h3>

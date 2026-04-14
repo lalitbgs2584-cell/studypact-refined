@@ -12,7 +12,7 @@ export default async function ProfilePage() {
     <div className="mx-auto max-w-5xl space-y-8">
       <Card>
         <CardContent className="space-y-4 p-6 md:p-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+          <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
             Profile
           </div>
           <div className="space-y-2">
@@ -26,19 +26,19 @@ export default async function ProfilePage() {
         <Card>
           <CardContent className="p-5">
             <div className="text-xs uppercase tracking-[0.2em] text-white/40">Groups</div>
-            <div className="mt-1 text-2xl font-black text-white">{memberships.length}</div>
+            <div className="mt-1 text-2xl font-black text-primary">{memberships.length}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5">
             <div className="text-xs uppercase tracking-[0.2em] text-white/40">Points</div>
-            <div className="mt-1 text-2xl font-black text-white">{totalPoints}</div>
+            <div className="mt-1 text-2xl font-black text-primary">{totalPoints}</div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="p-5">
             <div className="text-xs uppercase tracking-[0.2em] text-white/40">Completions</div>
-            <div className="mt-1 text-2xl font-black text-white">{totalCompletions}</div>
+            <div className="mt-1 text-2xl font-black text-primary">{totalCompletions}</div>
           </CardContent>
         </Card>
       </div>
@@ -53,26 +53,26 @@ export default async function ProfilePage() {
         <CardContent className="space-y-3">
           {activeGroup ? (
             <>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-white/80">
+              <div className="rounded-[4px] bg-secondary/40 p-4 text-white/80 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
                 {activeGroup.description || "No description provided."}
               </div>
               <div className="grid gap-3 md:grid-cols-3">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/40">Members</div>
-                  <div className="mt-1 text-xl font-black text-white">{activeGroup._count.users}</div>
+                  <div className="mt-1 text-xl font-black text-primary">{activeGroup._count.users}</div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/40">Tasks</div>
-                  <div className="mt-1 text-xl font-black text-white">{activeGroup._count.tasks}</div>
+                  <div className="mt-1 text-xl font-black text-primary">{activeGroup._count.tasks}</div>
                 </div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/40">Invite code</div>
                   <div className="mt-1 font-mono text-xl font-black tracking-[0.25em] text-primary">{activeGroup.inviteCode.toUpperCase()}</div>
                 </div>
               </div>
             </>
           ) : (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
+            <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">
               Create or join a group to populate your profile.
             </div>
           )}

@@ -91,7 +91,7 @@ export default async function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
         <Card className="overflow-hidden">
           <CardContent className="space-y-5 p-6 md:p-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+            <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Sparkles className="h-3.5 w-3.5" />
               Dashboard
             </div>
@@ -134,21 +134,21 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.15)]">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/40">Groups</div>
-                <div className="mt-1 text-2xl font-black text-white">{memberships.length}</div>
+                <div className="mt-1 text-2xl font-black text-primary">{memberships.length}</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.15)]">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/40">Tasks</div>
-                <div className="mt-1 text-2xl font-black text-white">{pendingTasks}</div>
+                <div className="mt-1 text-2xl font-black text-primary">{pendingTasks}</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.15)]">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/40">Proof</div>
-                <div className="mt-1 text-2xl font-black text-white">{pendingProof}</div>
+                <div className="mt-1 text-2xl font-black text-primary">{pendingProof}</div>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.15)]">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/40">Review</div>
-                <div className="mt-1 text-2xl font-black text-white">{awaitingReview}</div>
+                <div className="mt-1 text-2xl font-black text-primary">{awaitingReview}</div>
               </div>
             </div>
           </CardContent>
@@ -163,17 +163,17 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {activityFeed.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No activity yet. Start with a task or proof submission.</div>
+              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No activity yet. Start with a task or proof submission.</div>
             ) : (
               activityFeed.map((item) => (
-                <div key={`${item.kind}-${item.title}-${item.time.toISOString()}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <div className="mt-0.5 rounded-2xl border border-white/10 bg-white/5 p-2 text-primary">
+                <div key={`${item.kind}-${item.title}-${item.time.toISOString()}`} className="flex items-start gap-3 rounded-[4px] bg-card/60 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.12)]">
+                  <div className="mt-0.5 rounded-[4px] bg-secondary/40 p-2 text-primary shadow-[0_0_20px_-18px_rgba(0,255,178,0.18)]">
                     {item.kind === "task" ? <Plus className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-3">
                       <div className="truncate font-semibold text-white">{item.title}</div>
-                      <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                      <span className="rounded-[4px] bg-secondary/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
                         {item.status}
                       </span>
                     </div>
@@ -192,12 +192,12 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {groupProgress.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No groups yet. Create or join one to start tracking progress.</div>
+              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No groups yet. Create or join one to start tracking progress.</div>
             ) : (
               groupProgress.map((group) => (
                 <div
                   key={group.id}
-                  className={cn("rounded-3xl border p-4", group.isActive ? "border-primary/30 bg-primary/10" : "border-white/10 bg-black/30")}
+                  className={cn("rounded-[4px] p-4", group.isActive ? "bg-primary/10 shadow-[0_0_30px_-20px_rgba(0,255,178,0.25)]" : "bg-black/30")}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
@@ -206,7 +206,7 @@ export default async function DashboardPage() {
                         {group.activeMembers}/{group.members} members active - {group.tasks} tasks
                       </div>
                     </div>
-                    <div className="text-right text-xs uppercase tracking-[0.2em] text-white/45">{group.progress}%</div>
+                    <div className="text-right text-xs uppercase tracking-[0.2em] text-primary">{group.progress}%</div>
                   </div>
                   <div className="mt-3 h-[6px] overflow-hidden rounded-[3px] bg-secondary">
                     <div className="h-full rounded-[3px] bg-primary" style={{ width: `${group.progress}%` }} />
@@ -222,11 +222,11 @@ export default async function DashboardPage() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-primary">
+              <div className="rounded-[4px] bg-secondary/40 p-3 text-primary shadow-[0_0_20px_-18px_rgba(0,255,178,0.18)]">
                 <Clock3 className="h-6 w-6" />
               </div>
               <div>
-                <div className="text-2xl font-black text-white">{pendingTasks}</div>
+                <div className="text-2xl font-black text-primary">{pendingTasks}</div>
                 <div className="text-sm text-white/50">Pending tasks</div>
               </div>
             </div>
@@ -235,11 +235,11 @@ export default async function DashboardPage() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-primary">
+              <div className="rounded-[4px] bg-secondary/40 p-3 text-primary shadow-[0_0_20px_-18px_rgba(0,255,178,0.18)]">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <div>
-                <div className="text-2xl font-black text-white">{pendingProof}</div>
+                <div className="text-2xl font-black text-primary">{pendingProof}</div>
                 <div className="text-sm text-white/50">Pending proof of work</div>
               </div>
             </div>
@@ -248,11 +248,11 @@ export default async function DashboardPage() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-4">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-3 text-primary">
+              <div className="rounded-[4px] bg-secondary/40 p-3 text-primary shadow-[0_0_20px_-18px_rgba(0,255,178,0.18)]">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <div>
-                <div className="text-2xl font-black text-white">{awaitingReview}</div>
+                <div className="text-2xl font-black text-primary">{awaitingReview}</div>
                 <div className="text-sm text-white/50">Uploads awaiting review</div>
               </div>
             </div>

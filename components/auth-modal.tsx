@@ -65,7 +65,7 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
       <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" onClick={onClose} />
 
       <div className="relative z-10 w-full max-w-md animate-in fade-in zoom-in duration-200">
-        <div className="relative overflow-hidden rounded-lg border border-border bg-card p-8 shadow-[0_0_40px_-24px_rgba(0,255,178,0.3)] backdrop-blur-xl">
+        <div className="relative overflow-hidden rounded-lg bg-card p-8 shadow-[0_0_40px_-24px_rgba(0,255,178,0.3)] backdrop-blur-xl">
           <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/15 blur-[50px]" />
 
           <button onClick={onClose} className="absolute right-6 top-6 text-muted-foreground transition-colors hover:text-foreground">
@@ -89,7 +89,7 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-[4px] border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
+                  className="w-full rounded-[4px] border border-border/50 bg-secondary/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
                 />
               </div>
             )}
@@ -102,7 +102,7 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-[4px] border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
+                className="w-full rounded-[4px] border border-border/50 bg-secondary/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
               />
             </div>
 
@@ -116,11 +116,11 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-[4px] border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
+                className="w-full rounded-[4px] border border-border/50 bg-secondary/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
               />
             </div>
 
-            {error ? <div className="rounded-[4px] border border-accent/30 bg-accent/10 px-3 py-2 text-xs font-medium text-accent">{error}</div> : null}
+            {error ? <div className="rounded-[4px] bg-accent/10 px-3 py-2 text-xs font-medium text-accent">{error}</div> : null}
 
             <button
               type="submit"
@@ -131,7 +131,7 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
             </button>
 
             <div className="relative my-5 flex items-center justify-center">
-              <div className="absolute w-full border-t border-border" />
+              <div className="absolute h-px w-full bg-border" />
               <span className="relative rounded-[4px] bg-secondary px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Or</span>
             </div>
 
@@ -139,7 +139,7 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
               type="button"
               disabled={loading}
               onClick={handleGoogleAuth}
-              className="flex w-full items-center justify-center gap-2 rounded-[4px] border border-border bg-secondary px-4 py-3 text-foreground transition-colors hover:bg-secondary/80"
+              className="flex w-full items-center justify-center gap-2 rounded-[4px] bg-secondary px-4 py-3 text-foreground transition-colors hover:bg-secondary/80"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />

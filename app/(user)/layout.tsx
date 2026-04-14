@@ -1,9 +1,8 @@
 import { UserNavigation } from "@/components/user-navigation";
-import { requireSession, getWorkspace } from "@/lib/workspace";
+import { requireSession } from "@/lib/workspace";
 
 export default async function UserLayout({ children }: { children: React.ReactNode }) {
   const session = await requireSession();
-  const { memberships, activeGroupId } = await getWorkspace(session.user.id);
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -23,8 +22,6 @@ export default async function UserLayout({ children }: { children: React.ReactNo
           userName={session.user.name}
           userEmail={session.user.email}
           userImage={session.user.image}
-          memberships={memberships}
-          activeGroupId={activeGroupId}
         />
 
         <main className="flex-1 overflow-hidden">

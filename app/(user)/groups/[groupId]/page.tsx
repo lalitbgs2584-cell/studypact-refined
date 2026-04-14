@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Plus, Sparkles, Users } from "lucide-react";
+import { ArrowRight, Plus, Sparkles } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
@@ -41,7 +41,7 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Card>
           <CardContent className="space-y-4 p-6 md:p-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+            <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Sparkles className="h-3.5 w-3.5" />
               Group Feed
             </div>
@@ -71,21 +71,21 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
             <CardDescription className="text-white/50">Active context summary for this group.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Members</div>
-              <div className="mt-1 text-2xl font-black text-white">{group.users.length}</div>
+              <div className="mt-1 text-2xl font-black text-primary">{group.users.length}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Tasks</div>
-              <div className="mt-1 text-2xl font-black text-white">{group.tasks.length}</div>
+              <div className="mt-1 text-2xl font-black text-primary">{group.tasks.length}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Leader</div>
               <div className="mt-1 text-sm font-semibold text-white">{group.createdBy.name}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Members active</div>
-              <div className="mt-1 text-2xl font-black text-white">{completedMembers}</div>
+              <div className="mt-1 text-2xl font-black text-primary">{completedMembers}</div>
             </div>
           </CardContent>
         </Card>
@@ -99,7 +99,7 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
           </CardHeader>
           <CardContent className="space-y-4">
             {group.tasks.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
+              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">
                 No tasks posted yet.
               </div>
             ) : (
@@ -107,7 +107,7 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
                 const status = task.status === "COMPLETED" ? "Completed" : task.status === "IN_PROGRESS" ? "In progress" : "Not started";
 
                 return (
-                  <Card key={task.id} className="bg-black/30">
+                  <Card key={task.id} className="bg-black/30 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]">
                     <CardContent className="space-y-3 p-4">
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -116,7 +116,7 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
                             by {task.user.name} · {formatDistanceToNow(new Date(task.createdAt), { addSuffix: true })}
                           </div>
                         </div>
-                        <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
+                        <span className="rounded-[4px] bg-secondary/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white/45">
                           {status}
                         </span>
                       </div>
@@ -141,10 +141,10 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
             <CardDescription className="text-white/50">Share this code with members who need access.</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="rounded-3xl border border-primary/20 bg-primary/10 p-5 text-center font-mono text-2xl font-black tracking-[0.3em] text-primary">
+            <div className="rounded-[4px] bg-primary/10 p-5 text-center font-mono text-2xl font-black tracking-[0.3em] text-primary shadow-[0_0_24px_-22px_rgba(0,255,178,0.18)]">
               {group.inviteCode.toUpperCase()}
             </div>
-            <div className="mt-4 rounded-3xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/60">
+            <div className="mt-4 rounded-[4px] bg-secondary/30 p-4 text-sm text-white/60">
               Members can switch active context from the sidebar without leaving the page.
             </div>
           </CardContent>

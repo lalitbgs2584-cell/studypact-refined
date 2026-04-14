@@ -43,7 +43,7 @@ export default async function AssignmentsPage() {
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Card>
           <CardContent className="space-y-4 p-6 md:p-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+            <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Sparkles className="h-3.5 w-3.5" />
               Assignments
             </div>
@@ -64,13 +64,13 @@ export default async function AssignmentsPage() {
             <CardDescription className="text-white/50">Leader tools appear only when you can create assignments.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-white/60">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Status</div>
               <div className="mt-1 text-xl font-black text-white">{isLeader ? "Leader" : "Member"}</div>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Assignments</div>
-              <div className="mt-1 text-xl font-black text-white">{assignments.length}</div>
+              <div className="mt-1 text-xl font-black text-primary">{assignments.length}</div>
             </div>
           </CardContent>
         </Card>
@@ -100,7 +100,7 @@ export default async function AssignmentsPage() {
                 <textarea
                   id="assignment-details"
                   name="details"
-                  className="min-h-24 w-full rounded-2xl border border-white/10 bg-black/50 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
+                  className="min-h-24 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
                   placeholder="Describe the assignment and expected output."
                 />
               </div>
@@ -119,7 +119,7 @@ export default async function AssignmentsPage() {
                     <textarea
                       key={questionNumber}
                       name="questions"
-                      className="min-h-20 w-full rounded-2xl border border-white/10 bg-black/50 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
+                      className="min-h-20 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
                       placeholder={`Question ${questionNumber}`}
                     />
                   ))}
@@ -145,7 +145,7 @@ export default async function AssignmentsPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {assignments.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No assignments yet.</div>
+            <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No assignments yet.</div>
           ) : (
             assignments.map((assignment) => {
               const completedQuestions = assignment.questions.filter((question) =>
@@ -154,7 +154,7 @@ export default async function AssignmentsPage() {
               const progress = assignment.questions.length === 0 ? 0 : Math.round((completedQuestions / assignment.questions.length) * 100);
 
               return (
-                <div key={assignment.id} className="rounded-3xl border border-white/10 bg-black/30 p-4">
+                <div key={assignment.id} className="rounded-lg bg-secondary/25 p-4 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="font-semibold text-white">{assignment.title}</div>
@@ -163,7 +163,7 @@ export default async function AssignmentsPage() {
                         {assignment.dueAt ? ` - due ${assignment.dueAt.toLocaleString()}` : ""}
                       </div>
                     </div>
-                    <div className="text-right text-xs uppercase tracking-[0.2em] text-white/45">{progress}%</div>
+                    <div className="text-right text-xs uppercase tracking-[0.2em] text-primary">{progress}%</div>
                   </div>
 
                   {assignment.details ? <p className="mt-3 text-sm text-white/60">{assignment.details}</p> : null}
@@ -178,13 +178,13 @@ export default async function AssignmentsPage() {
                       const submissionStatus = mySubmission ? mySubmission.status : "Not Started";
 
                       return (
-                        <div key={question.id} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                        <div key={question.id} className="rounded-[4px] bg-secondary/30 p-4">
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
                               <div className="font-medium text-white">Question {question.order}</div>
                               <div className="mt-1 text-sm text-white/60">{question.prompt}</div>
                             </div>
-                            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                            <span className="rounded-[4px] bg-secondary/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
                               {submissionStatus}
                             </span>
                           </div>
@@ -195,7 +195,7 @@ export default async function AssignmentsPage() {
                                 Submit proof
                               </Button>
                             </Link>
-                            <div className="text-xs text-white/45">{question.checkIns.length} submission(s)</div>
+                            <div className="text-xs text-primary">{question.checkIns.length} submission(s)</div>
                           </div>
                         </div>
                       );

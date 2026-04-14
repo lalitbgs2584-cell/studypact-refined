@@ -102,7 +102,7 @@ export default async function ProofWorkPage({
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Card>
           <CardContent className="space-y-4 p-6 md:p-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+            <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <ShieldCheck className="h-3.5 w-3.5" />
               Proof of Work
             </div>
@@ -123,15 +123,15 @@ export default async function ProofWorkPage({
             <CardDescription className="text-white/50">The proof workflow is shared by tasks and assignments.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-white/60">
-            <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="flex items-start gap-3 rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <Upload className="mt-0.5 h-4 w-4 text-primary" />
               <div>Every submission needs a before photo, an after photo, and a short reflection.</div>
             </div>
-            <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="flex items-start gap-3 rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
               <div>Peer votes close a submission once quorum is met, and rejected work comes back with a note.</div>
             </div>
-            <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+            <div className="flex items-start gap-3 rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
               <Sparkles className="mt-0.5 h-4 w-4 text-primary" />
               <div>
                 {quorumThreshold} vote(s) are needed from {totalEligibleReviewers} eligible reviewers to close a proof in the active group.
@@ -160,7 +160,7 @@ export default async function ProofWorkPage({
                 submitLabel="Submit task proof"
               />
             ) : (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No task targets available right now.</div>
+              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No task targets available right now.</div>
             )}
           </CardContent>
         </Card>
@@ -183,7 +183,7 @@ export default async function ProofWorkPage({
                 submitLabel="Submit question proof"
               />
             ) : (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No assignment questions yet.</div>
+              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No assignment questions yet.</div>
             )}
           </CardContent>
         </Card>
@@ -196,7 +196,7 @@ export default async function ProofWorkPage({
         </CardHeader>
         <CardContent className="space-y-3">
           {recentSubmissions.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No proof submitted yet.</div>
+            <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No proof submitted yet.</div>
           ) : (
             recentSubmissions.map((submission) => {
               const metrics = getPeerReviewMetrics(submission.verifications, totalEligibleReviewers);
@@ -220,7 +220,7 @@ export default async function ProofWorkPage({
                     : "Awaiting votes";
 
               return (
-                <div key={submission.id} className="rounded-3xl border border-white/10 bg-black/30 p-4">
+                <div key={submission.id} className="rounded-lg bg-secondary/25 p-4 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <div className="font-semibold text-white">{targetLabel}</div>
@@ -229,7 +229,7 @@ export default async function ProofWorkPage({
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1 text-right">
-                      <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                      <span className="rounded-[4px] bg-secondary/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
                         {reviewSummary}
                       </span>
                       <span className="text-[10px] uppercase tracking-[0.2em] text-white/35">
@@ -239,19 +239,19 @@ export default async function ProofWorkPage({
                   </div>
                   <div className="mt-4 grid gap-3 md:grid-cols-2">
                     {submission.startFiles[0] ? (
-                      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                      <div className="overflow-hidden rounded-[4px] bg-secondary/30">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={submission.startFiles[0].url} alt={submission.startFiles[0].name} className="h-40 w-full object-cover" />
                       </div>
                     ) : null}
                     {submission.endFiles[0] ? (
-                      <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+                      <div className="overflow-hidden rounded-[4px] bg-secondary/30">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={submission.endFiles[0].url} alt={submission.endFiles[0].name} className="h-40 w-full object-cover" />
                       </div>
                     ) : null}
                   </div>
-                  <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/70">
+                  <div className="mt-4 rounded-[4px] bg-secondary/30 p-4 text-sm text-white/70">
                     {submission.proofText || submission.reflection || "No summary provided."}
                   </div>
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -259,10 +259,10 @@ export default async function ProofWorkPage({
                       <span
                         key={`${submission.id}-${verification.reviewer.name}-${verification.verdict}`}
                         className={cn(
-                          "rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]",
+                          "rounded-[4px] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]",
                           verification.verdict === "APPROVE"
-                            ? "border-primary/30 bg-primary/10 text-primary"
-                            : "border-red-500/20 bg-red-500/10 text-red-200"
+                            ? "bg-primary/10 text-primary"
+                            : "bg-accent/10 text-accent"
                         )}
                       >
                         {verification.reviewer.name} - {verification.verdict === "APPROVE" ? "Approve" : "Flag"}
@@ -270,7 +270,7 @@ export default async function ProofWorkPage({
                     ))}
                   </div>
                   {submission.reviewNote ? (
-                    <div className="mt-3 rounded-2xl border border-primary/20 bg-primary/10 p-3 text-sm text-primary-foreground">
+                    <div className="mt-3 rounded-[4px] bg-primary/10 p-3 text-sm text-primary-foreground">
                       {submission.reviewNote}
                     </div>
                   ) : null}
