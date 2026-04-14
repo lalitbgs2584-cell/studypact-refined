@@ -1,0 +1,1 @@
+export const ACTIVE_GROUP_COOKIE = "studypact_active_group";

@@ -6,8 +6,7 @@ const f = createUploadthing();
 
 export const ourFileRouter = {
   proofUpload: f({ 
-    image: { maxFileSize: "4MB", maxFileCount: 2 },
-    video: { maxFileSize: "16MB", maxFileCount: 1 } 
+    image: { maxFileSize: "4MB", maxFileCount: 2 }
   })
     .middleware(async () => {
       const session = await auth.api.getSession({ headers: await headers() });
