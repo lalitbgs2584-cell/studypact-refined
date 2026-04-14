@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession, type Membership } from "@/lib/workspace";
 
 type Assignment = Awaited<ReturnType<typeof fetchAssignments>>[number];
+type Question = Assignment["questions"][number];
+type CheckIn = Question["checkIns"][number];
 
 async function fetchAssignments(groupId: string) {
   return db.assignment.findMany({
@@ -39,7 +41,7 @@ export default async function AssignmentsPage() {
   const session = await requireSession();
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
   const groupId = activeGroupId ?? memberships[0]?.groupId ?? "";
-  const membership: Membership | undefined = memberships.find((item: any) => item.groupId === groupId);
+  const membership: Membership | undefined = memberships.find((item: Membership) => item.groupId === groupId);
   const isLeader = membership?.role === "admin";
 
   const assignments: Assignment[] = groupId ? await fetchAssignments(groupId) : [];
@@ -138,8 +140,8 @@ export default async function AssignmentsPage() {
             <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No assignments yet.</div>
           ) : (
             assignments.map((assignment: Assignment) => {
-              const completedQuestions = assignment.questions.filter((question) =>
-                question.checkIns.some((checkIn) => checkIn.userId === session.user.id)
+              const completedQuestions = assignment.questions.filter((question: Question) =>
+                question.checkIns.some((checkIn: CheckIn) => checkIn.userId === session.user.id)
               ).length;
               const progress = assignment.questions.length === 0 ? 0 : Math.round((completedQuestions / assignment.questions.length) * 100);
               const submissionBadgeClass = (status: string) =>
@@ -165,8 +167,8 @@ export default async function AssignmentsPage() {
                   </div>
 
                   <div className="mt-4 space-y-3">
-                    {assignment.questions.map((question) => {
-                      const mySubmission = question.checkIns.find((checkIn) => checkIn.userId === session.user.id);
+                    {assignment.questions.map((question: Question) => {
+                      const mySubmission = question.checkIns.find((checkIn: CheckIn) => checkIn.userId === session.user.id);
                       const submissionStatus = mySubmission ? mySubmission.status : "Not Started";
 
                       return (
