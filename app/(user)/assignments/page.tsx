@@ -11,11 +11,13 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
+type Membership = Awaited<ReturnType<typeof getWorkspace>>["memberships"][number];
+
 export default async function AssignmentsPage() {
   const session = await requireSession();
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
   const groupId = activeGroupId ?? memberships[0]?.groupId ?? "";
-  const membership = memberships.find((item) => item.groupId === groupId);
+  const membership: Membership | undefined = memberships.find((item) => item.groupId === groupId);
   const isLeader = membership?.role === "admin";
 
   const assignments = groupId
