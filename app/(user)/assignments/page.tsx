@@ -11,35 +11,38 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession, type Membership } from "@/lib/workspace";
 
+type Assignment = Awaited<ReturnType<typeof fetchAssignments>>[number];
+
+async function fetchAssignments(groupId: string) {
+  return db.assignment.findMany({
+    where: { groupId },
+    include: {
+      createdBy: { select: { name: true } },
+      questions: {
+        include: {
+          checkIns: {
+            include: {
+              user: { select: { id: true, name: true } },
+              startFiles: true,
+              endFiles: true,
+            },
+          },
+        },
+        orderBy: { order: "asc" },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
 
 export default async function AssignmentsPage() {
   const session = await requireSession();
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
   const groupId = activeGroupId ?? memberships[0]?.groupId ?? "";
-  const membership: Membership | undefined = memberships.find((item:any) => item.groupId === groupId);
+  const membership: Membership | undefined = memberships.find((item: any) => item.groupId === groupId);
   const isLeader = membership?.role === "admin";
 
-  const assignments = groupId
-    ? await db.assignment.findMany({
-        where: { groupId },
-        include: {
-          createdBy: { select: { name: true } },
-          questions: {
-            include: {
-              checkIns: {
-                include: {
-                  user: { select: { id: true, name: true } },
-                  startFiles: true,
-                  endFiles: true,
-                },
-              },
-            },
-            orderBy: { order: "asc" },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-      })
-    : [];
+  const assignments: Assignment[] = groupId ? await fetchAssignments(groupId) : [];
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
@@ -134,7 +137,7 @@ export default async function AssignmentsPage() {
           {assignments.length === 0 ? (
             <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No assignments yet.</div>
           ) : (
-            assignments.map((assignment) => {
+            assignments.map((assignment: Assignment) => {
               const completedQuestions = assignment.questions.filter((question) =>
                 question.checkIns.some((checkIn) => checkIn.userId === session.user.id)
               ).length;
@@ -167,15 +170,15 @@ export default async function AssignmentsPage() {
                       const submissionStatus = mySubmission ? mySubmission.status : "Not Started";
 
                       return (
-                      <div key={question.id} className="rounded-[4px] border border-border bg-secondary/20 p-4">
+                        <div key={question.id} className="rounded-[4px] border border-border bg-secondary/20 p-4">
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
                               <div className="font-medium text-white">Question {question.order}</div>
                               <div className="mt-1 text-sm text-white/60">{question.prompt}</div>
                             </div>
-                          <span className={cn("px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]", submissionBadgeClass(submissionStatus))}>
+                            <span className={cn("px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]", submissionBadgeClass(submissionStatus))}>
                               {submissionStatus}
-                          </span>
+                            </span>
                           </div>
 
                           <div className="mt-3 flex flex-wrap items-center gap-2">
