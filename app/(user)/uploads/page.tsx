@@ -11,11 +11,13 @@ import { getWorkspace, requireSession } from "@/lib/workspace";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
+type Membership = Awaited<ReturnType<typeof getWorkspace>>["memberships"][number];
+
 export default async function UploadsPage() {
   const session = await requireSession();
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
   const groupId = activeGroupId ?? memberships[0]?.groupId ?? "";
-  const membership = memberships.find((item) => item.groupId === groupId);
+  const membership: Membership | undefined = memberships.find((item) => item.groupId === groupId);
   const totalEligibleReviewers = Math.max((activeGroup?.users.length ?? 0) - 1, 0);
   const quorumThreshold = getPeerReviewThreshold(totalEligibleReviewers);
 
