@@ -22,11 +22,10 @@ export async function submitProof(formData: FormData) {
   const endFiles: { url: string; name: string }[] = [];
 
   formData.forEach((value, key) => {
-    if (key.startsWith("startFileUrl_")) {
+    if (key.startsWith("startFileUrl")) {
       startFiles.push({ url: value as string, name: "Before / Start" });
     }
-
-    if (key.startsWith("endFileUrl_")) {
+    if (key.startsWith("endFileUrl")) {
       endFiles.push({ url: value as string, name: "After / End" });
     }
   });

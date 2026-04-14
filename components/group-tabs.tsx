@@ -33,7 +33,7 @@ export function GroupTabs({ groupId, isLeader }: GroupTabsProps) {
   }
 
   return (
-    <div className="flex items-center gap-1 overflow-x-auto rounded-[4px] bg-card/80 p-1.5 py-2 backdrop-blur-xl">
+    <div className="flex items-center gap-1 overflow-x-auto rounded-[4px] border border-border bg-card/80 p-1.5 py-2">
       {tabs.map(({ href, label, icon: Icon, active }) => (
         <Link
           key={href}
@@ -41,8 +41,8 @@ export function GroupTabs({ groupId, isLeader }: GroupTabsProps) {
           className={cn(
             "flex items-center gap-2 whitespace-nowrap rounded-[4px] px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] transition-colors",
             active
-              ? "bg-primary/10 text-primary"
-              : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              ? "border border-primary/20 bg-primary/10 text-primary"
+              : "border border-transparent text-muted-foreground hover:border-border hover:bg-secondary hover:text-foreground"
           )}
         >
           <Icon className="w-4 h-4" />

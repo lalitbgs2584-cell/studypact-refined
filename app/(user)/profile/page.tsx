@@ -10,7 +10,7 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
-      <Card>
+      <Card className="border-l-4 border-l-primary">
         <CardContent className="space-y-4 p-6 md:p-8">
           <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
             Profile
@@ -53,19 +53,19 @@ export default async function ProfilePage() {
         <CardContent className="space-y-3">
           {activeGroup ? (
             <>
-              <div className="rounded-[4px] bg-secondary/40 p-4 text-white/80 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+              <div className="rounded-[4px] border border-border bg-secondary/30 p-4 text-white/80">
                 {activeGroup.description || "No description provided."}
               </div>
               <div className="grid gap-3 md:grid-cols-3">
-                <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+                <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/40">Members</div>
                   <div className="mt-1 text-xl font-black text-primary">{activeGroup._count.users}</div>
                 </div>
-                <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+                <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/40">Tasks</div>
                   <div className="mt-1 text-xl font-black text-primary">{activeGroup._count.tasks}</div>
                 </div>
-                <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+                <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/40">Invite code</div>
                   <div className="mt-1 font-mono text-xl font-black tracking-[0.25em] text-primary">{activeGroup.inviteCode.toUpperCase()}</div>
                 </div>

@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { createAssignment } from "@/lib/actions/assignment";
 import { db } from "@/lib/db";
+import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
 export default async function AssignmentsPage() {
@@ -41,7 +43,7 @@ export default async function AssignmentsPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <Card>
+        <Card className="border-l-4 border-l-primary">
           <CardContent className="space-y-4 p-6 md:p-8">
             <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Sparkles className="h-3.5 w-3.5" />
@@ -58,17 +60,17 @@ export default async function AssignmentsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-l-4 border-l-primary/40">
           <CardHeader>
             <CardTitle className="text-white">Your role</CardTitle>
             <CardDescription className="text-white/50">Leader tools appear only when you can create assignments.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-white/60">
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Status</div>
               <div className="mt-1 text-xl font-black text-white">{isLeader ? "Leader" : "Member"}</div>
             </div>
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Assignments</div>
               <div className="mt-1 text-xl font-black text-primary">{assignments.length}</div>
             </div>
@@ -87,44 +89,28 @@ export default async function AssignmentsPage() {
               <input type="hidden" name="groupId" value={groupId} />
 
               <div className="space-y-2">
-                <Label htmlFor="assignment-title" className="text-white/80">
-                  Title
-                </Label>
+                <Label htmlFor="assignment-title">Title</Label>
                 <Input id="assignment-title" name="title" placeholder="Assignment title" required />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="assignment-details" className="text-white/80">
-                  Details
-                </Label>
-                <textarea
-                  id="assignment-details"
-                  name="details"
-                  className="min-h-24 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
-                  placeholder="Describe the assignment and expected output."
-                />
+                <Label htmlFor="assignment-details">Details</Label>
+                <Textarea id="assignment-details" name="details" placeholder="Describe the assignment and expected output." />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="assignment-due" className="text-white/80">
-                  Due date
-                </Label>
+                <Label htmlFor="assignment-due">Due date</Label>
                 <Input id="assignment-due" name="dueAt" type="datetime-local" />
               </div>
 
               <div className="space-y-3">
-                <Label className="text-white/80">Questions</Label>
+                <Label>Questions</Label>
                 <div className="grid gap-3">
                   {[1, 2, 3, 4, 5].map((questionNumber) => (
-                    <textarea
-                      key={questionNumber}
-                      name="questions"
-                      className="min-h-20 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
-                      placeholder={`Question ${questionNumber}`}
-                    />
+                    <Textarea key={questionNumber} name="questions" placeholder={`Question ${questionNumber}`} className="min-h-20" />
                   ))}
                 </div>
-                <p className="text-xs text-white/40">Fill at least one question. Extra blank rows are ignored.</p>
+                <p style={{ fontSize: 11, color: "#6A7888" }}>Fill at least one question. Extra blank rows are ignored.</p>
               </div>
 
               <div className="flex justify-end">
@@ -152,9 +138,11 @@ export default async function AssignmentsPage() {
                 question.checkIns.some((checkIn) => checkIn.userId === session.user.id)
               ).length;
               const progress = assignment.questions.length === 0 ? 0 : Math.round((completedQuestions / assignment.questions.length) * 100);
+              const submissionBadgeClass = (status: string) =>
+                status === "APPROVED" ? "badge-active" : status === "REJECTED" || status === "FLAGGED" ? "badge-risk" : "badge-muted";
 
               return (
-                <div key={assignment.id} className="rounded-lg bg-secondary/25 p-4 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]">
+                <div key={assignment.id} className="rounded-lg border border-border bg-card/70 p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="font-semibold text-white">{assignment.title}</div>
@@ -168,8 +156,8 @@ export default async function AssignmentsPage() {
 
                   {assignment.details ? <p className="mt-3 text-sm text-white/60">{assignment.details}</p> : null}
 
-                  <div className="mt-4 h-[6px] overflow-hidden rounded-[3px] bg-secondary">
-                    <div className="h-full rounded-[3px] bg-primary" style={{ width: `${progress}%` }} />
+                  <div className="progress-track mt-4 overflow-hidden">
+                    <div className="progress-fill" style={{ width: `${progress}%` }} />
                   </div>
 
                   <div className="mt-4 space-y-3">
@@ -178,15 +166,15 @@ export default async function AssignmentsPage() {
                       const submissionStatus = mySubmission ? mySubmission.status : "Not Started";
 
                       return (
-                        <div key={question.id} className="rounded-[4px] bg-secondary/30 p-4">
+                      <div key={question.id} className="rounded-[4px] border border-border bg-secondary/20 p-4">
                           <div className="flex flex-wrap items-start justify-between gap-3">
                             <div>
                               <div className="font-medium text-white">Question {question.order}</div>
                               <div className="mt-1 text-sm text-white/60">{question.prompt}</div>
                             </div>
-                            <span className="rounded-[4px] bg-secondary/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                          <span className={cn("px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]", submissionBadgeClass(submissionStatus))}>
                               {submissionStatus}
-                            </span>
+                          </span>
                           </div>
 
                           <div className="mt-3 flex flex-wrap items-center gap-2">

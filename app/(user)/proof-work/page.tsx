@@ -89,6 +89,12 @@ export default async function ProofWorkPage({
             : "Upload before and after proof to finish this task.",
   }));
 
+  const submissionBadgeClass = (status: string) => {
+    if (status === "APPROVED") return "badge-active";
+    if (status === "REJECTED" || status === "FLAGGED") return "badge-risk";
+    return "badge-muted";
+  };
+
   const questionTargets = assignments.flatMap((assignment) =>
     assignment.questions.map((question) => ({
       id: question.id,
@@ -100,7 +106,7 @@ export default async function ProofWorkPage({
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <Card>
+        <Card className="border-l-4 border-l-primary">
           <CardContent className="space-y-4 p-6 md:p-8">
             <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <ShieldCheck className="h-3.5 w-3.5" />
@@ -117,21 +123,21 @@ export default async function ProofWorkPage({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-l-4 border-l-primary/40">
           <CardHeader>
             <CardTitle className="text-white">Why this page exists</CardTitle>
             <CardDescription className="text-white/50">The proof workflow is shared by tasks and assignments.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-white/60">
-            <div className="flex items-start gap-3 rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="flex items-start gap-3 rounded-[4px] border border-border bg-secondary/20 p-4">
               <Upload className="mt-0.5 h-4 w-4 text-primary" />
               <div>Every submission needs a before photo, an after photo, and a short reflection.</div>
             </div>
-            <div className="flex items-start gap-3 rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="flex items-start gap-3 rounded-[4px] border border-border bg-secondary/20 p-4">
               <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
               <div>Peer votes close a submission once quorum is met, and rejected work comes back with a note.</div>
             </div>
-            <div className="flex items-start gap-3 rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="flex items-start gap-3 rounded-[4px] border border-border bg-secondary/20 p-4">
               <Sparkles className="mt-0.5 h-4 w-4 text-primary" />
               <div>
                 {quorumThreshold} vote(s) are needed from {totalEligibleReviewers} eligible reviewers to close a proof in the active group.
@@ -217,10 +223,10 @@ export default async function ProofWorkPage({
                   ? `Rejected by quorum (${metrics.flagVotes}/${metrics.threshold})`
                   : metrics.totalVotes > 0
                     ? `${metrics.approvalVotes} approvals, ${metrics.flagVotes} flags`
-                    : "Awaiting votes";
+                  : "Awaiting votes";
 
               return (
-                <div key={submission.id} className="rounded-lg bg-secondary/25 p-4 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]">
+                <div key={submission.id} className="rounded-[4px] border border-border bg-card/70 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <div className="font-semibold text-white">{targetLabel}</div>
@@ -229,7 +235,7 @@ export default async function ProofWorkPage({
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1 text-right">
-                      <span className="rounded-[4px] bg-secondary/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                      <span className={cn("px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]", submissionBadgeClass(submission.status))}>
                         {reviewSummary}
                       </span>
                       <span className="text-[10px] uppercase tracking-[0.2em] text-white/35">
@@ -258,19 +264,14 @@ export default async function ProofWorkPage({
                     {submission.verifications.map((verification) => (
                       <span
                         key={`${submission.id}-${verification.reviewer.name}-${verification.verdict}`}
-                        className={cn(
-                          "rounded-[4px] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]",
-                          verification.verdict === "APPROVE"
-                            ? "bg-primary/10 text-primary"
-                            : "bg-accent/10 text-accent"
-                        )}
+                        className={cn("rounded-[4px] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]", verification.verdict === "APPROVE" ? "badge-active" : "badge-risk")}
                       >
                         {verification.reviewer.name} - {verification.verdict === "APPROVE" ? "Approve" : "Flag"}
                       </span>
                     ))}
                   </div>
                   {submission.reviewNote ? (
-                    <div className="mt-3 rounded-[4px] bg-primary/10 p-3 text-sm text-primary-foreground">
+                    <div className={cn("mt-3 rounded-[4px] p-3 text-sm", submission.status === "APPROVED" ? "bg-primary/10 text-primary-foreground" : "bg-accent/10 text-accent")}>
                       {submission.reviewNote}
                     </div>
                   ) : null}

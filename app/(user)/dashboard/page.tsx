@@ -86,10 +86,22 @@ export default async function DashboardPage() {
     };
   });
 
+  const activityBadgeClass = (kind: "task" | "proof", status: string) => {
+    if ((kind === "task" && (status === "IN_PROGRESS" || status === "COMPLETED")) || (kind === "proof" && status === "APPROVED")) {
+      return "badge-active";
+    }
+
+    if ((kind === "task" && status === "MISSED") || (kind === "proof" && (status === "REJECTED" || status === "FLAGGED"))) {
+      return "badge-risk";
+    }
+
+    return "badge-muted";
+  };
+
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       <div className="grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
-        <Card className="overflow-hidden">
+        <Card className="overflow-hidden border-l-4 border-l-primary">
           <CardContent className="space-y-5 p-6 md:p-8">
             <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Sparkles className="h-3.5 w-3.5" />
@@ -127,26 +139,26 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className={cn(activeGroup ? "border-l-4 border-l-primary" : "")}>
           <CardHeader>
             <CardTitle className="text-white">Active Context</CardTitle>
             <CardDescription className="text-white/50">{activeGroup ? activeGroup.name : "No active group yet"}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
-              <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.15)]">
+              <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/40">Groups</div>
                 <div className="mt-1 text-2xl font-black text-primary">{memberships.length}</div>
               </div>
-              <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.15)]">
+              <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/40">Tasks</div>
                 <div className="mt-1 text-2xl font-black text-primary">{pendingTasks}</div>
               </div>
-              <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.15)]">
+              <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/40">Proof</div>
                 <div className="mt-1 text-2xl font-black text-primary">{pendingProof}</div>
               </div>
-              <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.15)]">
+              <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
                 <div className="text-xs uppercase tracking-[0.2em] text-white/40">Review</div>
                 <div className="mt-1 text-2xl font-black text-primary">{awaitingReview}</div>
               </div>
@@ -166,14 +178,14 @@ export default async function DashboardPage() {
               <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No activity yet. Start with a task or proof submission.</div>
             ) : (
               activityFeed.map((item) => (
-                <div key={`${item.kind}-${item.title}-${item.time.toISOString()}`} className="flex items-start gap-3 rounded-[4px] bg-card/60 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.12)]">
-                  <div className="mt-0.5 rounded-[4px] bg-secondary/40 p-2 text-primary shadow-[0_0_20px_-18px_rgba(0,255,178,0.18)]">
+                <div key={`${item.kind}-${item.title}-${item.time.toISOString()}`} className="flex items-start gap-3 rounded-[4px] border border-border bg-card/70 p-4">
+                  <div className="mt-0.5 rounded-[4px] border border-border bg-secondary/30 p-2 text-primary">
                     {item.kind === "task" ? <Plus className="h-4 w-4" /> : <Upload className="h-4 w-4" />}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-3">
                       <div className="truncate font-semibold text-white">{item.title}</div>
-                      <span className="rounded-[4px] bg-secondary/40 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                      <span className={cn("px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em]", activityBadgeClass(item.kind, item.status))}>
                         {item.status}
                       </span>
                     </div>
@@ -195,10 +207,7 @@ export default async function DashboardPage() {
               <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No groups yet. Create or join one to start tracking progress.</div>
             ) : (
               groupProgress.map((group) => (
-                <div
-                  key={group.id}
-                  className={cn("rounded-[4px] p-4", group.isActive ? "bg-primary/10 shadow-[0_0_30px_-20px_rgba(0,255,178,0.25)]" : "bg-black/30")}
-                >
+                <div key={group.id} className={cn("rounded-lg border p-4", group.isActive ? "card-accent-primary bg-primary/10" : group.progress < 40 ? "card-accent-danger bg-accent/10" : "bg-card/70")}>
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <div className="font-semibold text-white">{group.name}</div>
@@ -208,8 +217,8 @@ export default async function DashboardPage() {
                     </div>
                     <div className="text-right text-xs uppercase tracking-[0.2em] text-primary">{group.progress}%</div>
                   </div>
-                  <div className="mt-3 h-[6px] overflow-hidden rounded-[3px] bg-secondary">
-                    <div className="h-full rounded-[3px] bg-primary" style={{ width: `${group.progress}%` }} />
+                  <div className="progress-track mt-3 overflow-hidden">
+                    <div className={cn("progress-fill", group.progress < 40 ? "progress-fill-danger" : "")} style={{ width: `${group.progress}%` }} />
                   </div>
                 </div>
               ))
@@ -222,7 +231,7 @@ export default async function DashboardPage() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-4">
-              <div className="rounded-[4px] bg-secondary/40 p-3 text-primary shadow-[0_0_20px_-18px_rgba(0,255,178,0.18)]">
+              <div className="rounded-[4px] border border-border bg-secondary/30 p-3 text-primary">
                 <Clock3 className="h-6 w-6" />
               </div>
               <div>
@@ -235,7 +244,7 @@ export default async function DashboardPage() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-4">
-              <div className="rounded-[4px] bg-secondary/40 p-3 text-primary shadow-[0_0_20px_-18px_rgba(0,255,178,0.18)]">
+              <div className="rounded-[4px] border border-border bg-secondary/30 p-3 text-primary">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <div>
@@ -248,7 +257,7 @@ export default async function DashboardPage() {
         <Card>
           <CardContent className="p-5">
             <div className="flex items-center gap-4">
-              <div className="rounded-[4px] bg-secondary/40 p-3 text-primary shadow-[0_0_20px_-18px_rgba(0,255,178,0.18)]">
+              <div className="rounded-[4px] border border-border bg-secondary/30 p-3 text-primary">
                 <CheckCircle2 className="h-6 w-6" />
               </div>
               <div>

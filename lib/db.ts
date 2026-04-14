@@ -1,13 +1,8 @@
-import dotenv from "dotenv";
-dotenv.config({ override: true }); // ... Force override
-
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { PrismaClient } from '@prisma/client';
 
-console.log('" Prisma DB - DATABASE_URL:', !!process.env.DATABASE_URL ? '... loaded' : ' missing');
-
 if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL missing in prisma.ts');
+  throw new Error('DATABASE_URL env var is missing');
 }
 
 const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });

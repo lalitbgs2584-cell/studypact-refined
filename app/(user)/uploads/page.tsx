@@ -3,12 +3,13 @@ import { ArrowRight, CheckCircle2, Upload, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { submitVerification } from "@/lib/actions/verification";
 import { db } from "@/lib/db";
 import { getPeerReviewMetrics, getPeerReviewThreshold } from "@/lib/peer-review";
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 export default async function UploadsPage() {
   const session = await requireSession();
@@ -47,10 +48,16 @@ export default async function UploadsPage() {
   const pendingUploads = uploads.filter((upload) => upload.status === "PENDING" || upload.status === "FLAGGED").length;
   const rejectedUploads = uploads.filter((upload) => upload.status === "REJECTED").length;
 
+  const uploadBadgeClass = (status: string) => {
+    if (status === "APPROVED") return "badge-active";
+    if (status === "REJECTED" || status === "FLAGGED") return "badge-risk";
+    return "badge-muted";
+  };
+
   return (
     <div className="mx-auto max-w-7xl space-y-8">
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <Card>
+        <Card className="border-l-4 border-l-primary">
           <CardContent className="space-y-4 p-6 md:p-8">
             <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
               <Upload className="h-3.5 w-3.5" />
@@ -67,25 +74,25 @@ export default async function UploadsPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border-l-4 border-l-primary/40">
           <CardHeader>
             <CardTitle className="text-white">Current summary</CardTitle>
             <CardDescription className="text-white/50">The active group review queue.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">My uploads</div>
               <div className="mt-1 text-2xl font-black text-primary">{myUploads}</div>
             </div>
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Pending</div>
               <div className="mt-1 text-2xl font-black text-primary">{pendingUploads}</div>
             </div>
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Rejected</div>
               <div className="mt-1 text-2xl font-black text-primary">{rejectedUploads}</div>
             </div>
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
+            <div className="rounded-[4px] border border-border bg-secondary/30 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Quorum</div>
               <div className="mt-1 text-2xl font-black text-primary">{quorumThreshold}</div>
               <div className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/40">of {totalEligibleReviewers} eligible voters</div>
@@ -130,8 +137,8 @@ export default async function UploadsPage() {
                 <div
                   key={upload.id}
                   className={cn(
-                    "rounded-[4px] p-4 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]",
-                    upload.userId === session.user.id ? "bg-primary/5" : "bg-secondary/25"
+                    "rounded-[4px] border border-border p-4",
+                    upload.userId === session.user.id ? "card-accent-primary bg-primary/10" : "bg-card/70"
                   )}
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
@@ -141,7 +148,7 @@ export default async function UploadsPage() {
                         {upload.user.name} - {upload.createdAt.toLocaleString()}
                       </div>
                     </div>
-                    <span className="rounded-[4px] bg-secondary/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                    <span className={cn("px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]", uploadBadgeClass(upload.status))}>
                       {statusLabel}
                     </span>
                   </div>
@@ -161,7 +168,7 @@ export default async function UploadsPage() {
                     ) : null}
                   </div>
 
-                  <div className="mt-4 rounded-[4px] bg-secondary/30 p-4 text-sm text-white/70">{upload.proofText || "No summary provided."}</div>
+                  <div className="mt-4 rounded-[4px] border border-border bg-secondary/20 p-4 text-sm text-white/70">{upload.proofText || "No summary provided."}</div>
 
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-white/50">
                     <span>{reviewSummary}</span>
@@ -221,14 +228,12 @@ export default async function UploadsPage() {
                       <input type="hidden" name="checkInId" value={upload.id} />
                       <input type="hidden" name="taskId" value={upload.tasks[0]?.id ?? ""} />
                       <div className="space-y-2">
-                        <Label htmlFor={`note-${upload.id}`} className="text-white/80">
-                          Vote note
-                        </Label>
-                        <textarea
+                        <Label htmlFor={`note-${upload.id}`}>Vote note</Label>
+                        <Textarea
                           id={`note-${upload.id}`}
                           name="note"
                           placeholder="Add a short explanation for your vote"
-                          className="min-h-24 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
+                          className="min-h-20"
                         />
                       </div>
                       {currentVote ? (
@@ -241,7 +246,7 @@ export default async function UploadsPage() {
                           <CheckCircle2 className="h-4 w-4" />
                           Approve
                         </Button>
-                        <Button type="submit" name="verdict" value="FLAG" variant="outline" className="gap-2 text-accent">
+                        <Button type="submit" name="verdict" value="FLAG" variant="outline" className="gap-2 border-accent/40 text-accent hover:bg-accent/10">
                           <XCircle className="h-4 w-4" />
                           Flag
                         </Button>

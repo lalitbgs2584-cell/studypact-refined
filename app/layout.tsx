@@ -17,7 +17,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="dark">
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
         <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
           {children}

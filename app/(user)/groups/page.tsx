@@ -7,10 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { createGroup, joinGroup, setActiveGroup } from "@/lib/actions/group";
 import { auth } from "@/lib/auth";
-import { cn } from "@/lib/utils";
 import { getWorkspace } from "@/lib/workspace";
+
+const statBox: React.CSSProperties = {
+  background: "rgba(196,172,120,0.04)", border: "1px solid rgba(196,172,120,0.10)",
+  borderRadius: 12, padding: 16,
+};
 
 export default async function GroupsPage({
   searchParams,
@@ -23,21 +29,27 @@ export default async function GroupsPage({
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
   const params = (await searchParams) ?? {};
   const errorMessage = params.error ? decodeURIComponent(params.error) : null;
-  const totalTasks = memberships.reduce((sum, membership) => sum + membership.group._count.tasks, 0);
+  const totalTasks = memberships.reduce((sum, m) => sum + m.group._count.tasks, 0);
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
+      {/* Page header */}
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
-        <Card>
+        <Card className="card-accent-primary">
           <CardContent className="space-y-4 p-6 md:p-8">
-            <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 6,
+              background: "rgba(196,172,120,0.08)", border: "1px solid rgba(196,172,120,0.20)",
+              borderRadius: 9999, padding: "5px 14px",
+              fontSize: 11, fontWeight: 600, color: "#C4AC78", letterSpacing: "0.2em", textTransform: "uppercase",
+            }}>
+              <Sparkles style={{ width: 12, height: 12 }} />
               Groups
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">Group control center</h1>
-              <p className="max-w-2xl text-white/60">
-                Switch the active context, create a new pact, or join one with an invite code. The group cards now live here instead of inside the sidebar.
+              <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.5px", color: "#EDE6D6", margin: 0 }}>Group control center</h1>
+              <p style={{ fontSize: 13, color: "#A09880", maxWidth: 480 }}>
+                Switch the active context, create a new pact, or join one with an invite code.
               </p>
             </div>
           </CardContent>
@@ -45,73 +57,59 @@ export default async function GroupsPage({
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-white">Current context</CardTitle>
-            <CardDescription className="text-white/50">A quick snapshot of your workspace.</CardDescription>
+            <CardTitle>Current context</CardTitle>
+            <CardDescription>A quick snapshot of your workspace.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
-              <div className="text-xs uppercase tracking-[0.2em] text-white/40">Active group</div>
-              <div className="mt-1 text-lg font-black text-primary">{activeGroup?.name ?? "No active group"}</div>
-            </div>
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
-              <div className="text-xs uppercase tracking-[0.2em] text-white/40">Groups</div>
-              <div className="mt-1 text-2xl font-black text-primary">{memberships.length}</div>
-            </div>
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
-              <div className="text-xs uppercase tracking-[0.2em] text-white/40">Tasks</div>
-              <div className="mt-1 text-2xl font-black text-primary">{totalTasks}</div>
-            </div>
-            <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
-              <div className="text-xs uppercase tracking-[0.2em] text-white/40">Active state</div>
-              <div className="mt-1 text-sm font-semibold text-white">{activeGroupId ? "Ready" : "Not set yet"}</div>
-            </div>
+            {[
+              { label: "Active group", value: activeGroup?.name ?? "None", large: false },
+              { label: "Groups",       value: String(memberships.length),  large: true },
+              { label: "Tasks",        value: String(totalTasks),          large: true },
+              { label: "Active state", value: activeGroupId ? "Ready" : "Not set", large: false },
+            ].map(({ label, value, large }) => (
+              <div key={label} style={statBox}>
+                <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em", color: "#6A7888", fontWeight: 600 }}>{label}</div>
+                <div style={{ marginTop: 4, fontSize: large ? 22 : 14, fontWeight: 700, color: "#C4AC78" }}>{value}</div>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </div>
 
-      {errorMessage ? <div className="rounded-[4px] bg-accent/10 px-4 py-3 text-sm text-accent">{errorMessage}</div> : null}
+      {errorMessage && (
+        <div style={{
+          background: "rgba(160,104,104,0.10)", border: "1px solid rgba(160,104,104,0.24)",
+          borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#C08888",
+        }}>{errorMessage}</div>
+      )}
 
+      {/* Create / Join */}
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="text-white">Create Group</CardTitle>
-            <CardDescription className="text-white/50">Start a new workspace and keep the invite code handy.</CardDescription>
+            <CardTitle>Create Group</CardTitle>
+            <CardDescription>Start a new workspace and keep the invite code handy.</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={createGroup} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="group-name" className="text-white/80">
-                  Group name
-                </Label>
+                <Label htmlFor="group-name">Group name</Label>
                 <Input id="group-name" name="name" placeholder="Study Sprint" required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="group-description" className="text-white/80">
-                  Description
-                </Label>
-                <textarea
-                  id="group-description"
-                  name="description"
-                  placeholder="What is this group about?"
-                  className="min-h-24 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
-                />
+                <Label htmlFor="group-description">Description</Label>
+                <Textarea id="group-description" name="description" placeholder="What is this group about?" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="group-focus" className="text-white/80">
-                  Focus
-                </Label>
-                <select
-                  id="group-focus"
-                  name="focusType"
-                  className="w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white focus:border-primary focus:outline-none"
-                >
+                <Label htmlFor="group-focus">Focus</Label>
+                <Select id="group-focus" name="focusType">
                   <option value="GENERAL">General</option>
                   <option value="DEVELOPMENT">Development</option>
                   <option value="DSA">DSA</option>
                   <option value="EXAM_PREP">Exam Prep</option>
                   <option value="MACHINE_LEARNING">Machine Learning</option>
                   <option value="CUSTOM">Custom</option>
-                </select>
+                </Select>
               </div>
               <Button type="submit" className="gap-2">
                 <CirclePlus className="h-4 w-4" />
@@ -123,15 +121,13 @@ export default async function GroupsPage({
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-white">Join Group</CardTitle>
-            <CardDescription className="text-white/50">Use an invite code to enter an existing pact.</CardDescription>
+            <CardTitle>Join Group</CardTitle>
+            <CardDescription>Use an invite code to enter an existing pact.</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={joinGroup} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="invite-code" className="text-white/80">
-                  Invite code
-                </Label>
+                <Label htmlFor="invite-code">Invite code</Label>
                 <Input id="invite-code" name="inviteCode" placeholder="AB12CD34" className="font-mono uppercase tracking-[0.3em]" required />
               </div>
               <Button type="submit" variant="outline" className="gap-2">
@@ -142,69 +138,84 @@ export default async function GroupsPage({
         </Card>
       </div>
 
+      {/* Group list */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-white">Your Groups</CardTitle>
-          <CardDescription className="text-white/50">Pick the active workspace, then jump into its feed.</CardDescription>
+          <CardTitle>Your Groups</CardTitle>
+          <CardDescription>Pick the active workspace, then jump into its feed.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {memberships.length === 0 ? (
-            <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No groups yet. Create one or join by invite code.</div>
+            <div style={{
+              background: "rgba(196,172,120,0.04)", border: "1px solid rgba(196,172,120,0.09)",
+              borderRadius: 12, padding: "32px 16px", textAlign: "center", color: "#6A7888", fontSize: 13,
+            }}>
+              No groups yet. Create one or join by invite code.
+            </div>
           ) : (
             memberships.map((membership) => {
               const group = membership.group;
               const active = activeGroupId === membership.groupId;
 
               return (
-                <div
-                  key={membership.groupId}
-                  className={cn(
-                    "rounded-lg p-4 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]",
-                    active ? "bg-primary/10" : "bg-secondary/25"
-                  )}
-                >
+                <div key={membership.groupId} style={{
+                  background: active ? "rgba(196,172,120,0.07)" : "rgba(196,172,120,0.03)",
+                  borderTop: `1px solid ${active ? "rgba(196,172,120,0.28)" : "rgba(196,172,120,0.12)"}`,
+                  borderLeft: active ? "3px solid #C4AC78" : "1px solid rgba(196,172,120,0.08)",
+                  borderRight: "1px solid rgba(196,172,120,0.05)",
+                  borderBottom: "1px solid rgba(196,172,120,0.04)",
+                  borderRadius: 14, padding: 20,
+                  boxShadow: active ? "0 4px 20px rgba(196,172,120,0.08)" : "none",
+                }}>
                   <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-xl font-black tracking-tight text-white">{group.name}</h2>
-                        {active ? (
-                          <span className="rounded-[4px] bg-primary/10 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-                            Active Context
+                        <h2 style={{ fontSize: 17, fontWeight: 700, color: "#EDE6D6", margin: 0 }}>{group.name}</h2>
+                        {active && (
+                          <span style={{
+                            background: "rgba(196,172,120,0.12)", border: "1px solid rgba(196,172,120,0.24)",
+                            borderRadius: 9999, padding: "2px 10px",
+                            fontSize: 10, fontWeight: 700, color: "#C4AC78", letterSpacing: "0.15em", textTransform: "uppercase",
+                          }}>
+                            Active
                           </span>
-                        ) : null}
+                        )}
                       </div>
-                      <p className="max-w-2xl text-sm text-white/60">{group.description || "No description provided."}</p>
+                      <p style={{ fontSize: 13, color: "#A09880", margin: 0 }}>{group.description || "No description provided."}</p>
                     </div>
-                    <div className="text-right text-[10px] font-bold uppercase tracking-[0.25em] text-white/35">{group.focusType}</div>
+                    <span style={{
+                      fontSize: 10, fontWeight: 600, color: "#6A7888",
+                      textTransform: "uppercase", letterSpacing: "0.2em",
+                    }}>{group.focusType}</span>
                   </div>
 
                   <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                    <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Members</div>
-                      <div className="mt-1 text-2xl font-black text-primary">{group._count.users}</div>
-                    </div>
-                    <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Tasks</div>
-                      <div className="mt-1 text-2xl font-black text-primary">{group._count.tasks}</div>
-                    </div>
-                    <div className="rounded-[4px] bg-secondary/40 p-4 shadow-[0_0_24px_-22px_rgba(0,255,178,0.14)]">
-                      <div className="text-xs uppercase tracking-[0.2em] text-white/40">Created by</div>
-                      <div className="mt-1 text-sm font-semibold text-white">{group.createdBy.name}</div>
-                    </div>
+                    {[
+                      { label: "Members",    value: group._count.users },
+                      { label: "Tasks",      value: group._count.tasks },
+                      { label: "Created by", value: group.createdBy.name, small: true },
+                    ].map(({ label, value, small }) => (
+                      <div key={label} style={statBox}>
+                        <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.2em", color: "#6A7888", fontWeight: 600 }}>{label}</div>
+                        <div style={{ marginTop: 4, fontSize: small ? 13 : 20, fontWeight: 700, color: "#C4AC78" }}>{value}</div>
+                      </div>
+                    ))}
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-2">
                     {!active ? (
                       <form action={setActiveGroup}>
                         <input type="hidden" name="groupId" value={membership.groupId} />
-                        <Button type="submit" variant="outline" size="sm" className="gap-2">
-                          Use this group
-                        </Button>
+                        <Button type="submit" variant="outline" size="sm">Use this group</Button>
                       </form>
                     ) : (
-                      <div className="rounded-[4px] bg-secondary/40 px-3 py-2 text-xs font-bold uppercase tracking-[0.2em] text-primary">
+                      <span style={{
+                        background: "rgba(196,172,120,0.08)", border: "1px solid rgba(196,172,120,0.18)",
+                        borderRadius: 9999, padding: "6px 14px",
+                        fontSize: 11, fontWeight: 600, color: "#C4AC78", letterSpacing: "0.12em", textTransform: "uppercase",
+                      }}>
                         Current group
-                      </div>
+                      </span>
                     )}
                     <Link href={`/groups/${membership.groupId}`}>
                       <Button variant="ghost" size="sm" className="gap-2">

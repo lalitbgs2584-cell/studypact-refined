@@ -5,17 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { createTask } from "@/lib/actions/task";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
-const statusLabels: Record<string, { label: string; className: string }> = {
-  PENDING: { label: "Not Started", className: "bg-[#1A1A2E] text-[#AAAAAA]" },
-  IN_PROGRESS: { label: "In Progress", className: "bg-[#003D2B] text-[#00FFB2]" },
-  COMPLETED: { label: "Completed", className: "bg-[#003D2B] text-[#00FFB2]" },
-  MISSED: { label: "Overdue", className: "bg-[#3D1A0A] text-[#FF6B35]" },
+const statusLabels: Record<string, { label: string; style: React.CSSProperties }> = {
+  PENDING:     { label: "Not Started", style: { background: "rgba(196,172,120,0.06)", color: "rgba(237,230,214,0.45)", border: "1px solid rgba(196,172,120,0.12)" } },
+  IN_PROGRESS: { label: "In Progress", style: { background: "rgba(154,170,120,0.13)", color: "#AABB88",  border: "1px solid rgba(154,170,120,0.28)" } },
+  COMPLETED:   { label: "Completed",   style: { background: "rgba(154,170,120,0.13)", color: "#AABB88",  border: "1px solid rgba(154,170,120,0.28)" } },
+  MISSED:      { label: "Overdue",     style: { background: "rgba(160,104,104,0.12)", color: "#C08888",  border: "1px solid rgba(160,104,104,0.28)" } },
 };
+
+const statBox = "rounded-xl p-4" as const;
+const statLabel = "text-[10px] uppercase tracking-[0.2em] text-[#6A7888] font-semibold" as const;
+const statValue = "mt-1 text-2xl font-bold text-[#C4AC78]" as const;
 
 export default async function TasksPage({
   searchParams,
@@ -29,175 +35,127 @@ export default async function TasksPage({
 
   const personalTasks = await db.task.findMany({
     where: { userId: session.user.id, scope: "PERSONAL" },
-    include: {
-      group: true,
-      checkIn: {
-        include: {
-          startFiles: true,
-          endFiles: true,
-        },
-      },
-    },
+    include: { group: true, checkIn: { include: { startFiles: true, endFiles: true } } },
     orderBy: { createdAt: "desc" },
   });
 
   const groupTasks = activeGroupId
     ? await db.task.findMany({
         where: { userId: session.user.id, groupId: activeGroupId, scope: "GROUP" },
-        include: {
-          group: true,
-          checkIn: {
-            include: {
-              startFiles: true,
-              endFiles: true,
-            },
-          },
-        },
+        include: { group: true, checkIn: { include: { startFiles: true, endFiles: true } } },
         orderBy: { createdAt: "desc" },
       })
     : [];
 
   const taskCards = view === "personal" ? personalTasks : groupTasks;
-  const targetGroups = memberships.map((membership) => membership.group);
+  const targetGroups = memberships.map((m) => m.group);
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
+      {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            background: "rgba(196,172,120,0.08)", border: "1px solid rgba(196,172,120,0.20)",
+            borderRadius: 9999, padding: "5px 14px",
+            fontSize: 11, fontWeight: 600, color: "#C4AC78", letterSpacing: "0.2em", textTransform: "uppercase",
+          }}>
+            <Sparkles style={{ width: 12, height: 12 }} />
             Tasks
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-white">Task hub</h1>
-          <p className="max-w-2xl text-white/60">
+          <h1 style={{ fontSize: 28, fontWeight: 700, letterSpacing: "-0.5px", color: "#EDE6D6", margin: 0 }}>Task hub</h1>
+          <p style={{ fontSize: 13, color: "#A09880", maxWidth: 480 }}>
             Personal tasks live beside group broadcasts. Each broadcast task is copied to every member of the selected group.
           </p>
         </div>
-
         <div className="flex flex-wrap gap-2">
           <Link href="/tasks?view=personal">
-            <Button variant={view === "personal" ? "default" : "outline"}>Personal Tasks</Button>
+            <Button variant={view === "personal" ? "default" : "outline"} size="sm">Personal Tasks</Button>
           </Link>
           <Link href="/tasks?view=group">
-            <Button variant={view === "group" ? "default" : "outline"}>Group Tasks</Button>
+            <Button variant={view === "group" ? "default" : "outline"} size="sm">Group Tasks</Button>
           </Link>
         </div>
       </div>
 
+      {/* KPI strip */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardContent className="flex items-center gap-4 p-5">
-            <CalendarDays className="h-6 w-6 text-primary" />
-            <div>
-              <div className="text-2xl font-black text-primary">{personalTasks.length}</div>
-              <div className="text-sm text-white/50">Personal tasks</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-5">
-            <Clock3 className="h-6 w-6 text-primary" />
-            <div>
-              <div className="text-2xl font-black text-primary">{groupTasks.length}</div>
-              <div className="text-sm text-white/50">Group tasks in active context</div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="flex items-center gap-4 p-5">
-            <CheckCircle2 className="h-6 w-6 text-primary" />
-            <div>
-              <div className="text-2xl font-black text-primary">
-                {taskCards.filter((task) => task.status === "COMPLETED").length}
+        {[
+          { icon: CalendarDays, value: personalTasks.length, label: "Personal tasks" },
+          { icon: Clock3,       value: groupTasks.length,    label: "Group tasks in active context" },
+          { icon: CheckCircle2, value: taskCards.filter((t) => t.status === "COMPLETED").length, label: "Already completed" },
+        ].map(({ icon: Icon, value, label }) => (
+          <Card key={label}>
+            <CardContent className="flex items-center gap-4 p-5">
+              <div style={{
+                width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+                background: "rgba(196,172,120,0.08)", border: "1px solid rgba(196,172,120,0.16)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}>
+                <Icon style={{ width: 18, height: 18, color: "#C4AC78" }} />
               </div>
-              <div className="text-sm text-white/50">Already completed</div>
-            </div>
-          </CardContent>
-        </Card>
+              <div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: "#C4AC78", lineHeight: 1 }}>{value}</div>
+                <div style={{ fontSize: 12, color: "#A09880", marginTop: 3 }}>{label}</div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        {/* Create form */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-white">Create Task</CardTitle>
-            <CardDescription className="text-white/50">
-              Add due date, priority, and select one or more groups for broadcast tasks.
-            </CardDescription>
+            <CardTitle>Create Task</CardTitle>
+            <CardDescription>Add due date, priority, and select groups for broadcast tasks.</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={createTask} className="space-y-5">
               <input type="hidden" name="groupId" value={activeGroupId ?? memberships[0]?.groupId ?? ""} />
 
               <div className="space-y-2">
-                <Label htmlFor="task-title" className="text-white/80">
-                  Title
-                </Label>
+                <Label htmlFor="task-title">Title</Label>
                 <Input id="task-title" name="title" placeholder="Write the project summary" required />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="task-details" className="text-white/80">
-                  Details
-                </Label>
-                <textarea
-                  id="task-details"
-                  name="details"
-                  className="min-h-28 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white placeholder:text-white/30 focus:border-primary focus:outline-none"
-                  placeholder="What should be done?"
-                />
+                <Label htmlFor="task-details">Details</Label>
+                <Textarea id="task-details" name="details" placeholder="What should be done?" />
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="task-due" className="text-white/80">
-                    Due date
-                  </Label>
+                  <Label htmlFor="task-due">Due date</Label>
                   <Input id="task-due" name="dueAt" type="datetime-local" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="task-priority" className="text-white/80">
-                    Priority
-                  </Label>
-                  <select
-                    id="task-priority"
-                    name="priority"
-                    className="w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white focus:border-primary focus:outline-none"
-                  >
+                  <Label htmlFor="task-priority">Priority</Label>
+                  <Select id="task-priority" name="priority">
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
                     <option value="HIGH">High</option>
-                  </select>
+                  </Select>
                 </div>
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="task-scope" className="text-white/80">
-                    Scope
-                  </Label>
-                  <select
-                    id="task-scope"
-                    name="scope"
-                    className="w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white focus:border-primary focus:outline-none"
-                  >
+                  <Label htmlFor="task-scope">Scope</Label>
+                  <Select id="task-scope" name="scope">
                     <option value="PERSONAL">Personal task</option>
                     <option value="GROUP">Group broadcast</option>
-                  </select>
+                  </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-white/80">Broadcast groups</Label>
-                  <select
-                    name="groupIds"
-                    multiple
-                    className="min-h-28 w-full rounded-[4px] border border-border/50 bg-secondary/40 p-3 text-sm text-white focus:border-primary focus:outline-none"
-                  >
+                  <Label>Broadcast groups</Label>
+                  <Select name="groupIds" multiple className="min-h-28">
                     {targetGroups.map((group) => (
-                      <option key={group.id} value={group.id}>
-                        {group.name}
-                      </option>
+                      <option key={group.id} value={group.id}>{group.name}</option>
                     ))}
-                  </select>
-                  <p className="text-xs text-white/40">Hold Ctrl or Cmd to select multiple groups.</p>
+                  </Select>
+                  <p style={{ fontSize: 11, color: "#6A7888", marginTop: 4 }}>Hold Ctrl / Cmd to select multiple.</p>
                 </div>
               </div>
 
@@ -211,12 +169,13 @@ export default async function TasksPage({
           </CardContent>
         </Card>
 
+        {/* Task list */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-white">
+            <CardTitle>
               {view === "personal" ? "Personal Tasks" : activeGroup?.name ? `${activeGroup.name} tasks` : "Group Tasks"}
             </CardTitle>
-            <CardDescription className="text-white/50">
+            <CardDescription>
               {view === "personal"
                 ? "Tasks that belong only to you."
                 : activeGroup?.name
@@ -224,65 +183,78 @@ export default async function TasksPage({
                   : "Join a group to see group tasks."}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             {taskCards.length === 0 ? (
-              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">
+              <div style={{
+                background: "rgba(196,172,120,0.04)", border: "1px solid rgba(196,172,120,0.09)",
+                borderRadius: 12, padding: "32px 16px", textAlign: "center", color: "#6A7888", fontSize: 13,
+              }}>
                 No tasks yet.
               </div>
             ) : (
               taskCards.map((task) => {
                 const status = statusLabels[task.status] ?? statusLabels.PENDING;
                 const proofStatus =
-                  task.checkIn?.status === "APPROVED"
-                    ? "Verified"
-                    : task.checkIn?.status === "REJECTED"
-                      ? "Rejected"
-                      : task.checkIn
-                        ? "Pending review"
-                        : "No proof yet";
+                  task.checkIn?.status === "APPROVED" ? "Verified"
+                  : task.checkIn?.status === "REJECTED" ? "Rejected"
+                  : task.checkIn ? "Pending review"
+                  : "No proof yet";
 
                 return (
-                  <Card key={task.id} className="bg-black/35 shadow-[0_0_30px_-28px_rgba(0,0,0,0.8)]">
-                    <CardContent className="space-y-3 p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div>
-                          <div className="text-lg font-bold text-white">{task.title}</div>
-                          <div className="mt-1 text-xs text-white/45">
-                            {task.group.name} • due {task.dueAt ? new Date(task.dueAt).toLocaleString() : new Date(task.day).toLocaleString()}
-                          </div>
+                  <div key={task.id} style={{
+                    background: "rgba(196,172,120,0.04)", backdropFilter: "blur(12px)",
+                    borderTop: "1px solid rgba(196,172,120,0.14)", borderLeft: "1px solid rgba(196,172,120,0.09)",
+                    borderRight: "1px solid rgba(196,172,120,0.05)", borderBottom: "1px solid rgba(196,172,120,0.04)",
+                    borderRadius: 14, padding: 16,
+                    ...(task.status === "MISSED" ? { borderLeft: "3px solid #A06868" } : {}),
+                    ...(task.status === "COMPLETED" || task.status === "IN_PROGRESS" ? { borderLeft: "3px solid #C4AC78" } : {}),
+                  }}>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div style={{ fontSize: 15, fontWeight: 600, color: "#EDE6D6" }}>{task.title}</div>
+                        <div style={{ fontSize: 11, color: "#6A7888", marginTop: 3 }}>
+                          {task.group.name} · due {task.dueAt ? new Date(task.dueAt).toLocaleString() : new Date(task.day).toLocaleString()}
                         </div>
-                        <span className={cn("rounded-[4px] px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.18em]", status.className)}>
-                          {status.label}
-                        </span>
                       </div>
+                      <span style={{
+                        ...status.style,
+                        fontSize: 10, fontWeight: 700, letterSpacing: "0.1em",
+                        textTransform: "uppercase", padding: "3px 10px", borderRadius: 9999,
+                        whiteSpace: "nowrap", flexShrink: 0,
+                      }}>
+                        {status.label}
+                      </span>
+                    </div>
 
-                      {task.details ? <p className="text-sm text-white/60">{task.details}</p> : null}
+                    {task.details && <p style={{ fontSize: 13, color: "#A09880", marginTop: 8 }}>{task.details}</p>}
 
-                      <div className="flex flex-wrap items-center gap-2 text-xs">
-                        <span className="rounded-[4px] bg-white/[0.05] px-2.5 py-1 text-white/60">
-                          Priority: {task.priority}
-                        </span>
-                        <span className="rounded-[4px] bg-white/[0.05] px-2.5 py-1 text-white/60">
-                          Proof: {proofStatus}
-                        </span>
+                    <div className="flex flex-wrap items-center gap-2 mt-3">
+                      {[`Priority: ${task.priority}`, `Proof: ${proofStatus}`].map((tag) => (
+                        <span key={tag} style={{
+                          background: "rgba(196,172,120,0.06)", border: "1px solid rgba(196,172,120,0.12)",
+                          borderRadius: 9999, padding: "2px 10px", fontSize: 11, color: "#A09880",
+                        }}>{tag}</span>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3 mt-3 pt-3" style={{ borderTop: "1px solid rgba(196,172,120,0.07)" }}>
+                      <Link href={`/groups/${task.groupId}/task/${task.id}`} style={{ fontSize: 13, fontWeight: 500, color: "#C4AC78" }}>
+                        Open task
+                      </Link>
+                      <Link href={`/proof-work?taskId=${task.id}`} style={{ fontSize: 13, fontWeight: 500, color: "#A09880", display: "flex", alignItems: "center", gap: 4 }}>
+                        Submit proof <ArrowRight style={{ width: 14, height: 14 }} />
+                      </Link>
+                    </div>
+
+                    {task.checkIn?.status === "REJECTED" && (task.checkIn as { reviewNote?: string }).reviewNote ? (
+                      <div style={{
+                        marginTop: 10, background: "rgba(160,104,104,0.10)", border: "1px solid rgba(160,104,104,0.24)",
+                        borderRadius: 10, padding: "10px 12px", fontSize: 13, color: "#C08888",
+                      }}>
+                        Rejected: {(task.checkIn as { reviewNote?: string }).reviewNote}
                       </div>
-
-                      <div className="flex items-center justify-between gap-3 pt-2">
-                        <Link href={`/groups/${task.groupId}/task/${task.id}`} className="text-sm font-medium text-primary">
-                          Open task
-                        </Link>
-                        <Link href={`/proof-work?taskId=${task.id}`} className="text-sm font-medium text-white/70 hover:text-white">
-                          Submit proof <ArrowRight className="inline h-4 w-4" />
-                        </Link>
-                      </div>
-
-                      {task.checkIn?.status === "REJECTED" && task.checkIn.reviewNote ? (
-                        <div className="rounded-[4px] bg-accent/10 p-3 text-sm text-accent shadow-[0_0_24px_-22px_rgba(255,107,53,0.16)]">
-                          Rejected: {task.checkIn.reviewNote}
-                        </div>
-                      ) : null}
-                    </CardContent>
-                  </Card>
+                    ) : null}
+                  </div>
                 );
               })
             )}
