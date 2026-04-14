@@ -1,88 +1,135 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
+
+import { TaskStatus } from "@prisma/client";
+
 import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
 
-// Note: This endpoint should be secured by a CRON_SECRET or similar mechanism in production.
+type OverdueTaskRow = {
+  id: string;
+  title: string;
+  userId: string;
+  groupId: string;
+  checkInId: string | null;
+  dailyPenalty: number;
+};
+
 export async function GET(req: Request) {
-  // Simple check for security token in headers
-  if (
-    process.env.CRON_SECRET &&
-    req.headers.get("Authorization") !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  const secret = process.env.CRON_SECRET;
+  const authHeader = req.headers.get("authorization");
+
+  if (secret && authHeader !== `Bearer ${secret}`) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
   try {
-    // Determine what constitutes a "missed" deadline.
-    // For simplicity: any PENDING task older than 24 hours.
-    const cutoffDate = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const result = await db.$transaction(async (tx) => {
+      const overdueTasks = await tx.$queryRaw<OverdueTaskRow[]>`
+        SELECT
+          t.id,
+          t.title,
+          t."userId",
+          t."groupId",
+          t."checkInId",
+          COALESCE(g."dailyPenalty", 10)::int AS "dailyPenalty"
+        FROM "task" t
+        INNER JOIN "group" g ON g.id = t."groupId"
+        WHERE t.status = ${TaskStatus.PENDING}
+          AND t."day" < (date_trunc('day', timezone('Asia/Kolkata', now())) AT TIME ZONE 'Asia/Kolkata')
+        ORDER BY t."day" ASC, t."createdAt" ASC
+      `;
 
-    const overdueTasks = await db.task.findMany({
-      where: {
-        status: "PENDING",
-        createdAt: {
-          lt: cutoffDate,
+      if (overdueTasks.length === 0) {
+        return {
+          penalizedTaskIds: [] as string[],
+          affectedGroupIds: [] as string[],
+        };
+      }
+
+      const penalizedTaskIds = overdueTasks.map((task) => task.id);
+      const affectedGroupIds = [...new Set(overdueTasks.map((task) => task.groupId))];
+      const groupedPenalties = new Map<string, { userId: string; groupId: string; points: number; misses: number }>();
+
+      for (const task of overdueTasks) {
+        const key = `${task.userId}:${task.groupId}`;
+        const current = groupedPenalties.get(key) ?? {
+          userId: task.userId,
+          groupId: task.groupId,
+          points: 0,
+          misses: 0,
+        };
+
+        current.points += task.dailyPenalty;
+        current.misses += 1;
+        groupedPenalties.set(key, current);
+      }
+
+      await tx.task.updateMany({
+        where: {
+          id: {
+            in: penalizedTaskIds,
+          },
+          status: TaskStatus.PENDING,
         },
-      },
-      include: {
-        user: true,
-        group: true,
-      },
-    });
-
-    if (overdueTasks.length === 0) {
-      return NextResponse.json({ message: "No overdue tasks found." });
-    }
-
-    const penaltyUpdates = [];
-
-    for (const task of overdueTasks) {
-      // 1. Mark task as MISSED
-      await db.task.update({
-        where: { id: task.id },
-        data: { status: "MISSED" },
+        data: {
+          status: TaskStatus.MISSED,
+        },
       });
 
-      // 2. Create the Penalty Event
-      await db.penaltyEvent.create({
-        data: {
-          points: task.group.dailyPenalty || 10,
+      await tx.penaltyEvent.createMany({
+        data: overdueTasks.map((task) => ({
+          points: task.dailyPenalty,
           reason: `Missed deadline for task: ${task.title}`,
           userId: task.userId,
           groupId: task.groupId,
-        },
+          checkInId: task.checkInId ?? null,
+        })),
       });
 
-      // 3. Deduct points & reset streak, add miss
-      await db.userGroup.update({
-        where: {
-          userId_groupId: {
-            userId: task.userId,
-            groupId: task.groupId,
-          },
-        },
-        data: {
-          points: { decrement: task.group.dailyPenalty || 10 },
-          streak: 0,
-          misses: { increment: 1 },
-        },
+      await Promise.all(
+        [...groupedPenalties.values()].map((penalty) =>
+          tx.userGroup.update({
+            where: {
+              userId_groupId: {
+                userId: penalty.userId,
+                groupId: penalty.groupId,
+              },
+            },
+            data: {
+              points: { decrement: penalty.points },
+              streak: 0,
+              misses: { increment: penalty.misses },
+            },
+          })
+        )
+      );
+
+      return {
+        penalizedTaskIds,
+        affectedGroupIds,
+      };
+    });
+
+    if (result.penalizedTaskIds.length === 0) {
+      return NextResponse.json({
+        message: "No overdue tasks found.",
       });
+    }
 
-      penaltyUpdates.push(task.id);
-
-      // Trigger pusher event for the group to refresh stats
-      if (pusherServer) {
-        pusherServer
-          .trigger(`group-${task.groupId}`, "new-verification", {})
-          .catch(console.error);
-      }
+    const cronPusher = pusherServer;
+    if (cronPusher) {
+      await Promise.all(
+        result.affectedGroupIds.map((groupId) =>
+          cronPusher.trigger(`group-${groupId}`, "new-verification", { source: "cron" }).catch(console.error)
+        )
+      );
     }
 
     return NextResponse.json({
-      message: `Successfully processed ${penaltyUpdates.length} overdue tasks.`,
-      penalizedTasks: penaltyUpdates,
+      message: `Successfully processed ${result.penalizedTaskIds.length} overdue tasks.`,
+      penalizedTasks: result.penalizedTaskIds,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error("Cron Error:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }

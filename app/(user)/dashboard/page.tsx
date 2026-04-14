@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { ArrowRight, CheckCircle2, Clock3, Plus, ShieldCheck, Sparkles, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -47,7 +47,7 @@ export default async function DashboardPage() {
 
   const pendingTasks = activeTasks.filter((task) => task.status !== "COMPLETED").length;
   const pendingProof = activeTasks.filter((task) => !task.checkIn || task.checkIn.status !== "APPROVED").length;
-  const awaitingReview = recentSubmissions.filter((submission) => submission.status === "PENDING").length;
+  const awaitingReview = recentSubmissions.filter((submission) => submission.status !== "APPROVED" && submission.status !== "REJECTED").length;
 
   const activityFeed = [
     ...activeTasks.map((task) => ({
@@ -60,7 +60,7 @@ export default async function DashboardPage() {
     ...recentSubmissions.map((submission) => ({
       kind: "proof" as const,
       title: submission.assignmentQuestion
-        ? `${submission.assignmentQuestion.assignment.title} · Question ${submission.assignmentQuestion.order}`
+        ? `${submission.assignmentQuestion.assignment.title} - Question ${submission.assignmentQuestion.order}`
         : submission.tasks[0]?.title ?? "Task proof",
       detail: `${submission.user.name} submitted proof`,
       time: submission.createdAt,
@@ -96,9 +96,7 @@ export default async function DashboardPage() {
               Dashboard
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">
-                Welcome back, {session.user.name}
-              </h1>
+              <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">Welcome back, {session.user.name}</h1>
               <p className="max-w-2xl text-white/60">
                 {activeGroup
                   ? `You are currently in ${activeGroup.name}. Track work, proof, and reviews from one place.`
@@ -132,9 +130,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Active Context</CardTitle>
-            <CardDescription className="text-white/50">
-              {activeGroup ? activeGroup.name : "No active group yet"}
-            </CardDescription>
+            <CardDescription className="text-white/50">{activeGroup ? activeGroup.name : "No active group yet"}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2">
@@ -163,15 +159,11 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Recent Activity</CardTitle>
-            <CardDescription className="text-white/50">
-              Scanned from the active group context.
-            </CardDescription>
+            <CardDescription className="text-white/50">Scanned from the active group context.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {activityFeed.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
-                No activity yet. Start with a task or proof submission.
-              </div>
+              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No activity yet. Start with a task or proof submission.</div>
             ) : (
               activityFeed.map((item) => (
                 <div key={`${item.kind}-${item.title}-${item.time.toISOString()}`} className="flex items-start gap-3 rounded-2xl border border-white/10 bg-black/30 p-4">
@@ -196,35 +188,28 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Group Progress</CardTitle>
-            <CardDescription className="text-white/50">
-              A quick look at how each group is moving.
-            </CardDescription>
+            <CardDescription className="text-white/50">A quick look at how each group is moving.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {groupProgress.length === 0 ? (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
-                No groups yet. Create or join one to start tracking progress.
-              </div>
+              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No groups yet. Create or join one to start tracking progress.</div>
             ) : (
               groupProgress.map((group) => (
                 <div
                   key={group.id}
-                  className={cn(
-                    "rounded-3xl border p-4",
-                    group.isActive ? "border-primary/30 bg-primary/10" : "border-white/10 bg-black/30"
-                  )}
+                  className={cn("rounded-3xl border p-4", group.isActive ? "border-primary/30 bg-primary/10" : "border-white/10 bg-black/30")}
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <div className="font-semibold text-white">{group.name}</div>
                       <div className="text-xs text-white/45">
-                        {group.activeMembers}/{group.members} members active · {group.tasks} tasks
+                        {group.activeMembers}/{group.members} members active - {group.tasks} tasks
                       </div>
                     </div>
                     <div className="text-right text-xs uppercase tracking-[0.2em] text-white/45">{group.progress}%</div>
                   </div>
-                  <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/5">
-                    <div className="h-full rounded-full bg-gradient-to-r from-primary to-[#ff9b57]" style={{ width: `${group.progress}%` }} />
+                  <div className="mt-3 h-[6px] overflow-hidden rounded-[3px] bg-secondary">
+                    <div className="h-full rounded-[3px] bg-primary" style={{ width: `${group.progress}%` }} />
                   </div>
                 </div>
               ))

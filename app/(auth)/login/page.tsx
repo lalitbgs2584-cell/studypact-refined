@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Brain } from "lucide-react";
 import Link from "next/link";
@@ -35,18 +35,18 @@ export default function LoginPage() {
         className="pointer-events-none absolute inset-0 z-0 opacity-10"
         style={{
           backgroundImage:
-            "linear-gradient(to right, rgba(45,53,64,0.7) 1px, transparent 1px), linear-gradient(to bottom, rgba(45,53,64,0.7) 1px, transparent 1px)",
+            "linear-gradient(to right, rgba(42,42,64,0.7) 1px, transparent 1px), linear-gradient(to bottom, rgba(42,42,64,0.7) 1px, transparent 1px)",
           backgroundSize: "4rem 4rem",
         }}
       />
       <div className="pointer-events-none absolute left-1/2 top-1/2 z-0 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[150px]" />
 
       <div className="relative z-10 w-full max-w-md p-8">
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-card/90 p-10 shadow-2xl backdrop-blur-2xl">
+        <div className="relative overflow-hidden rounded-lg border border-border bg-card p-10 shadow-[0_0_40px_-24px_rgba(0,255,178,0.3)] backdrop-blur-xl">
           <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/15 blur-[50px]" />
 
           <div className="mb-10 text-center">
-            <div className="mb-6 inline-flex items-center gap-3 rounded-full border border-border bg-secondary px-4 py-2">
+            <div className="mb-6 inline-flex items-center gap-3 rounded-[4px] border border-border bg-secondary px-4 py-2">
               <Brain className="h-5 w-5 text-primary" />
               <span className="text-xs font-black tracking-[0.35em] text-foreground">STUDYPACT</span>
             </div>
@@ -63,7 +63,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background/70 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30 transition-all"
+                className="w-full rounded-[4px] border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
               />
             </div>
 
@@ -79,23 +79,23 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background/70 px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30 transition-all"
+                className="w-full rounded-[4px] border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
               />
             </div>
 
-            {error ? <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-200">{error}</div> : null}
+            {error ? <div className="rounded-[4px] border border-accent/30 bg-accent/10 px-3 py-2 text-sm font-medium text-accent">{error}</div> : null}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-xl bg-primary py-4 font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(251,146,60,0.3)] transition-all hover:shadow-[0_0_30px_rgba(251,146,60,0.45)] disabled:opacity-50"
+              className="w-full rounded-[4px] bg-primary py-4 font-bold uppercase tracking-[0.16em] text-primary-foreground shadow-[0_0_20px_rgba(0,255,178,0.25)] transition-all hover:shadow-[0_0_30px_rgba(0,255,178,0.38)] disabled:opacity-50"
             >
               {loading ? "Authenticating..." : "Sign In"}
             </button>
 
             <div className="relative mt-6 mb-6 flex items-center justify-center">
               <div className="absolute w-full border-t border-border" />
-              <span className="relative rounded-full bg-card px-4 text-xs font-bold uppercase text-muted-foreground">Or</span>
+              <span className="relative rounded-[4px] bg-secondary px-4 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">Or</span>
             </div>
 
             <button
@@ -107,7 +107,7 @@ export default function LoginPage() {
                 if (result?.error) setError(result.error.message || "Google sign in failed");
                 setLoading(false);
               }}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-secondary py-3.5 text-foreground transition-colors hover:bg-secondary/80"
+              className="flex w-full items-center justify-center gap-2 rounded-[4px] border border-border bg-secondary py-3.5 text-foreground transition-colors hover:bg-secondary/80"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
@@ -130,3 +130,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

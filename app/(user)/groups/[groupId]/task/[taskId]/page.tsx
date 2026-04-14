@@ -1,5 +1,5 @@
-import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Clock3, ShieldCheck, Upload } from "lucide-react";
+﻿import Link from "next/link";
+import { ArrowLeft, Clock3, ShieldCheck, Upload } from "lucide-react";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -8,6 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { RealtimeGroupSync } from "@/components/realtime-sync";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getPeerReviewMetrics } from "@/lib/peer-review";
+import { cn } from "@/lib/utils";
 
 export default async function TaskDetailPage({ params }: { params: Promise<{ groupId: string; taskId: string }> }) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -17,13 +19,25 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
   const task = await db.task.findUnique({
     where: { id: taskId },
     include: {
+      group: {
+        include: {
+          users: {
+            select: { userId: true },
+          },
+        },
+      },
       user: { select: { name: true } },
       checkIn: {
         include: {
+          reviewedBy: { select: { name: true } },
           startFiles: true,
           endFiles: true,
-          reviewedBy: { select: { name: true } },
-          verifications: { include: { reviewer: { select: { name: true } } } },
+          verifications: {
+            include: {
+              reviewer: { select: { name: true } },
+            },
+            orderBy: { createdAt: "asc" },
+          },
         },
       },
     },
@@ -32,9 +46,22 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
   if (!task) return <div className="p-8 text-white">Task not found.</div>;
 
   const isOwner = task.userId === session.user.id;
+  const isMember = task.group.users.some((member) => member.userId === session.user.id);
+  if (!isMember) redirect("/dashboard");
+
+  const totalEligibleReviewers = Math.max(task.group.users.length - 1, 0);
+  const reviewMetrics = getPeerReviewMetrics(task.checkIn?.verifications ?? [], totalEligibleReviewers);
   const hasSubmission = Boolean(task.checkIn);
   const statusLabel =
-    task.status === "COMPLETED" ? "Completed" : task.status === "IN_PROGRESS" ? "In progress" : "Not started";
+    task.status === "COMPLETED"
+      ? "Completed"
+      : task.status === "IN_PROGRESS"
+        ? "In progress"
+        : task.status === "MISSED"
+          ? "Missed"
+          : "Not started";
+  const canVote = !isOwner && Boolean(task.checkIn) && task.checkIn?.status !== "APPROVED" && task.checkIn?.status !== "REJECTED";
+  const myVote = task.checkIn?.verifications.find((verification) => verification.reviewerId === session.user.id);
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
@@ -58,15 +85,9 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white/60">
-                {task.category}
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white/60">
-                Priority: {task.priority}
-              </span>
-              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white/60">
-                {statusLabel}
-              </span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white/60">{task.category}</span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white/60">Priority: {task.priority}</span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.18em] text-white/60">{statusLabel}</span>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -78,11 +99,11 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
                   </Button>
                 </Link>
               ) : null}
-              {!isOwner && task.checkIn?.status === "PENDING" && !task.checkIn.verifications.some((item) => item.reviewerId === session.user.id) ? (
+              {canVote ? (
                 <Link href={`/groups/${groupId}/task/${task.id}/verify`}>
                   <Button variant="outline" className="gap-2">
                     <ShieldCheck className="h-4 w-4" />
-                    Review Proof
+                    {myVote ? "Update vote" : "Vote on Proof"}
                   </Button>
                 </Link>
               ) : null}
@@ -103,7 +124,32 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
             <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-white/40">Submission</div>
               <div className="mt-1 font-semibold text-white">
-                {task.checkIn ? (task.checkIn.status === "APPROVED" ? "Verified" : task.checkIn.status === "REJECTED" ? "Rejected" : "Pending review") : "No proof yet"}
+                {task.checkIn
+                  ? task.checkIn.status === "APPROVED"
+                    ? "Verified"
+                    : task.checkIn.status === "REJECTED"
+                      ? "Rejected"
+                      : task.checkIn.status === "FLAGGED"
+                        ? "Flagged"
+                        : "Pending review"
+                  : "No proof yet"}
+              </div>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <div className="text-xs uppercase tracking-[0.2em] text-white/40">Peer quorum</div>
+              <div className="mt-1 font-semibold text-white">
+                {reviewMetrics.approved
+                  ? "Approved by quorum"
+                  : reviewMetrics.rejected
+                    ? "Rejected by quorum"
+                    : reviewMetrics.totalVotes === 0
+                      ? "Awaiting first vote"
+                      : `${reviewMetrics.approvalVotes}/${reviewMetrics.threshold} approvals needed`}
+              </div>
+              <div className="mt-1 text-xs text-white/45">
+                {reviewMetrics.totalVotes === 0
+                  ? `Need ${reviewMetrics.threshold} vote(s) from ${reviewMetrics.totalEligibleReviewers} eligible reviewers.`
+                  : `${reviewMetrics.approvalVotes} approve, ${reviewMetrics.flagVotes} flag, ${reviewMetrics.approvalsRemaining} approval(s) left, ${reviewMetrics.flagsRemaining} flag(s) left.`}
               </div>
             </div>
             {task.dueAt ? (
@@ -126,7 +172,9 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
                   ? "This proof has been verified."
                   : task.checkIn.status === "REJECTED"
                     ? "This proof needs another pass."
-                    : "Waiting on review."}
+                    : task.checkIn.status === "FLAGGED"
+                      ? "This proof is under peer review."
+                      : "Waiting on review."}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -148,7 +196,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
                 ) : null}
               </div>
               {task.checkIn.reviewNote ? (
-                <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">
+                <div className="rounded-2xl border border-primary/20 bg-primary/10 p-3 text-sm text-primary-foreground">
                   Review note: {task.checkIn.reviewNote}
                 </div>
               ) : null}
@@ -157,19 +205,22 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-white">Reviews</CardTitle>
-              <CardDescription className="text-white/50">Peer verification history for this proof.</CardDescription>
+              <CardTitle className="text-white">Peer Votes</CardTitle>
+              <CardDescription className="text-white/50">Voting history for this proof.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {task.checkIn.verifications.length === 0 ? (
-                <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
-                  No reviews yet.
-                </div>
+                <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No reviews yet.</div>
               ) : (
                 task.checkIn.verifications.map((verification) => (
-                  <div key={verification.id} className="flex items-center justify-between rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
-                    <div className="font-medium text-white">{verification.reviewer.name}</div>
-                    <div className="text-xs font-bold uppercase tracking-[0.2em] text-white/45">{verification.verdict}</div>
+                  <div key={verification.id} className="rounded-2xl border border-white/10 bg-black/30 px-4 py-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="font-medium text-white">{verification.reviewer.name}</div>
+                      <div className={cn("text-xs font-bold uppercase tracking-[0.2em]", verification.verdict === "APPROVE" ? "text-primary" : "text-red-300")}>
+                        {verification.verdict === "APPROVE" ? "Approve" : "Flag"}
+                      </div>
+                    </div>
+                    {verification.note ? <div className="mt-2 text-sm text-white/60">{verification.note}</div> : null}
                   </div>
                 ))
               )}
@@ -180,3 +231,4 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ gro
     </div>
   );
 }
+

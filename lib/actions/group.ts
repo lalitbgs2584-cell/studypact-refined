@@ -1,13 +1,35 @@
-"use server";
+﻿"use server";
 
-import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import crypto from "crypto";
+import { GroupFocusType } from "@prisma/client";
 import { cookies, headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { GroupFocusType } from "@prisma/client";
-import crypto from "crypto";
+
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { ACTIVE_GROUP_COOKIE } from "@/lib/workspace";
+
+export async function setActiveGroup(groupId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const membership = await db.userGroup.findUnique({
+    where: {
+      userId_groupId: {
+        userId: session.user.id,
+        groupId,
+      },
+    },
+    select: { groupId: true },
+  });
+
+  if (!membership) throw new Error("Not a member of that group");
+
+  const cookieStore = await cookies();
+  cookieStore.set(ACTIVE_GROUP_COOKIE, groupId, { path: "/", sameSite: "lax" });
+  revalidatePath("/dashboard");
+}
 
 export async function createGroup(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -24,7 +46,6 @@ export async function createGroup(formData: FormData) {
     redirect("/groups?error=Group%20name%20is%20required");
   }
 
-  // Create unique invite code
   const inviteCode = crypto.randomBytes(4).toString("hex");
 
   const group = await db.group.create({
@@ -33,19 +54,19 @@ export async function createGroup(formData: FormData) {
       description,
       focusType,
       inviteCode,
-      inviteExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      inviteExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       createdById: session.user.id,
       users: {
         create: {
           userId: session.user.id,
-          role: "admin", // Creator is automatically Leader/Admin
-        }
-      }
-    }
+          role: "admin",
+        },
+      },
+    },
   });
 
   const cookieStore = await cookies();
-  cookieStore.set(ACTIVE_GROUP_COOKIE, group.id, { path: "/" });
+  cookieStore.set(ACTIVE_GROUP_COOKIE, group.id, { path: "/", sameSite: "lax" });
   revalidatePath("/groups");
   redirect("/dashboard");
 }
@@ -103,7 +124,7 @@ export async function joinGroup(formData: FormData) {
   });
 
   const cookieStore = await cookies();
-  cookieStore.set(ACTIVE_GROUP_COOKIE, group.id, { path: "/" });
+  cookieStore.set(ACTIVE_GROUP_COOKIE, group.id, { path: "/", sameSite: "lax" });
   revalidatePath("/groups");
   redirect("/dashboard");
 }

@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Sparkles, Target } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -48,9 +48,7 @@ export default async function AssignmentsPage() {
               Assignments
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">
-                Assignment work packages
-              </h1>
+              <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">Assignment work packages</h1>
               <p className="max-w-2xl text-white/60">
                 {activeGroup
                   ? `Assignments in ${activeGroup.name} are broken into questions, and each question needs its own proof submission.`
@@ -82,9 +80,7 @@ export default async function AssignmentsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Create Assignment</CardTitle>
-            <CardDescription className="text-white/50">
-              Build a multi-question work package for the active group.
-            </CardDescription>
+            <CardDescription className="text-white/50">Build a multi-question work package for the active group.</CardDescription>
           </CardHeader>
           <CardContent>
             <form action={createAssignment} className="space-y-5">
@@ -145,15 +141,11 @@ export default async function AssignmentsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-white">Assignment Queue</CardTitle>
-          <CardDescription className="text-white/50">
-            Track progress question by question and jump straight to proof submission.
-          </CardDescription>
+          <CardDescription className="text-white/50">Track progress question by question and jump straight to proof submission.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {assignments.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
-              No assignments yet.
-            </div>
+            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No assignments yet.</div>
           ) : (
             assignments.map((assignment) => {
               const completedQuestions = assignment.questions.filter((question) =>
@@ -168,7 +160,7 @@ export default async function AssignmentsPage() {
                       <div className="font-semibold text-white">{assignment.title}</div>
                       <div className="text-xs text-white/45">
                         Created by {assignment.createdBy.name}
-                        {assignment.dueAt ? ` · due ${assignment.dueAt.toLocaleString()}` : ""}
+                        {assignment.dueAt ? ` - due ${assignment.dueAt.toLocaleString()}` : ""}
                       </div>
                     </div>
                     <div className="text-right text-xs uppercase tracking-[0.2em] text-white/45">{progress}%</div>
@@ -176,8 +168,8 @@ export default async function AssignmentsPage() {
 
                   {assignment.details ? <p className="mt-3 text-sm text-white/60">{assignment.details}</p> : null}
 
-                  <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/5">
-                    <div className="h-full rounded-full bg-gradient-to-r from-primary to-[#ff9b57]" style={{ width: `${progress}%` }} />
+                  <div className="mt-4 h-[6px] overflow-hidden rounded-[3px] bg-secondary">
+                    <div className="h-full rounded-[3px] bg-primary" style={{ width: `${progress}%` }} />
                   </div>
 
                   <div className="mt-4 space-y-3">

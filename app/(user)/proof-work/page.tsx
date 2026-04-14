@@ -1,9 +1,11 @@
-import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles, Upload } from "lucide-react";
+﻿import { CheckCircle2, ShieldCheck, Sparkles, Upload } from "lucide-react";
 
-import { ProofWorkForm } from "@/components/proof-work-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ProofWorkForm } from "@/components/proof-work-form";
 import { submitProof } from "@/lib/actions/submission";
 import { db } from "@/lib/db";
+import { getPeerReviewMetrics, getPeerReviewThreshold } from "@/lib/peer-review";
+import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
 export default async function ProofWorkPage({
@@ -15,6 +17,8 @@ export default async function ProofWorkPage({
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
   const params = (await searchParams) ?? {};
   const groupId = activeGroupId ?? memberships[0]?.groupId ?? "";
+  const totalEligibleReviewers = Math.max((activeGroup?.users.length ?? 0) - 1, 0);
+  const quorumThreshold = getPeerReviewThreshold(totalEligibleReviewers);
 
   const taskTargets = groupId
     ? await db.task.findMany({
@@ -52,6 +56,12 @@ export default async function ProofWorkPage({
         where: { groupId, userId: session.user.id },
         include: {
           reviewedBy: { select: { name: true } },
+          verifications: {
+            include: {
+              reviewer: { select: { name: true } },
+            },
+            orderBy: { createdAt: "asc" },
+          },
           assignmentQuestion: {
             include: {
               assignment: { select: { title: true } },
@@ -72,15 +82,17 @@ export default async function ProofWorkPage({
     hint:
       task.checkIn?.status === "REJECTED"
         ? "Rejected. Resubmit with fresh proof."
-        : task.checkIn?.status === "PENDING"
-          ? "Already submitted. Waiting on review."
-          : "Upload before and after proof to finish this task.",
+        : task.checkIn?.status === "APPROVED"
+          ? "Completed. This task is already verified."
+          : task.checkIn?.status === "PENDING" || task.checkIn?.status === "FLAGGED"
+            ? "Already submitted. Votes are still in progress."
+            : "Upload before and after proof to finish this task.",
   }));
 
   const questionTargets = assignments.flatMap((assignment) =>
     assignment.questions.map((question) => ({
       id: question.id,
-      label: `${assignment.title} · Q${question.order}`,
+      label: `${assignment.title} - Q${question.order}`,
       hint: question.prompt,
     }))
   );
@@ -95,9 +107,7 @@ export default async function ProofWorkPage({
               Proof of Work
             </div>
             <div className="space-y-2">
-              <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">
-                Submit before-and-after evidence
-              </h1>
+              <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">Submit before-and-after evidence</h1>
               <p className="max-w-2xl text-white/60">
                 {activeGroup
                   ? `Everything here is scoped to ${activeGroup.name}. Choose a task or assignment question, upload both photos, and add a short summary.`
@@ -119,7 +129,13 @@ export default async function ProofWorkPage({
             </div>
             <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
               <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
-              <div>Rejected proof returns with a note so members can resubmit corrected evidence.</div>
+              <div>Peer votes close a submission once quorum is met, and rejected work comes back with a note.</div>
+            </div>
+            <div className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+              <Sparkles className="mt-0.5 h-4 w-4 text-primary" />
+              <div>
+                {quorumThreshold} vote(s) are needed from {totalEligibleReviewers} eligible reviewers to close a proof in the active group.
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -129,9 +145,7 @@ export default async function ProofWorkPage({
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Task Proof</CardTitle>
-            <CardDescription className="text-white/50">
-              Submit evidence for an active task in the current group.
-            </CardDescription>
+            <CardDescription className="text-white/50">Submit evidence for an active task in the current group.</CardDescription>
           </CardHeader>
           <CardContent>
             {groupId && taskFormTargets.length > 0 ? (
@@ -146,9 +160,7 @@ export default async function ProofWorkPage({
                 submitLabel="Submit task proof"
               />
             ) : (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
-                No task targets available right now.
-              </div>
+              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No task targets available right now.</div>
             )}
           </CardContent>
         </Card>
@@ -156,9 +168,7 @@ export default async function ProofWorkPage({
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Assignment Proof</CardTitle>
-            <CardDescription className="text-white/50">
-              Submit evidence for a specific assignment question.
-            </CardDescription>
+            <CardDescription className="text-white/50">Submit evidence for a specific assignment question.</CardDescription>
           </CardHeader>
           <CardContent>
             {groupId && questionTargets.length > 0 ? (
@@ -173,9 +183,7 @@ export default async function ProofWorkPage({
                 submitLabel="Submit question proof"
               />
             ) : (
-              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
-                No assignment questions yet.
-              </div>
+              <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No assignment questions yet.</div>
             )}
           </CardContent>
         </Card>
@@ -184,26 +192,32 @@ export default async function ProofWorkPage({
       <Card>
         <CardHeader>
           <CardTitle className="text-white">Recent Submissions</CardTitle>
-          <CardDescription className="text-white/50">
-            Your latest uploads in the active group context.
-          </CardDescription>
+          <CardDescription className="text-white/50">Your latest uploads in the active group context.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {recentSubmissions.length === 0 ? (
-            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">
-              No proof submitted yet.
-            </div>
+            <div className="rounded-3xl border border-dashed border-white/10 bg-white/[0.03] p-8 text-center text-white/45">No proof submitted yet.</div>
           ) : (
             recentSubmissions.map((submission) => {
+              const metrics = getPeerReviewMetrics(submission.verifications, totalEligibleReviewers);
               const targetLabel = submission.assignmentQuestion
-                ? `${submission.assignmentQuestion.assignment.title} · Q${submission.assignmentQuestion.order}`
+                ? `${submission.assignmentQuestion.assignment.title} - Q${submission.assignmentQuestion.order}`
                 : submission.tasks[0]?.title ?? "Task proof";
               const status =
                 submission.status === "APPROVED"
                   ? "Verified"
                   : submission.status === "REJECTED"
                     ? "Rejected"
-                    : "Pending review";
+                    : submission.status === "FLAGGED"
+                      ? "Flagged"
+                      : "Pending review";
+              const reviewSummary = metrics.approved
+                ? `Approved by quorum (${metrics.approvalVotes}/${metrics.threshold})`
+                : metrics.rejected
+                  ? `Rejected by quorum (${metrics.flagVotes}/${metrics.threshold})`
+                  : metrics.totalVotes > 0
+                    ? `${metrics.approvalVotes} approvals, ${metrics.flagVotes} flags`
+                    : "Awaiting votes";
 
               return (
                 <div key={submission.id} className="rounded-3xl border border-white/10 bg-black/30 p-4">
@@ -211,12 +225,17 @@ export default async function ProofWorkPage({
                     <div>
                       <div className="font-semibold text-white">{targetLabel}</div>
                       <div className="text-xs text-white/45">
-                        Submitted {submission.createdAt.toLocaleString()} · {status}
+                        Submitted {submission.createdAt.toLocaleString()} - {status}
                       </div>
                     </div>
-                    <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
-                      {submission.reviewedBy?.name ?? "Self"}
-                    </span>
+                    <div className="flex flex-col items-end gap-1 text-right">
+                      <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-white/45">
+                        {reviewSummary}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-white/35">
+                        {submission.reviewedBy?.name ? `Closed by ${submission.reviewedBy.name}` : metrics.totalVotes > 0 ? "Open for more votes" : "Awaiting quorum"}
+                      </span>
+                    </div>
                   </div>
                   <div className="mt-4 grid gap-3 md:grid-cols-2">
                     {submission.startFiles[0] ? (
@@ -232,6 +251,29 @@ export default async function ProofWorkPage({
                       </div>
                     ) : null}
                   </div>
+                  <div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-white/70">
+                    {submission.proofText || submission.reflection || "No summary provided."}
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {submission.verifications.map((verification) => (
+                      <span
+                        key={`${submission.id}-${verification.reviewer.name}-${verification.verdict}`}
+                        className={cn(
+                          "rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em]",
+                          verification.verdict === "APPROVE"
+                            ? "border-primary/30 bg-primary/10 text-primary"
+                            : "border-red-500/20 bg-red-500/10 text-red-200"
+                        )}
+                      >
+                        {verification.reviewer.name} - {verification.verdict === "APPROVE" ? "Approve" : "Flag"}
+                      </span>
+                    ))}
+                  </div>
+                  {submission.reviewNote ? (
+                    <div className="mt-3 rounded-2xl border border-primary/20 bg-primary/10 p-3 text-sm text-primary-foreground">
+                      {submission.reviewNote}
+                    </div>
+                  ) : null}
                 </div>
               );
             })
@@ -241,3 +283,6 @@ export default async function ProofWorkPage({
     </div>
   );
 }
+
+
+

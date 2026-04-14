@@ -1,12 +1,13 @@
-"use server";
+﻿"use server";
 
-import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { CheckInStatus, TaskStatus } from "@prisma/client";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
 import { pusherServer } from "@/lib/pusher";
-import { TaskStatus } from "@prisma/client";
 
 export async function submitProof(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -16,13 +17,15 @@ export async function submitProof(formData: FormData) {
   const assignmentQuestionId = ((formData.get("assignmentQuestionId") as string) || "").trim();
   const groupId = ((formData.get("groupId") as string) || "").trim();
   const reflection = ((formData.get("reflection") as string) || "").trim();
-  
+
   const startFiles: { url: string; name: string }[] = [];
   const endFiles: { url: string; name: string }[] = [];
+
   formData.forEach((value, key) => {
     if (key.startsWith("startFileUrl_")) {
       startFiles.push({ url: value as string, name: "Before / Start" });
     }
+
     if (key.startsWith("endFileUrl_")) {
       endFiles.push({ url: value as string, name: "After / End" });
     }
@@ -50,26 +53,43 @@ export async function submitProof(formData: FormData) {
       })
     : null;
 
+  const latestAssignmentSubmission = assignmentQuestionId
+    ? await db.checkIn.findFirst({
+        where: {
+          assignmentQuestionId,
+          userId: session.user.id,
+        },
+        orderBy: { createdAt: "desc" },
+        select: {
+          status: true,
+        },
+      })
+    : null;
+
   if (taskId) {
     if (!task || task.userId !== session.user.id) throw new Error("Task not found or you are not the owner");
-    if (task.checkIn?.status === "APPROVED") throw new Error("Task already approved");
+    if (task.checkIn && task.checkIn.status !== CheckInStatus.REJECTED) {
+      throw new Error("Task already has an active submission");
+    }
   }
 
   if (assignmentQuestionId && !assignmentQuestion) {
     throw new Error("Assignment question not found");
   }
 
+  if (assignmentQuestionId && latestAssignmentSubmission && latestAssignmentSubmission.status !== CheckInStatus.REJECTED) {
+    throw new Error("Assignment question already has an active submission");
+  }
+
   const proofGroupId = groupId || task?.groupId || assignmentQuestion?.assignment.groupId || "";
   if (!proofGroupId) throw new Error("Group context is required");
-
-  const nextStatus = "PENDING";
 
   const checkIn = await db.checkIn.create({
     data: {
       day: new Date(),
       reflection,
       proofText: reflection,
-      status: nextStatus,
+      status: CheckInStatus.PENDING,
       userId: session.user.id,
       groupId: proofGroupId,
       assignmentQuestionId: assignmentQuestionId || null,
@@ -89,7 +109,7 @@ export async function submitProof(formData: FormData) {
           groupId: proofGroupId,
         })),
       },
-    }
+    },
   });
 
   if (taskId) {
@@ -98,7 +118,7 @@ export async function submitProof(formData: FormData) {
       data: {
         status: TaskStatus.IN_PROGRESS,
         checkInId: checkIn.id,
-      }
+      },
     });
   }
 
@@ -112,5 +132,5 @@ export async function submitProof(formData: FormData) {
   revalidatePath("/uploads");
   if (taskId) revalidatePath(`/groups/${proofGroupId}/task/${taskId}`);
   if (assignmentQuestionId) revalidatePath("/assignments");
-  redirect(`/tasks`);
+  redirect("/tasks");
 }

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect } from "react";
 import { getPusherClient } from "@/lib/pusher-client";
@@ -11,8 +11,9 @@ export function RealtimeGroupSync({ groupId }: { groupId: string }) {
     const pusher = getPusherClient();
     if (!pusher) return;
 
-    const channel = pusher.subscribe(`group-${groupId}`);
-    
+    const channelName = `group-${groupId}`;
+    const channel = pusher.subscribe(channelName);
+
     const reloadHandler = () => {
       router.refresh();
     };
@@ -22,7 +23,8 @@ export function RealtimeGroupSync({ groupId }: { groupId: string }) {
     channel.bind("new-verification", reloadHandler);
 
     return () => {
-      pusher.unsubscribe(`group-${groupId}`);
+      channel.unbind_all();
+      pusher.unsubscribe(channelName);
     };
   }, [groupId, router]);
 

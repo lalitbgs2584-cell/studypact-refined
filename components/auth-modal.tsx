@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -46,8 +46,8 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
         if (error) setError(error.message || "Login failed");
         else router.push("/dashboard");
       }
-    } catch (err: any) {
-      setError(err?.message || "An error occurred");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);
     }
@@ -62,10 +62,10 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
+      <div className="absolute inset-0 bg-background/85 backdrop-blur-sm" onClick={onClose} />
 
       <div className="relative z-10 w-full max-w-md animate-in fade-in zoom-in duration-200">
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-card/95 p-8 shadow-2xl backdrop-blur-2xl">
+        <div className="relative overflow-hidden rounded-lg border border-border bg-card p-8 shadow-[0_0_40px_-24px_rgba(0,255,178,0.3)] backdrop-blur-xl">
           <div className="pointer-events-none absolute -right-20 -top-20 h-40 w-40 rounded-full bg-primary/15 blur-[50px]" />
 
           <button onClick={onClose} className="absolute right-6 top-6 text-muted-foreground transition-colors hover:text-foreground">
@@ -73,9 +73,7 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
           </button>
 
           <div className="mb-8 mt-2 text-center">
-            <h1 className="mb-2 text-3xl font-black tracking-tight text-foreground">
-              {view === "signup" ? "Join StudyPact" : "Welcome Back"}
-            </h1>
+            <h1 className="mb-2 text-3xl font-black tracking-tight text-foreground">{view === "signup" ? "Join StudyPact" : "Welcome Back"}</h1>
             <p className="text-sm font-medium text-muted-foreground">
               {view === "signup" ? "Create your account to master your goals." : "Access your pacts and prove your execution."}
             </p>
@@ -91,7 +89,7 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="w-full rounded-xl border border-border bg-background/70 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30 transition-all"
+                  className="w-full rounded-[4px] border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
                 />
               </div>
             )}
@@ -104,7 +102,7 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background/70 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30 transition-all"
+                className="w-full rounded-[4px] border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
               />
             </div>
 
@@ -118,30 +116,30 @@ export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModal
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-border bg-background/70 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30 transition-all"
+                className="w-full rounded-[4px] border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground transition-all focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring/30"
               />
             </div>
 
-            {error ? <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-xs font-medium text-red-200">{error}</div> : null}
+            {error ? <div className="rounded-[4px] border border-accent/30 bg-accent/10 px-3 py-2 text-xs font-medium text-accent">{error}</div> : null}
 
             <button
               type="submit"
               disabled={loading}
-              className="mt-2 w-full rounded-xl bg-primary py-3.5 text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-[0_0_20px_rgba(251,146,60,0.3)] transition-all hover:shadow-[0_0_30px_rgba(251,146,60,0.45)] disabled:opacity-50"
+              className="mt-2 w-full rounded-[4px] bg-primary py-3.5 text-sm font-bold uppercase tracking-[0.16em] text-primary-foreground shadow-[0_0_20px_rgba(0,255,178,0.25)] transition-all hover:shadow-[0_0_30px_rgba(0,255,178,0.38)] disabled:opacity-50"
             >
               {loading ? "Processing..." : view === "signup" ? "Commit Now" : "Sign In"}
             </button>
 
             <div className="relative my-5 flex items-center justify-center">
               <div className="absolute w-full border-t border-border" />
-              <span className="relative rounded-full bg-card px-4 text-[10px] font-bold uppercase text-muted-foreground">Or</span>
+              <span className="relative rounded-[4px] bg-secondary px-4 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">Or</span>
             </div>
 
             <button
               type="button"
               disabled={loading}
               onClick={handleGoogleAuth}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-4 py-3 text-foreground transition-colors hover:bg-secondary/80"
+              className="flex w-full items-center justify-center gap-2 rounded-[4px] border border-border bg-secondary px-4 py-3 text-foreground transition-colors hover:bg-secondary/80"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
