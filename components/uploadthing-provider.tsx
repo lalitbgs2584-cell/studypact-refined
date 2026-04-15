@@ -1,8 +1,8 @@
 "use client";
-import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { extractRouterConfig } from "uploadthing/server";
-import { ourFileRouter } from "@/app/api/uploadthing/core";
 
+// UploadThing's SSR plugin has been unstable in this Docker/Next runtime.
+// The upload dropzone still works without it because the client component can
+// fetch its route config directly when needed.
 export function UploadthingProvider() {
-  return <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />;
+  return null;
 }

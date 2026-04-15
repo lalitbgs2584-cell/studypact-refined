@@ -1,19 +1,62 @@
-import 'dotenv/config';  // Preloads .env.local automatically—no config() call needed [web:19][web:7]
+import "dotenv/config";
 
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { PrismaClient } from '@prisma/client';
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaClient } from "@prisma/client";
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL missing');
+declare global {
+  // eslint-disable-next-line no-var
+  var __prismaClient: PrismaClient | undefined;
 }
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
+function createPrismaClient() {
+  const databaseUrl = process.env.DATABASE_URL;
+  console.log(" Prisma DB - DATABASE_URL:", databaseUrl ? "... loaded" : " missing");
 
-const adapter = new PrismaNeon({ 
-  connectionString: process.env.DATABASE_URL! 
-});
+  if (!databaseUrl) {
+    throw new Error("DATABASE_URL missing in prisma.ts");
+  }
 
-export const db = globalForPrisma.prisma ?? 
-  (globalForPrisma.prisma = new PrismaClient({ adapter }));
+  const adapter = new PrismaNeon({ connectionString: databaseUrl });
+  return new PrismaClient({ adapter });
+}
+
+function getPrismaClient() {
+  if (!globalThis.__prismaClient) {
+    globalThis.__prismaClient = createPrismaClient();
+  }
+
+  return globalThis.__prismaClient;
+}
+
+export function getDb() {
+  return getPrismaClient();
+}
+
+export const db = new Proxy({} as PrismaClient, {
+  get(_target, prop, _receiver) {
+    const client = getPrismaClient();
+    const value = Reflect.get(client, prop, client);
+
+    if (typeof value === "function") {
+      return value.bind(client);
+    }
+
+    return value;
+  },
+  set(_target, prop, value) {
+    return Reflect.set(getPrismaClient(), prop, value);
+  },
+  has(_target, prop) {
+    return prop in getPrismaClient();
+  },
+  ownKeys() {
+    return Reflect.ownKeys(getPrismaClient());
+  },
+  getOwnPropertyDescriptor(_target, prop) {
+    const descriptor = Object.getOwnPropertyDescriptor(getPrismaClient(), prop);
+    if (descriptor) {
+      descriptor.configurable = true;
+    }
+    return descriptor;
+  },
+}) as PrismaClient;

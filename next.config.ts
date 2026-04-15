@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
   serverExternalPackages: [
     "socket.io",
     "socket.io-client",
-    "better-auth",
     "@prisma/client",
     "@prisma/adapter-neon",
     "@prisma/adapter-pg",

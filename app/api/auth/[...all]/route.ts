@@ -1,4 +1,22 @@
-import { auth } from "@/lib/auth";
 import { toNextJsHandler } from "better-auth/next-js";
+import type { NextRequest } from "next/server";
 
-export const { GET, POST } = toNextJsHandler(auth);
+import { getAuth } from "@/lib/auth";
+
+let authHandler: ReturnType<typeof toNextJsHandler> | undefined;
+
+function getAuthHandler(): ReturnType<typeof toNextJsHandler> {
+  if (!authHandler) {
+    authHandler = toNextJsHandler(getAuth());
+  }
+
+  return authHandler;
+}
+
+export function GET(request: NextRequest) {
+  return getAuthHandler().GET(request);
+}
+
+export function POST(request: NextRequest) {
+  return getAuthHandler().POST(request);
+}

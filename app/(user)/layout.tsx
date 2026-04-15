@@ -1,8 +1,10 @@
+export const dynamic = "force-dynamic";
+
 import { UserNavigation } from "@/components/user-navigation";
 import { requireSession } from "@/lib/workspace";
 
 export default async function UserLayout({ children }: { children: React.ReactNode }) {
-  const session = await requireSession();
+  await requireSession();
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
@@ -16,11 +18,7 @@ export default async function UserLayout({ children }: { children: React.ReactNo
       />
 
       <div className="relative z-10 flex min-h-screen flex-col md:flex-row">
-        <UserNavigation
-          userName={session.user.name}
-          userEmail={session.user.email}
-          userImage={session.user.image}
-        />
+        <UserNavigation />
 
         <main className="flex-1 overflow-hidden">
           <div className="h-full overflow-y-auto p-4 md:p-6 lg:p-8">{children}</div>

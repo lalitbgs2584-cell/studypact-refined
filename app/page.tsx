@@ -2,13 +2,12 @@
 
 export const dynamic = "force-dynamic";
 
-
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "@/lib/auth-client";
 import { AuthModal } from "@/components/auth-modal";
 import { Logo } from "@/components/logo";
+import { signOut, useSession } from "@/lib/auth-client";
 
 const FEATURES = [
   { icon: "🎯", label: "Form Pacts", desc: "Join specialized accountability groups tailored to DSA, development, or custom study routines." },
@@ -25,25 +24,24 @@ const STATS: [string, string][] = [
 ];
 
 export default function Home() {
-  const router = useRouter();
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalView, setModalView] = useState<"login" | "signup">("signup");
-
-  // Already logged in — middleware handles server-side, this handles client-side hydration
-  if (!isPending && session) {
-    router.replace("/dashboard");
-    return null;
-  }
+  const isSignedIn = !!session;
 
   const openAuth = (view: "login" | "signup") => {
     setModalView(view);
     setModalOpen(true);
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    window.location.href = "/";
+  };
+
   return (
     <main style={{ minHeight: "100vh", fontFamily: "var(--font-sans)", color: "#EDE6D6", background: "transparent" }}>
-      <AuthModal isOpen={modalOpen} onClose={() => setModalOpen(false)} defaultView={modalView} />
+      {!isSignedIn && <AuthModal isOpen={modalOpen} onClose={() => setModalOpen(false)} defaultView={modalView} />}
 
       {/* ── Navbar ── */}
       <nav style={{
@@ -59,32 +57,85 @@ export default function Home() {
       }}>
         <Logo size="md" />
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <button onClick={() => openAuth("login")} style={{
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 500,
-            height: 36, padding: "0 18px",
-            color: "rgba(237,230,214,0.75)",
-            background: "rgba(196,172,120,0.06)", backdropFilter: "blur(12px)",
-            border: "1px solid rgba(196,172,120,0.16)", borderRadius: 10,
-            cursor: "pointer",
-            boxShadow: "inset 0 1px 0 rgba(196,172,120,0.06), 0 2px 8px rgba(0,0,0,0.35)",
-            transition: "all 0.2s ease",
-          }}>
-            Sign In
-          </button>
-          <button onClick={() => openAuth("signup")} style={{
-            display: "inline-flex", alignItems: "center", justifyContent: "center",
-            fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600,
-            height: 36, padding: "0 20px",
-            color: "#0D1118",
-            background: "linear-gradient(135deg, #A08840 0%, #C4AC78 55%, #D4C090 100%)",
-            border: "1px solid rgba(196,172,120,0.50)", borderRadius: 10,
-            cursor: "pointer",
-            boxShadow: "0 0 12px rgba(196,172,120,0.22), 0 4px 20px rgba(196,172,120,0.12)",
-            transition: "all 0.2s ease",
-          }}>
-            Get Started
-          </button>
+          {isSignedIn ? (
+            <>
+              <Link
+                href="/dashboard"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontFamily: "var(--font-sans)",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  height: 36,
+                  padding: "0 18px",
+                  color: "#0D1118",
+                  background: "linear-gradient(135deg, #A08840 0%, #C4AC78 55%, #D4C090 100%)",
+                  border: "1px solid rgba(196,172,120,0.50)",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  boxShadow: "0 0 12px rgba(196,172,120,0.22), 0 4px 20px rgba(196,172,120,0.12)",
+                  transition: "all 0.2s ease",
+                  textDecoration: "none",
+                }}
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={handleSignOut}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontFamily: "var(--font-sans)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                  height: 36,
+                  padding: "0 18px",
+                  color: "rgba(237,230,214,0.75)",
+                  background: "rgba(196,172,120,0.06)",
+                  backdropFilter: "blur(12px)",
+                  border: "1px solid rgba(196,172,120,0.16)",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  boxShadow: "inset 0 1px 0 rgba(196,172,120,0.06), 0 2px 8px rgba(0,0,0,0.35)",
+                  transition: "all 0.2s ease",
+                }}
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => openAuth("login")} style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 500,
+                height: 36, padding: "0 18px",
+                color: "rgba(237,230,214,0.75)",
+                background: "rgba(196,172,120,0.06)", backdropFilter: "blur(12px)",
+                border: "1px solid rgba(196,172,120,0.16)", borderRadius: 10,
+                cursor: "pointer",
+                boxShadow: "inset 0 1px 0 rgba(196,172,120,0.06), 0 2px 8px rgba(0,0,0,0.35)",
+                transition: "all 0.2s ease",
+              }}>
+                Sign In
+              </button>
+              <button onClick={() => openAuth("signup")} style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                fontFamily: "var(--font-sans)", fontSize: 13, fontWeight: 600,
+                height: 36, padding: "0 20px",
+                color: "#0D1118",
+                background: "linear-gradient(135deg, #A08840 0%, #C4AC78 55%, #D4C090 100%)",
+                border: "1px solid rgba(196,172,120,0.50)", borderRadius: 10,
+                cursor: "pointer",
+                boxShadow: "0 0 12px rgba(196,172,120,0.22), 0 4px 20px rgba(196,172,120,0.12)",
+                transition: "all 0.2s ease",
+              }}>
+                Get Started
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
@@ -141,37 +192,82 @@ export default function Home() {
           Join groups, broadcast work, upload before-and-after proof, and let peers verify your execution.
         </p>
 
+        {isSignedIn && session ? (
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            background: "rgba(196,172,120,0.08)", backdropFilter: "blur(8px)",
+            border: "1px solid rgba(196,172,120,0.20)", borderRadius: 9999,
+            padding: "7px 16px", fontSize: 12, color: "#D4C090", fontWeight: 600,
+            marginBottom: 28, position: "relative", zIndex: 1,
+          }}>
+            Welcome back, {session.user.name}
+          </div>
+        ) : null}
+
         {/* CTA */}
         <div style={{
           display: "flex", gap: 16, justifyContent: "center", alignItems: "center",
           flexWrap: "wrap", position: "relative", zIndex: 1,
           animation: "g-fade-up 0.75s var(--ease-out) 0.54s both",
         }}>
-          <button onClick={() => openAuth("signup")} style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            fontFamily: "var(--font-sans)", fontSize: 15, fontWeight: 700,
-            color: "#0D1118",
-            background: "linear-gradient(135deg, #A08840 0%, #C4AC78 60%, #D4C090 100%)",
-            border: "1px solid rgba(196,172,120,0.45)", borderRadius: 12,
-            padding: "14px 36px", height: 52, cursor: "pointer",
-            boxShadow: "0 4px 20px rgba(196,172,120,0.20), 0 8px 40px rgba(196,172,120,0.10)",
-            transition: "all 0.25s ease",
-          }}>
-            Start Your Pact
-            <ArrowRight style={{ width: 18, height: 18 }} />
-          </button>
-          <button onClick={() => openAuth("login")} style={{
-            display: "inline-flex", alignItems: "center",
-            fontFamily: "var(--font-sans)", fontSize: 15, fontWeight: 600,
-            color: "#EDE6D6",
-            background: "rgba(196,172,120,0.05)", backdropFilter: "blur(16px)",
-            border: "1px solid rgba(196,172,120,0.14)", borderRadius: 12,
-            padding: "13px 32px", height: 52, cursor: "pointer",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.45)",
-            transition: "all 0.25s ease",
-          }}>
-            Sign In
-          </button>
+          {isSignedIn ? (
+            <>
+              <Link href="/dashboard" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                fontFamily: "var(--font-sans)", fontSize: 15, fontWeight: 700,
+                color: "#0D1118",
+                background: "linear-gradient(135deg, #A08840 0%, #C4AC78 60%, #D4C090 100%)",
+                border: "1px solid rgba(196,172,120,0.45)", borderRadius: 12,
+                padding: "14px 36px", height: 52, cursor: "pointer",
+                boxShadow: "0 4px 20px rgba(196,172,120,0.20), 0 8px 40px rgba(196,172,120,0.10)",
+                transition: "all 0.25s ease",
+                textDecoration: "none",
+              }}>
+                Open Dashboard
+                <ArrowRight style={{ width: 18, height: 18 }} />
+              </Link>
+              <button onClick={handleSignOut} style={{
+                display: "inline-flex", alignItems: "center",
+                fontFamily: "var(--font-sans)", fontSize: 15, fontWeight: 600,
+                color: "#EDE6D6",
+                background: "rgba(196,172,120,0.05)", backdropFilter: "blur(16px)",
+                border: "1px solid rgba(196,172,120,0.14)", borderRadius: 12,
+                padding: "13px 32px", height: 52, cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.45)",
+                transition: "all 0.25s ease",
+              }}>
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => openAuth("signup")} style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                fontFamily: "var(--font-sans)", fontSize: 15, fontWeight: 700,
+                color: "#0D1118",
+                background: "linear-gradient(135deg, #A08840 0%, #C4AC78 60%, #D4C090 100%)",
+                border: "1px solid rgba(196,172,120,0.45)", borderRadius: 12,
+                padding: "14px 36px", height: 52, cursor: "pointer",
+                boxShadow: "0 4px 20px rgba(196,172,120,0.20), 0 8px 40px rgba(196,172,120,0.10)",
+                transition: "all 0.25s ease",
+              }}>
+                Start Your Pact
+                <ArrowRight style={{ width: 18, height: 18 }} />
+              </button>
+              <button onClick={() => openAuth("login")} style={{
+                display: "inline-flex", alignItems: "center",
+                fontFamily: "var(--font-sans)", fontSize: 15, fontWeight: 600,
+                color: "#EDE6D6",
+                background: "rgba(196,172,120,0.05)", backdropFilter: "blur(16px)",
+                border: "1px solid rgba(196,172,120,0.14)", borderRadius: 12,
+                padding: "13px 32px", height: 52, cursor: "pointer",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.45)",
+                transition: "all 0.25s ease",
+              }}>
+                Sign In
+              </button>
+            </>
+          )}
         </div>
 
         {/* Stats */}

@@ -1,14 +1,36 @@
 "use client";
 
-import { useState, useRef } from "react";
+import dynamic from "next/dynamic";
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
-import { CheckCircle2, CloudUpload, ImageIcon, Loader2, X } from "lucide-react";
+import { CheckCircle2, ImageIcon, Loader2, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { UploadDropzone } from "@/utils/uploadthing";
+
+const UploadDropzone = dynamic(
+  () => import("@/utils/uploadthing").then((mod) => mod.UploadDropzone),
+  {
+    ssr: false,
+    loading: () => (
+      <div
+        style={{
+          border: "1.5px dashed rgba(196,172,120,0.22)",
+          borderRadius: 10,
+          background: "rgba(196,172,120,0.03)",
+          padding: "24px 16px",
+          color: "#6A7888",
+          fontSize: 12,
+          textAlign: "center",
+        }}
+      >
+        Preparing upload widget...
+      </div>
+    ),
+  }
+);
 
 type TargetOption = { id: string; label: string; hint?: string };
 

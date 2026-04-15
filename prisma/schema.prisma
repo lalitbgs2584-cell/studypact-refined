@@ -9,7 +9,7 @@ datasource db {
 
 enum TaskStatus {
   PENDING
-  IN_PROGRESS
+IN_PROGRESS
   COMPLETED
   MISSED
 }

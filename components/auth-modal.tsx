@@ -2,8 +2,8 @@
 
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { signIn, signUp } from "@/lib/auth-client";
+import { useEffect, useState } from "react";
+import { signIn, signUp, useSession } from "@/lib/auth-client";
 import { Logo } from "@/components/logo";
 
 interface AuthModalProps {
@@ -14,12 +14,20 @@ interface AuthModalProps {
 
 export function AuthModal({ isOpen, onClose, defaultView = "signup" }: AuthModalProps) {
   const router = useRouter();
+  const { data: session } = useSession();
   const [view, setView] = useState<"login" | "signup">(defaultView);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (session) {
+      onClose();
+      router.replace("/dashboard");
+    }
+  }, [onClose, router, session]);
 
   if (!isOpen) return null;
 

@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 
 import Link from "next/link";
 import { ArrowRight, CalendarDays, CheckCircle2, Clock3, Plus, Sparkles } from "lucide-react";
+import type { Prisma } from "@prisma/client";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +15,17 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
-type TaskRow = Awaited<ReturnType<typeof db.task.findMany>>[number];
+type TaskRow = Prisma.TaskGetPayload<{
+  include: {
+    group: true;
+    checkIn: {
+      include: {
+        startFiles: true;
+        endFiles: true;
+      };
+    };
+  };
+}>;
 
 const statusLabels: Record<string, { label: string; style: React.CSSProperties }> = {
   PENDING:     { label: "Not Started", style: { background: "rgba(196,172,120,0.06)", color: "rgba(237,230,214,0.45)", border: "1px solid rgba(196,172,120,0.12)" } },

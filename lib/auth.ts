@@ -1,22 +1,43 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { db } from "./db";
+import { getDb } from "./db";
 
-export const auth = betterAuth({
-  database: prismaAdapter(db, {
-    provider: "postgresql",
-  }),
-  emailAndPassword: {
-    enabled: true,
-  },
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+function createAuth() {
+  return betterAuth({
+    database: prismaAdapter(getDb(), {
+      provider: "postgresql",
+    }),
+    emailAndPassword: {
+      enabled: true,
     },
+    socialProviders: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID as string,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      },
+    },
+    session: {
+      expiresIn: 60 * 60 * 24 * 7, // 7 days
+      updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+    },
+  });
+}
+
+type AuthInstance = ReturnType<typeof createAuth>;
+type AuthApi = AuthInstance["api"];
+
+let authInstance: AuthInstance | undefined;
+
+export function getAuth(): AuthInstance {
+  if (!authInstance) {
+    authInstance = createAuth();
+  }
+
+  return authInstance;
+}
+
+export const auth = {
+  get api(): AuthApi {
+    return getAuth().api;
   },
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
-  },
-});
+};

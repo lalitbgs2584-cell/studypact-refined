@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 import { TaskStatus } from "@prisma/client";
 
 import { db } from "@/lib/db";
-import { pusherServer } from "@/lib/pusher";
+const { pusherServer } = await import("@/lib/pusher");
 
 type OverdueTaskRow = {
   id: string;

@@ -9,10 +9,47 @@ import { db } from "@/lib/db";
 import { getPeerReviewMetrics, getPeerReviewThreshold } from "@/lib/peer-review";
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
+import type { Prisma } from "@prisma/client";
 
-type TaskTarget = Awaited<ReturnType<typeof db.task.findMany>>[number];
-type AssignmentRow = Awaited<ReturnType<typeof db.assignment.findMany>>[number];
-type CheckInRow = Awaited<ReturnType<typeof db.checkIn.findMany>>[number];
+type TaskTarget = Prisma.TaskGetPayload<{
+  include: {
+    checkIn: true;
+  };
+}>;
+
+type AssignmentRow = Prisma.AssignmentGetPayload<{
+  include: {
+    questions: {
+      include: {
+        checkIns: {
+          include: {
+            startFiles: true;
+            endFiles: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+type CheckInRow = Prisma.CheckInGetPayload<{
+  include: {
+    reviewedBy: { select: { name: true } };
+    verifications: {
+      include: {
+        reviewer: { select: { name: true } };
+      };
+    };
+    assignmentQuestion: {
+      include: {
+        assignment: { select: { title: true } };
+      };
+    };
+    tasks: { select: { id: true; title: true } };
+    startFiles: true;
+    endFiles: true;
+  };
+}>;
 
 export default async function ProofWorkPage({
   searchParams,

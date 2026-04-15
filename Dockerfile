@@ -19,7 +19,6 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-RUN npx prisma generate --schema=./prisma/schema.prisma
 COPY . .
 
 # DATABASE_URL is needed at build time so Prisma can generate the client
