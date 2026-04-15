@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { CheckInStatus, TaskStatus, VerificationVerdict } from "@prisma/client";
 import { revalidatePath } from "next/cache";

@@ -1,4 +1,4 @@
-﻿import { VerificationVerdict } from "@prisma/client";
+import { VerificationVerdict } from "@prisma/client";
 
 export type PeerReviewVote = {
   verdict: VerificationVerdict;

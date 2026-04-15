@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { ArrowRight, CheckCircle2, Clock3, Plus, ShieldCheck, Sparkles, Upload } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -12,8 +12,14 @@ type RecentSubmission = Awaited<ReturnType<typeof fetchRecentSubmissions>>[numbe
 type Membership = Awaited<ReturnType<typeof getWorkspace>>["memberships"][number];
 
 async function fetchActiveTasks(activeGroupId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   return db.task.findMany({
-    where: { groupId: activeGroupId },
+    where: { 
+      groupId: activeGroupId,
+      day: { gte: today }
+    },
     include: {
       user: { select: { name: true } },
       checkIn: {
@@ -28,8 +34,14 @@ async function fetchActiveTasks(activeGroupId: string) {
 }
 
 async function fetchRecentSubmissions(activeGroupId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   return db.checkIn.findMany({
-    where: { groupId: activeGroupId },
+    where: { 
+      groupId: activeGroupId,
+      day: { gte: today }
+    },
     include: {
       user: { select: { name: true } },
       reviewedBy: { select: { name: true } },

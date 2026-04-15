@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { Sparkles, Target } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,14 @@ type Question = Assignment["questions"][number];
 type CheckIn = Question["checkIns"][number];
 
 async function fetchAssignments(groupId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   return db.assignment.findMany({
-    where: { groupId },
+    where: { 
+      groupId,
+      createdAt: { gte: today }
+    },
     include: {
       createdBy: { select: { name: true } },
       questions: {

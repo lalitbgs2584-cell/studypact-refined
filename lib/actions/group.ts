@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import crypto from "crypto";
 import { GroupFocusType } from "@prisma/client";

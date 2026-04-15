@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Menu, PenTool, ShieldCheck, Sparkles, Upload, Users, X, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Menu, PenTool, ShieldCheck, Sparkles, Trophy, Upload, Users, X, type LucideIcon } from "lucide-react";
 import { Logo } from "@/components/logo";
 
 type UserNavigationProps = {
@@ -14,6 +14,7 @@ type UserNavigationProps = {
 
 const navItems: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",   label: "Dashboard",    icon: LayoutDashboard },
+  { href: "/leaderboard", label: "Leaderboard",  icon: Trophy },
   { href: "/groups",      label: "Groups",        icon: Users },
   { href: "/tasks",       label: "Tasks",         icon: PenTool },
   { href: "/proof-work",  label: "Proof of Work", icon: ShieldCheck },
