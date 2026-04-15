@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  serverExternalPackages: ["socket.io", "socket.io-client"],
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "utfs.io" },
