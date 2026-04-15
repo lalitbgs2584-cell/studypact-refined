@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
-import { extractRouterConfig } from "uploadthing/server";
-import { ourFileRouter } from "@/app/api/uploadthing/core";
+
+import { UploadthingProvider } from "@/components/uploadthing-provider";
 
 export const metadata: Metadata = {
   title: "Study Pact Academy",
@@ -23,7 +22,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
       </head>
       <body style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
-        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+        <UploadthingProvider />
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" disableTransitionOnChange>
           {children}
         </ThemeProvider>

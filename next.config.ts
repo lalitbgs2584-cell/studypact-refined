@@ -4,12 +4,16 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  // next.config.ts
   serverExternalPackages: [
     "socket.io",
     "socket.io-client",
-    "better-auth",        // ← CRITICAL: prevents Turbopack from bundling it
-    "@prisma/client",     // ← prevents bundling, lets Neon adapter work
-    "@prisma/adapter-neon"
+    "better-auth",
+    "@prisma/client",
+    "@prisma/adapter-neon",
+    "@prisma/adapter-pg",
+    "pg",
+    "dotenv",
   ],
   images: {
     remotePatterns: [

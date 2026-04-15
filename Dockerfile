@@ -11,7 +11,7 @@ RUN corepack enable
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
-COPY prisma ./prisma
+COPY prisma/schema.prisma ./prisma/  
 
 RUN pnpm install --frozen-lockfile
 
@@ -19,6 +19,7 @@ RUN pnpm install --frozen-lockfile
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+RUN npx prisma generate --schema=./prisma/schema.prisma
 COPY . .
 
 # DATABASE_URL is needed at build time so Prisma can generate the client
