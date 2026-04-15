@@ -12,6 +12,8 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
+type TaskRow = Awaited<ReturnType<typeof db.task.findMany>>[number];
+
 const statusLabels: Record<string, { label: string; style: React.CSSProperties }> = {
   PENDING:     { label: "Not Started", style: { background: "rgba(196,172,120,0.06)", color: "rgba(237,230,214,0.45)", border: "1px solid rgba(196,172,120,0.12)" } },
   IN_PROGRESS: { label: "In Progress", style: { background: "rgba(154,170,120,0.13)", color: "#AABB88",  border: "1px solid rgba(154,170,120,0.28)" } },
@@ -33,13 +35,13 @@ export default async function TasksPage({
   const params = (await searchParams) ?? {};
   const view = params.view === "personal" ? "personal" : "group";
 
-  const personalTasks = await db.task.findMany({
+  const personalTasks: TaskRow[] = await db.task.findMany({
     where: { userId: session.user.id, scope: "PERSONAL" },
     include: { group: true, checkIn: { include: { startFiles: true, endFiles: true } } },
     orderBy: { createdAt: "desc" },
   });
 
-  const groupTasks = activeGroupId
+  const groupTasks: TaskRow[] = activeGroupId
     ? await db.task.findMany({
         where: { userId: session.user.id, groupId: activeGroupId, scope: "GROUP" },
         include: { group: true, checkIn: { include: { startFiles: true, endFiles: true } } },

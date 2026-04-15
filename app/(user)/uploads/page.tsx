@@ -11,6 +11,29 @@ import { getWorkspace, requireSession, type Membership } from "@/lib/workspace";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 
+function fetchUploads(groupId: string) {
+  return db.checkIn.findMany({
+    where: { groupId },
+    include: {
+      user: { select: { id: true, name: true, image: true } },
+      reviewedBy: { select: { name: true } },
+      verifications: {
+        include: { reviewer: { select: { name: true } } },
+        orderBy: { createdAt: "asc" },
+      },
+      tasks: { select: { id: true, title: true } },
+      assignmentQuestion: {
+        include: { assignment: { select: { title: true } } },
+      },
+      startFiles: true,
+      endFiles: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+}
+
+type UploadRow = Awaited<ReturnType<typeof fetchUploads>>[number];
+
 export default async function UploadsPage() {
   const session = await requireSession();
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
@@ -19,30 +42,7 @@ export default async function UploadsPage() {
   const totalEligibleReviewers = Math.max((activeGroup?.users.length ?? 0) - 1, 0);
   const quorumThreshold = getPeerReviewThreshold(totalEligibleReviewers);
 
-  const uploads = groupId
-    ? await db.checkIn.findMany({
-        where: { groupId },
-        include: {
-          user: { select: { id: true, name: true, image: true } },
-          reviewedBy: { select: { name: true } },
-          verifications: {
-            include: {
-              reviewer: { select: { name: true } },
-            },
-            orderBy: { createdAt: "asc" },
-          },
-          tasks: { select: { id: true, title: true } },
-          assignmentQuestion: {
-            include: {
-              assignment: { select: { title: true } },
-            },
-          },
-          startFiles: true,
-          endFiles: true,
-        },
-        orderBy: { createdAt: "desc" },
-      })
-    : [];
+  const uploads: UploadRow[] = groupId ? await fetchUploads(groupId) : [];
 
   const myUploads = uploads.filter((upload) => upload.userId === session.user.id).length;
   const pendingUploads = uploads.filter((upload) => upload.status === "PENDING" || upload.status === "FLAGGED").length;

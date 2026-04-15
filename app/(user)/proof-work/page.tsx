@@ -8,6 +8,10 @@ import { getPeerReviewMetrics, getPeerReviewThreshold } from "@/lib/peer-review"
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
+type TaskTarget = Awaited<ReturnType<typeof db.task.findMany>>[number];
+type AssignmentRow = Awaited<ReturnType<typeof db.assignment.findMany>>[number];
+type CheckInRow = Awaited<ReturnType<typeof db.checkIn.findMany>>[number];
+
 export default async function ProofWorkPage({
   searchParams,
 }: {
@@ -20,7 +24,7 @@ export default async function ProofWorkPage({
   const totalEligibleReviewers = Math.max((activeGroup?.users.length ?? 0) - 1, 0);
   const quorumThreshold = getPeerReviewThreshold(totalEligibleReviewers);
 
-  const taskTargets = groupId
+  const taskTargets: TaskTarget[] = groupId
     ? await db.task.findMany({
         where: { groupId, userId: session.user.id },
         include: {
@@ -30,7 +34,7 @@ export default async function ProofWorkPage({
       })
     : [];
 
-  const assignments = groupId
+  const assignments: AssignmentRow[] = groupId
     ? await db.assignment.findMany({
         where: { groupId },
         include: {
@@ -51,7 +55,7 @@ export default async function ProofWorkPage({
       })
     : [];
 
-  const recentSubmissions = groupId
+  const recentSubmissions: CheckInRow[] = groupId
     ? await db.checkIn.findMany({
         where: { groupId, userId: session.user.id },
         include: {

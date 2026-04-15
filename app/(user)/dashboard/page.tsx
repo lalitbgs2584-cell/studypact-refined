@@ -7,57 +7,64 @@ import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { getWorkspace, requireSession } from "@/lib/workspace";
 
+type ActiveTask = Awaited<ReturnType<typeof fetchActiveTasks>>[number];
+type RecentSubmission = Awaited<ReturnType<typeof fetchRecentSubmissions>>[number];
+type Membership = Awaited<ReturnType<typeof getWorkspace>>["memberships"][number];
+
+async function fetchActiveTasks(activeGroupId: string) {
+  return db.task.findMany({
+    where: { groupId: activeGroupId },
+    include: {
+      user: { select: { name: true } },
+      checkIn: {
+        include: {
+          reviewedBy: { select: { name: true } },
+        },
+      },
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 8,
+  });
+}
+
+async function fetchRecentSubmissions(activeGroupId: string) {
+  return db.checkIn.findMany({
+    where: { groupId: activeGroupId },
+    include: {
+      user: { select: { name: true } },
+      reviewedBy: { select: { name: true } },
+      tasks: { select: { id: true, title: true } },
+      assignmentQuestion: {
+        include: {
+          assignment: { select: { title: true } },
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 8,
+  });
+}
+
 export default async function DashboardPage() {
   const session = await requireSession();
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
 
-  const activeTasks = activeGroupId
-    ? await db.task.findMany({
-        where: { groupId: activeGroupId },
-        include: {
-          user: { select: { name: true } },
-          checkIn: {
-            include: {
-              reviewedBy: { select: { name: true } },
-            },
-          },
-        },
-        orderBy: { updatedAt: "desc" },
-        take: 8,
-      })
-    : [];
+  const activeTasks: ActiveTask[] = activeGroupId ? await fetchActiveTasks(activeGroupId) : [];
+  const recentSubmissions: RecentSubmission[] = activeGroupId ? await fetchRecentSubmissions(activeGroupId) : [];
 
-  const recentSubmissions = activeGroupId
-    ? await db.checkIn.findMany({
-        where: { groupId: activeGroupId },
-        include: {
-          user: { select: { name: true } },
-          reviewedBy: { select: { name: true } },
-          tasks: { select: { id: true, title: true } },
-          assignmentQuestion: {
-            include: {
-              assignment: { select: { title: true } },
-            },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-        take: 8,
-      })
-    : [];
-
-  const pendingTasks = activeTasks.filter((task) => task.status !== "COMPLETED").length;
-  const pendingProof = activeTasks.filter((task) => !task.checkIn || task.checkIn.status !== "APPROVED").length;
-  const awaitingReview = recentSubmissions.filter((submission) => submission.status !== "APPROVED" && submission.status !== "REJECTED").length;
+  const pendingTasks = activeTasks.filter((task: ActiveTask) => task.status !== "COMPLETED").length;
+  const pendingProof = activeTasks.filter((task: ActiveTask) => !task.checkIn || task.checkIn.status !== "APPROVED").length;
+  const awaitingReview = recentSubmissions.filter((submission: RecentSubmission) => submission.status !== "APPROVED" && submission.status !== "REJECTED").length;
 
   const activityFeed = [
-    ...activeTasks.map((task) => ({
+    ...activeTasks.map((task: ActiveTask) => ({
       kind: "task" as const,
       title: task.title,
       detail: `${task.user.name} posted a task`,
       time: task.createdAt,
       status: task.status,
     })),
-    ...recentSubmissions.map((submission) => ({
+    ...recentSubmissions.map((submission: RecentSubmission) => ({
       kind: "proof" as const,
       title: submission.assignmentQuestion
         ? `${submission.assignmentQuestion.assignment.title} - Question ${submission.assignmentQuestion.order}`
@@ -70,9 +77,9 @@ export default async function DashboardPage() {
     .sort((a, b) => b.time.getTime() - a.time.getTime())
     .slice(0, 6);
 
-  const groupProgress = memberships.map((membership) => {
+  const groupProgress = memberships.map((membership: Membership) => {
     const members = membership.group._count.users;
-    const activeMembers = membership.group.users.filter((groupMember) => groupMember.completions > 0).length;
+    const activeMembers = membership.group.users.filter((groupMember: Membership["group"]["users"][number]) => groupMember.completions > 0).length;
     const progress = members === 0 ? 0 : Math.round((activeMembers / members) * 100);
 
     return {
