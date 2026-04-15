@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Clock3, Plus, ShieldCheck, Sparkles, Upload } from "lucide-react";
 

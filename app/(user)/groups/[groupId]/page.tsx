@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { ArrowRight, Plus, Sparkles } from "lucide-react";
 import { headers } from "next/headers";

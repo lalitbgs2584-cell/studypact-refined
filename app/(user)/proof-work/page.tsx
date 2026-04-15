@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 ﻿import { CheckCircle2, ShieldCheck, Sparkles, Upload } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";

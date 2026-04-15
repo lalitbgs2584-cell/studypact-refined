@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    # Loads environment variables from the .env file exactly as requested
+    env_file:
+      - .env
+    restart: always
+    environment:
+      - NODE_ENV=production
+    # If network/db configurations are needed locally, they can be added below

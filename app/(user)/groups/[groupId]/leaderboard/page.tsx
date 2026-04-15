@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { redirect } from "next/navigation";
 import { Sparkles, Trophy, Zap } from "lucide-react";
 import { startOfDay, startOfWeek, startOfMonth } from "date-fns";

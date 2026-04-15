@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, UserX, CheckCircle2, XCircle } from "lucide-react";
 import { headers } from "next/headers";

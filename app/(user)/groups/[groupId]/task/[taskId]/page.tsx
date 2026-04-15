@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 ﻿import Link from "next/link";
 import { ArrowLeft, Clock3, ShieldCheck, Upload } from "lucide-react";
 import { headers } from "next/headers";
