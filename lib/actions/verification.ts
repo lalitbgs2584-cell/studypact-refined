@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getPeerReviewMetrics } from "@/lib/peer-review";
-import { emitGroupEvent } from "../socket-server";
+import { emitGroupEvent } from "@/lib/pusher";
 
 const FINAL_STATUSES = new Set<CheckInStatus>([CheckInStatus.APPROVED, CheckInStatus.REJECTED]);
 

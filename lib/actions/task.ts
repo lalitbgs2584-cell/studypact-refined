@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { emitGroupEvent } from "../socket-server";
+import { emitGroupEvent } from "@/lib/pusher";
 import crypto from "crypto";
 import { cookies } from "next/headers";
 import { ACTIVE_GROUP_COOKIE } from "@/lib/workspace";

@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { emitGroupEvent } from "../socket-server";
+import { emitGroupEvent } from "@/lib/pusher";
 
 
 export async function resolveFlaggedSubmission(formData: FormData) {
