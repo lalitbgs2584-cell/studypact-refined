@@ -54,6 +54,16 @@ export type Task = $Result.DefaultSelection<Prisma.$TaskPayload>
  */
 export type CheckIn = $Result.DefaultSelection<Prisma.$CheckInPayload>
 /**
+ * Model Assignment
+ * 
+ */
+export type Assignment = $Result.DefaultSelection<Prisma.$AssignmentPayload>
+/**
+ * Model AssignmentQuestion
+ * 
+ */
+export type AssignmentQuestion = $Result.DefaultSelection<Prisma.$AssignmentQuestionPayload>
+/**
  * Model SubmissionVerification
  * 
  */
@@ -140,6 +150,7 @@ export type RedemptionTask = $Result.DefaultSelection<Prisma.$RedemptionTaskPayl
 export namespace $Enums {
   export const TaskStatus: {
   PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
   COMPLETED: 'COMPLETED',
   MISSED: 'MISSED'
 };
@@ -245,6 +256,15 @@ export const TaskScope: {
 export type TaskScope = (typeof TaskScope)[keyof typeof TaskScope]
 
 
+export const TaskPriority: {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+};
+
+export type TaskPriority = (typeof TaskPriority)[keyof typeof TaskPriority]
+
+
 export const NotificationKind: {
   PRE_DEADLINE_NUDGE: 'PRE_DEADLINE_NUDGE',
   FLAGGED_SUBMISSION: 'FLAGGED_SUBMISSION'
@@ -342,6 +362,10 @@ export const TaskCategory: typeof $Enums.TaskCategory
 export type TaskScope = $Enums.TaskScope
 
 export const TaskScope: typeof $Enums.TaskScope
+
+export type TaskPriority = $Enums.TaskPriority
+
+export const TaskPriority: typeof $Enums.TaskPriority
 
 export type NotificationKind = $Enums.NotificationKind
 
@@ -563,6 +587,26 @@ export class PrismaClient<
     * ```
     */
   get checkIn(): Prisma.CheckInDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.assignment`: Exposes CRUD operations for the **Assignment** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Assignments
+    * const assignments = await prisma.assignment.findMany()
+    * ```
+    */
+  get assignment(): Prisma.AssignmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.assignmentQuestion`: Exposes CRUD operations for the **AssignmentQuestion** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AssignmentQuestions
+    * const assignmentQuestions = await prisma.assignmentQuestion.findMany()
+    * ```
+    */
+  get assignmentQuestion(): Prisma.AssignmentQuestionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.submissionVerification`: Exposes CRUD operations for the **SubmissionVerification** model.
@@ -1165,6 +1209,8 @@ export namespace Prisma {
     UserGroup: 'UserGroup',
     Task: 'Task',
     CheckIn: 'CheckIn',
+    Assignment: 'Assignment',
+    AssignmentQuestion: 'AssignmentQuestion',
     SubmissionVerification: 'SubmissionVerification',
     PenaltyEvent: 'PenaltyEvent',
     GroupMessage: 'GroupMessage',
@@ -1196,7 +1242,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "account" | "verification" | "group" | "userGroup" | "task" | "checkIn" | "submissionVerification" | "penaltyEvent" | "groupMessage" | "taskTemplate" | "startFile" | "endFile" | "notificationLog" | "groupMessageReaction" | "checkInReaction" | "groupDocument" | "hallOfFame" | "weeklyRecap" | "milestoneBadge" | "confessionPost" | "confessionUpvote" | "redemptionTask"
+      modelProps: "user" | "session" | "account" | "verification" | "group" | "userGroup" | "task" | "checkIn" | "assignment" | "assignmentQuestion" | "submissionVerification" | "penaltyEvent" | "groupMessage" | "taskTemplate" | "startFile" | "endFile" | "notificationLog" | "groupMessageReaction" | "checkInReaction" | "groupDocument" | "hallOfFame" | "weeklyRecap" | "milestoneBadge" | "confessionPost" | "confessionUpvote" | "redemptionTask"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1789,6 +1835,154 @@ export namespace Prisma {
           count: {
             args: Prisma.CheckInCountArgs<ExtArgs>
             result: $Utils.Optional<CheckInCountAggregateOutputType> | number
+          }
+        }
+      }
+      Assignment: {
+        payload: Prisma.$AssignmentPayload<ExtArgs>
+        fields: Prisma.AssignmentFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AssignmentFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AssignmentFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>
+          }
+          findFirst: {
+            args: Prisma.AssignmentFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AssignmentFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>
+          }
+          findMany: {
+            args: Prisma.AssignmentFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>[]
+          }
+          create: {
+            args: Prisma.AssignmentCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>
+          }
+          createMany: {
+            args: Prisma.AssignmentCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AssignmentCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>[]
+          }
+          delete: {
+            args: Prisma.AssignmentDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>
+          }
+          update: {
+            args: Prisma.AssignmentUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>
+          }
+          deleteMany: {
+            args: Prisma.AssignmentDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AssignmentUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AssignmentUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>[]
+          }
+          upsert: {
+            args: Prisma.AssignmentUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentPayload>
+          }
+          aggregate: {
+            args: Prisma.AssignmentAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAssignment>
+          }
+          groupBy: {
+            args: Prisma.AssignmentGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AssignmentGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AssignmentCountArgs<ExtArgs>
+            result: $Utils.Optional<AssignmentCountAggregateOutputType> | number
+          }
+        }
+      }
+      AssignmentQuestion: {
+        payload: Prisma.$AssignmentQuestionPayload<ExtArgs>
+        fields: Prisma.AssignmentQuestionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AssignmentQuestionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AssignmentQuestionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>
+          }
+          findFirst: {
+            args: Prisma.AssignmentQuestionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AssignmentQuestionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>
+          }
+          findMany: {
+            args: Prisma.AssignmentQuestionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>[]
+          }
+          create: {
+            args: Prisma.AssignmentQuestionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>
+          }
+          createMany: {
+            args: Prisma.AssignmentQuestionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.AssignmentQuestionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>[]
+          }
+          delete: {
+            args: Prisma.AssignmentQuestionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>
+          }
+          update: {
+            args: Prisma.AssignmentQuestionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>
+          }
+          deleteMany: {
+            args: Prisma.AssignmentQuestionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AssignmentQuestionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.AssignmentQuestionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>[]
+          }
+          upsert: {
+            args: Prisma.AssignmentQuestionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AssignmentQuestionPayload>
+          }
+          aggregate: {
+            args: Prisma.AssignmentQuestionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAssignmentQuestion>
+          }
+          groupBy: {
+            args: Prisma.AssignmentQuestionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AssignmentQuestionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.AssignmentQuestionCountArgs<ExtArgs>
+            result: $Utils.Optional<AssignmentQuestionCountAggregateOutputType> | number
           }
         }
       }
@@ -3092,6 +3286,8 @@ export namespace Prisma {
     userGroup?: UserGroupOmit
     task?: TaskOmit
     checkIn?: CheckInOmit
+    assignment?: AssignmentOmit
+    assignmentQuestion?: AssignmentQuestionOmit
     submissionVerification?: SubmissionVerificationOmit
     penaltyEvent?: PenaltyEventOmit
     groupMessage?: GroupMessageOmit
@@ -3207,6 +3403,8 @@ export namespace Prisma {
     taskTemplates: number
     createdTaskTemplates: number
     messageReactions: number
+    createdAssignments: number
+    reviewedCheckIns: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3229,6 +3427,8 @@ export namespace Prisma {
     taskTemplates?: boolean | UserCountOutputTypeCountTaskTemplatesArgs
     createdTaskTemplates?: boolean | UserCountOutputTypeCountCreatedTaskTemplatesArgs
     messageReactions?: boolean | UserCountOutputTypeCountMessageReactionsArgs
+    createdAssignments?: boolean | UserCountOutputTypeCountCreatedAssignmentsArgs
+    reviewedCheckIns?: boolean | UserCountOutputTypeCountReviewedCheckInsArgs
   }
 
   // Custom InputTypes
@@ -3375,6 +3575,20 @@ export namespace Prisma {
     where?: GroupMessageReactionWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCreatedAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountReviewedCheckInsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckInWhereInput
+  }
+
 
   /**
    * Count Type GroupCountOutputType
@@ -3395,6 +3609,7 @@ export namespace Prisma {
     weeklyRecaps: number
     confessionPosts: number
     redemptionTasks: number
+    assignments: number
   }
 
   export type GroupCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3412,6 +3627,7 @@ export namespace Prisma {
     weeklyRecaps?: boolean | GroupCountOutputTypeCountWeeklyRecapsArgs
     confessionPosts?: boolean | GroupCountOutputTypeCountConfessionPostsArgs
     redemptionTasks?: boolean | GroupCountOutputTypeCountRedemptionTasksArgs
+    assignments?: boolean | GroupCountOutputTypeCountAssignmentsArgs
   }
 
   // Custom InputTypes
@@ -3523,6 +3739,13 @@ export namespace Prisma {
     where?: RedemptionTaskWhereInput
   }
 
+  /**
+   * GroupCountOutputType without action
+   */
+  export type GroupCountOutputTypeCountAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentWhereInput
+  }
+
 
   /**
    * Count Type CheckInCountOutputType
@@ -3606,6 +3829,68 @@ export namespace Prisma {
    */
   export type CheckInCountOutputTypeCountReactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CheckInReactionWhereInput
+  }
+
+
+  /**
+   * Count Type AssignmentCountOutputType
+   */
+
+  export type AssignmentCountOutputType = {
+    questions: number
+  }
+
+  export type AssignmentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    questions?: boolean | AssignmentCountOutputTypeCountQuestionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AssignmentCountOutputType without action
+   */
+  export type AssignmentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentCountOutputType
+     */
+    select?: AssignmentCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AssignmentCountOutputType without action
+   */
+  export type AssignmentCountOutputTypeCountQuestionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentQuestionWhereInput
+  }
+
+
+  /**
+   * Count Type AssignmentQuestionCountOutputType
+   */
+
+  export type AssignmentQuestionCountOutputType = {
+    checkIns: number
+  }
+
+  export type AssignmentQuestionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    checkIns?: boolean | AssignmentQuestionCountOutputTypeCountCheckInsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * AssignmentQuestionCountOutputType without action
+   */
+  export type AssignmentQuestionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestionCountOutputType
+     */
+    select?: AssignmentQuestionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * AssignmentQuestionCountOutputType without action
+   */
+  export type AssignmentQuestionCountOutputTypeCountCheckInsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CheckInWhereInput
   }
 
 
@@ -3963,6 +4248,8 @@ export namespace Prisma {
     taskTemplates?: boolean | User$taskTemplatesArgs<ExtArgs>
     createdTaskTemplates?: boolean | User$createdTaskTemplatesArgs<ExtArgs>
     messageReactions?: boolean | User$messageReactionsArgs<ExtArgs>
+    createdAssignments?: boolean | User$createdAssignmentsArgs<ExtArgs>
+    reviewedCheckIns?: boolean | User$reviewedCheckInsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4026,6 +4313,8 @@ export namespace Prisma {
     taskTemplates?: boolean | User$taskTemplatesArgs<ExtArgs>
     createdTaskTemplates?: boolean | User$createdTaskTemplatesArgs<ExtArgs>
     messageReactions?: boolean | User$messageReactionsArgs<ExtArgs>
+    createdAssignments?: boolean | User$createdAssignmentsArgs<ExtArgs>
+    reviewedCheckIns?: boolean | User$reviewedCheckInsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4053,6 +4342,8 @@ export namespace Prisma {
       taskTemplates: Prisma.$TaskTemplatePayload<ExtArgs>[]
       createdTaskTemplates: Prisma.$TaskTemplatePayload<ExtArgs>[]
       messageReactions: Prisma.$GroupMessageReactionPayload<ExtArgs>[]
+      createdAssignments: Prisma.$AssignmentPayload<ExtArgs>[]
+      reviewedCheckIns: Prisma.$CheckInPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4478,6 +4769,8 @@ export namespace Prisma {
     taskTemplates<T extends User$taskTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, User$taskTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     createdTaskTemplates<T extends User$createdTaskTemplatesArgs<ExtArgs> = {}>(args?: Subset<T, User$createdTaskTemplatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskTemplatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     messageReactions<T extends User$messageReactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$messageReactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GroupMessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    createdAssignments<T extends User$createdAssignmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$createdAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reviewedCheckIns<T extends User$reviewedCheckInsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewedCheckInsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5363,6 +5656,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: GroupMessageReactionScalarFieldEnum | GroupMessageReactionScalarFieldEnum[]
+  }
+
+  /**
+   * User.createdAssignments
+   */
+  export type User$createdAssignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    where?: AssignmentWhereInput
+    orderBy?: AssignmentOrderByWithRelationInput | AssignmentOrderByWithRelationInput[]
+    cursor?: AssignmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssignmentScalarFieldEnum | AssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * User.reviewedCheckIns
+   */
+  export type User$reviewedCheckInsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    where?: CheckInWhereInput
+    orderBy?: CheckInOrderByWithRelationInput | CheckInOrderByWithRelationInput[]
+    cursor?: CheckInWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CheckInScalarFieldEnum | CheckInScalarFieldEnum[]
   }
 
   /**
@@ -8963,6 +9304,7 @@ export namespace Prisma {
     weeklyRecaps?: boolean | Group$weeklyRecapsArgs<ExtArgs>
     confessionPosts?: boolean | Group$confessionPostsArgs<ExtArgs>
     redemptionTasks?: boolean | Group$redemptionTasksArgs<ExtArgs>
+    assignments?: boolean | Group$assignmentsArgs<ExtArgs>
     _count?: boolean | GroupCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["group"]>
 
@@ -9039,6 +9381,7 @@ export namespace Prisma {
     weeklyRecaps?: boolean | Group$weeklyRecapsArgs<ExtArgs>
     confessionPosts?: boolean | Group$confessionPostsArgs<ExtArgs>
     redemptionTasks?: boolean | Group$redemptionTasksArgs<ExtArgs>
+    assignments?: boolean | Group$assignmentsArgs<ExtArgs>
     _count?: boolean | GroupCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type GroupIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9066,6 +9409,7 @@ export namespace Prisma {
       weeklyRecaps: Prisma.$WeeklyRecapPayload<ExtArgs>[]
       confessionPosts: Prisma.$ConfessionPostPayload<ExtArgs>[]
       redemptionTasks: Prisma.$RedemptionTaskPayload<ExtArgs>[]
+      assignments: Prisma.$AssignmentPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -9492,6 +9836,7 @@ export namespace Prisma {
     weeklyRecaps<T extends Group$weeklyRecapsArgs<ExtArgs> = {}>(args?: Subset<T, Group$weeklyRecapsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WeeklyRecapPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     confessionPosts<T extends Group$confessionPostsArgs<ExtArgs> = {}>(args?: Subset<T, Group$confessionPostsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConfessionPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     redemptionTasks<T extends Group$redemptionTasksArgs<ExtArgs> = {}>(args?: Subset<T, Group$redemptionTasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RedemptionTaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    assignments<T extends Group$assignmentsArgs<ExtArgs> = {}>(args?: Subset<T, Group$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10270,6 +10615,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: RedemptionTaskScalarFieldEnum | RedemptionTaskScalarFieldEnum[]
+  }
+
+  /**
+   * Group.assignments
+   */
+  export type Group$assignmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    where?: AssignmentWhereInput
+    orderBy?: AssignmentOrderByWithRelationInput | AssignmentOrderByWithRelationInput[]
+    cursor?: AssignmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssignmentScalarFieldEnum | AssignmentScalarFieldEnum[]
   }
 
   /**
@@ -11553,14 +11922,17 @@ export namespace Prisma {
     title: string | null
     details: string | null
     category: $Enums.TaskCategory | null
+    priority: $Enums.TaskPriority | null
     targetMinutes: number | null
     status: $Enums.TaskStatus | null
+    dueAt: Date | null
     day: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     completedAt: Date | null
     userId: string | null
     groupId: string | null
+    broadcastKey: string | null
     checkInId: string | null
     templateId: string | null
     isChallengeMode: boolean | null
@@ -11573,14 +11945,17 @@ export namespace Prisma {
     title: string | null
     details: string | null
     category: $Enums.TaskCategory | null
+    priority: $Enums.TaskPriority | null
     targetMinutes: number | null
     status: $Enums.TaskStatus | null
+    dueAt: Date | null
     day: Date | null
     createdAt: Date | null
     updatedAt: Date | null
     completedAt: Date | null
     userId: string | null
     groupId: string | null
+    broadcastKey: string | null
     checkInId: string | null
     templateId: string | null
     isChallengeMode: boolean | null
@@ -11593,14 +11968,17 @@ export namespace Prisma {
     title: number
     details: number
     category: number
+    priority: number
     targetMinutes: number
     status: number
+    dueAt: number
     day: number
     createdAt: number
     updatedAt: number
     completedAt: number
     userId: number
     groupId: number
+    broadcastKey: number
     checkInId: number
     templateId: number
     isChallengeMode: number
@@ -11623,14 +12001,17 @@ export namespace Prisma {
     title?: true
     details?: true
     category?: true
+    priority?: true
     targetMinutes?: true
     status?: true
+    dueAt?: true
     day?: true
     createdAt?: true
     updatedAt?: true
     completedAt?: true
     userId?: true
     groupId?: true
+    broadcastKey?: true
     checkInId?: true
     templateId?: true
     isChallengeMode?: true
@@ -11643,14 +12024,17 @@ export namespace Prisma {
     title?: true
     details?: true
     category?: true
+    priority?: true
     targetMinutes?: true
     status?: true
+    dueAt?: true
     day?: true
     createdAt?: true
     updatedAt?: true
     completedAt?: true
     userId?: true
     groupId?: true
+    broadcastKey?: true
     checkInId?: true
     templateId?: true
     isChallengeMode?: true
@@ -11663,14 +12047,17 @@ export namespace Prisma {
     title?: true
     details?: true
     category?: true
+    priority?: true
     targetMinutes?: true
     status?: true
+    dueAt?: true
     day?: true
     createdAt?: true
     updatedAt?: true
     completedAt?: true
     userId?: true
     groupId?: true
+    broadcastKey?: true
     checkInId?: true
     templateId?: true
     isChallengeMode?: true
@@ -11770,14 +12157,17 @@ export namespace Prisma {
     title: string
     details: string | null
     category: $Enums.TaskCategory
+    priority: $Enums.TaskPriority
     targetMinutes: number | null
     status: $Enums.TaskStatus
+    dueAt: Date | null
     day: Date
     createdAt: Date
     updatedAt: Date
     completedAt: Date | null
     userId: string
     groupId: string
+    broadcastKey: string | null
     checkInId: string | null
     templateId: string | null
     isChallengeMode: boolean
@@ -11809,14 +12199,17 @@ export namespace Prisma {
     title?: boolean
     details?: boolean
     category?: boolean
+    priority?: boolean
     targetMinutes?: boolean
     status?: boolean
+    dueAt?: boolean
     day?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     completedAt?: boolean
     userId?: boolean
     groupId?: boolean
+    broadcastKey?: boolean
     checkInId?: boolean
     templateId?: boolean
     isChallengeMode?: boolean
@@ -11833,14 +12226,17 @@ export namespace Prisma {
     title?: boolean
     details?: boolean
     category?: boolean
+    priority?: boolean
     targetMinutes?: boolean
     status?: boolean
+    dueAt?: boolean
     day?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     completedAt?: boolean
     userId?: boolean
     groupId?: boolean
+    broadcastKey?: boolean
     checkInId?: boolean
     templateId?: boolean
     isChallengeMode?: boolean
@@ -11857,14 +12253,17 @@ export namespace Prisma {
     title?: boolean
     details?: boolean
     category?: boolean
+    priority?: boolean
     targetMinutes?: boolean
     status?: boolean
+    dueAt?: boolean
     day?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     completedAt?: boolean
     userId?: boolean
     groupId?: boolean
+    broadcastKey?: boolean
     checkInId?: boolean
     templateId?: boolean
     isChallengeMode?: boolean
@@ -11881,14 +12280,17 @@ export namespace Prisma {
     title?: boolean
     details?: boolean
     category?: boolean
+    priority?: boolean
     targetMinutes?: boolean
     status?: boolean
+    dueAt?: boolean
     day?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     completedAt?: boolean
     userId?: boolean
     groupId?: boolean
+    broadcastKey?: boolean
     checkInId?: boolean
     templateId?: boolean
     isChallengeMode?: boolean
@@ -11896,7 +12298,7 @@ export namespace Prisma {
     scope?: boolean
   }
 
-  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "details" | "category" | "targetMinutes" | "status" | "day" | "createdAt" | "updatedAt" | "completedAt" | "userId" | "groupId" | "checkInId" | "templateId" | "isChallengeMode" | "earlyBirdCutoff" | "scope", ExtArgs["result"]["task"]>
+  export type TaskOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "details" | "category" | "priority" | "targetMinutes" | "status" | "dueAt" | "day" | "createdAt" | "updatedAt" | "completedAt" | "userId" | "groupId" | "broadcastKey" | "checkInId" | "templateId" | "isChallengeMode" | "earlyBirdCutoff" | "scope", ExtArgs["result"]["task"]>
   export type TaskInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     group?: boolean | GroupDefaultArgs<ExtArgs>
@@ -11929,14 +12331,17 @@ export namespace Prisma {
       title: string
       details: string | null
       category: $Enums.TaskCategory
+      priority: $Enums.TaskPriority
       targetMinutes: number | null
       status: $Enums.TaskStatus
+      dueAt: Date | null
       day: Date
       createdAt: Date
       updatedAt: Date
       completedAt: Date | null
       userId: string
       groupId: string
+      broadcastKey: string | null
       checkInId: string | null
       templateId: string | null
       isChallengeMode: boolean
@@ -12373,14 +12778,17 @@ export namespace Prisma {
     readonly title: FieldRef<"Task", 'String'>
     readonly details: FieldRef<"Task", 'String'>
     readonly category: FieldRef<"Task", 'TaskCategory'>
+    readonly priority: FieldRef<"Task", 'TaskPriority'>
     readonly targetMinutes: FieldRef<"Task", 'Int'>
     readonly status: FieldRef<"Task", 'TaskStatus'>
+    readonly dueAt: FieldRef<"Task", 'DateTime'>
     readonly day: FieldRef<"Task", 'DateTime'>
     readonly createdAt: FieldRef<"Task", 'DateTime'>
     readonly updatedAt: FieldRef<"Task", 'DateTime'>
     readonly completedAt: FieldRef<"Task", 'DateTime'>
     readonly userId: FieldRef<"Task", 'String'>
     readonly groupId: FieldRef<"Task", 'String'>
+    readonly broadcastKey: FieldRef<"Task", 'String'>
     readonly checkInId: FieldRef<"Task", 'String'>
     readonly templateId: FieldRef<"Task", 'String'>
     readonly isChallengeMode: FieldRef<"Task", 'Boolean'>
@@ -12873,6 +13281,7 @@ export namespace Prisma {
     reflection: string | null
     proofText: string | null
     proofLink: string | null
+    reviewNote: string | null
     aiSummary: string | null
     aiConfidence: number | null
     status: $Enums.CheckInStatus | null
@@ -12881,8 +13290,11 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     verifiedAt: Date | null
+    reviewedAt: Date | null
     userId: string | null
     groupId: string | null
+    assignmentQuestionId: string | null
+    reviewedById: string | null
     isEarlyBird: boolean | null
   }
 
@@ -12892,6 +13304,7 @@ export namespace Prisma {
     reflection: string | null
     proofText: string | null
     proofLink: string | null
+    reviewNote: string | null
     aiSummary: string | null
     aiConfidence: number | null
     status: $Enums.CheckInStatus | null
@@ -12900,8 +13313,11 @@ export namespace Prisma {
     createdAt: Date | null
     updatedAt: Date | null
     verifiedAt: Date | null
+    reviewedAt: Date | null
     userId: string | null
     groupId: string | null
+    assignmentQuestionId: string | null
+    reviewedById: string | null
     isEarlyBird: boolean | null
   }
 
@@ -12911,6 +13327,7 @@ export namespace Prisma {
     reflection: number
     proofText: number
     proofLink: number
+    reviewNote: number
     aiSummary: number
     aiConfidence: number
     status: number
@@ -12919,8 +13336,11 @@ export namespace Prisma {
     createdAt: number
     updatedAt: number
     verifiedAt: number
+    reviewedAt: number
     userId: number
     groupId: number
+    assignmentQuestionId: number
+    reviewedById: number
     isEarlyBird: number
     _all: number
   }
@@ -12944,6 +13364,7 @@ export namespace Prisma {
     reflection?: true
     proofText?: true
     proofLink?: true
+    reviewNote?: true
     aiSummary?: true
     aiConfidence?: true
     status?: true
@@ -12952,8 +13373,11 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     verifiedAt?: true
+    reviewedAt?: true
     userId?: true
     groupId?: true
+    assignmentQuestionId?: true
+    reviewedById?: true
     isEarlyBird?: true
   }
 
@@ -12963,6 +13387,7 @@ export namespace Prisma {
     reflection?: true
     proofText?: true
     proofLink?: true
+    reviewNote?: true
     aiSummary?: true
     aiConfidence?: true
     status?: true
@@ -12971,8 +13396,11 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     verifiedAt?: true
+    reviewedAt?: true
     userId?: true
     groupId?: true
+    assignmentQuestionId?: true
+    reviewedById?: true
     isEarlyBird?: true
   }
 
@@ -12982,6 +13410,7 @@ export namespace Prisma {
     reflection?: true
     proofText?: true
     proofLink?: true
+    reviewNote?: true
     aiSummary?: true
     aiConfidence?: true
     status?: true
@@ -12990,8 +13419,11 @@ export namespace Prisma {
     createdAt?: true
     updatedAt?: true
     verifiedAt?: true
+    reviewedAt?: true
     userId?: true
     groupId?: true
+    assignmentQuestionId?: true
+    reviewedById?: true
     isEarlyBird?: true
     _all?: true
   }
@@ -13088,6 +13520,7 @@ export namespace Prisma {
     reflection: string | null
     proofText: string | null
     proofLink: string | null
+    reviewNote: string | null
     aiSummary: string | null
     aiConfidence: number | null
     status: $Enums.CheckInStatus
@@ -13096,8 +13529,11 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     verifiedAt: Date | null
+    reviewedAt: Date | null
     userId: string
     groupId: string
+    assignmentQuestionId: string | null
+    reviewedById: string | null
     isEarlyBird: boolean
     _count: CheckInCountAggregateOutputType | null
     _avg: CheckInAvgAggregateOutputType | null
@@ -13126,6 +13562,7 @@ export namespace Prisma {
     reflection?: boolean
     proofText?: boolean
     proofLink?: boolean
+    reviewNote?: boolean
     aiSummary?: boolean
     aiConfidence?: boolean
     status?: boolean
@@ -13134,11 +13571,16 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     verifiedAt?: boolean
+    reviewedAt?: boolean
     userId?: boolean
     groupId?: boolean
+    assignmentQuestionId?: boolean
+    reviewedById?: boolean
     isEarlyBird?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     group?: boolean | GroupDefaultArgs<ExtArgs>
+    assignmentQuestion?: boolean | CheckIn$assignmentQuestionArgs<ExtArgs>
+    reviewedBy?: boolean | CheckIn$reviewedByArgs<ExtArgs>
     tasks?: boolean | CheckIn$tasksArgs<ExtArgs>
     verifications?: boolean | CheckIn$verificationsArgs<ExtArgs>
     penalties?: boolean | CheckIn$penaltiesArgs<ExtArgs>
@@ -13155,6 +13597,7 @@ export namespace Prisma {
     reflection?: boolean
     proofText?: boolean
     proofLink?: boolean
+    reviewNote?: boolean
     aiSummary?: boolean
     aiConfidence?: boolean
     status?: boolean
@@ -13163,11 +13606,16 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     verifiedAt?: boolean
+    reviewedAt?: boolean
     userId?: boolean
     groupId?: boolean
+    assignmentQuestionId?: boolean
+    reviewedById?: boolean
     isEarlyBird?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     group?: boolean | GroupDefaultArgs<ExtArgs>
+    assignmentQuestion?: boolean | CheckIn$assignmentQuestionArgs<ExtArgs>
+    reviewedBy?: boolean | CheckIn$reviewedByArgs<ExtArgs>
   }, ExtArgs["result"]["checkIn"]>
 
   export type CheckInSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -13176,6 +13624,7 @@ export namespace Prisma {
     reflection?: boolean
     proofText?: boolean
     proofLink?: boolean
+    reviewNote?: boolean
     aiSummary?: boolean
     aiConfidence?: boolean
     status?: boolean
@@ -13184,11 +13633,16 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     verifiedAt?: boolean
+    reviewedAt?: boolean
     userId?: boolean
     groupId?: boolean
+    assignmentQuestionId?: boolean
+    reviewedById?: boolean
     isEarlyBird?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     group?: boolean | GroupDefaultArgs<ExtArgs>
+    assignmentQuestion?: boolean | CheckIn$assignmentQuestionArgs<ExtArgs>
+    reviewedBy?: boolean | CheckIn$reviewedByArgs<ExtArgs>
   }, ExtArgs["result"]["checkIn"]>
 
   export type CheckInSelectScalar = {
@@ -13197,6 +13651,7 @@ export namespace Prisma {
     reflection?: boolean
     proofText?: boolean
     proofLink?: boolean
+    reviewNote?: boolean
     aiSummary?: boolean
     aiConfidence?: boolean
     status?: boolean
@@ -13205,15 +13660,20 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     verifiedAt?: boolean
+    reviewedAt?: boolean
     userId?: boolean
     groupId?: boolean
+    assignmentQuestionId?: boolean
+    reviewedById?: boolean
     isEarlyBird?: boolean
   }
 
-  export type CheckInOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "day" | "reflection" | "proofText" | "proofLink" | "aiSummary" | "aiConfidence" | "status" | "pointsAwarded" | "penaltyApplied" | "createdAt" | "updatedAt" | "verifiedAt" | "userId" | "groupId" | "isEarlyBird", ExtArgs["result"]["checkIn"]>
+  export type CheckInOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "day" | "reflection" | "proofText" | "proofLink" | "reviewNote" | "aiSummary" | "aiConfidence" | "status" | "pointsAwarded" | "penaltyApplied" | "createdAt" | "updatedAt" | "verifiedAt" | "reviewedAt" | "userId" | "groupId" | "assignmentQuestionId" | "reviewedById" | "isEarlyBird", ExtArgs["result"]["checkIn"]>
   export type CheckInInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     group?: boolean | GroupDefaultArgs<ExtArgs>
+    assignmentQuestion?: boolean | CheckIn$assignmentQuestionArgs<ExtArgs>
+    reviewedBy?: boolean | CheckIn$reviewedByArgs<ExtArgs>
     tasks?: boolean | CheckIn$tasksArgs<ExtArgs>
     verifications?: boolean | CheckIn$verificationsArgs<ExtArgs>
     penalties?: boolean | CheckIn$penaltiesArgs<ExtArgs>
@@ -13226,10 +13686,14 @@ export namespace Prisma {
   export type CheckInIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     group?: boolean | GroupDefaultArgs<ExtArgs>
+    assignmentQuestion?: boolean | CheckIn$assignmentQuestionArgs<ExtArgs>
+    reviewedBy?: boolean | CheckIn$reviewedByArgs<ExtArgs>
   }
   export type CheckInIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     group?: boolean | GroupDefaultArgs<ExtArgs>
+    assignmentQuestion?: boolean | CheckIn$assignmentQuestionArgs<ExtArgs>
+    reviewedBy?: boolean | CheckIn$reviewedByArgs<ExtArgs>
   }
 
   export type $CheckInPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -13237,6 +13701,8 @@ export namespace Prisma {
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
       group: Prisma.$GroupPayload<ExtArgs>
+      assignmentQuestion: Prisma.$AssignmentQuestionPayload<ExtArgs> | null
+      reviewedBy: Prisma.$UserPayload<ExtArgs> | null
       tasks: Prisma.$TaskPayload<ExtArgs>[]
       verifications: Prisma.$SubmissionVerificationPayload<ExtArgs>[]
       penalties: Prisma.$PenaltyEventPayload<ExtArgs>[]
@@ -13251,6 +13717,7 @@ export namespace Prisma {
       reflection: string | null
       proofText: string | null
       proofLink: string | null
+      reviewNote: string | null
       aiSummary: string | null
       aiConfidence: number | null
       status: $Enums.CheckInStatus
@@ -13259,8 +13726,11 @@ export namespace Prisma {
       createdAt: Date
       updatedAt: Date
       verifiedAt: Date | null
+      reviewedAt: Date | null
       userId: string
       groupId: string
+      assignmentQuestionId: string | null
+      reviewedById: string | null
       isEarlyBird: boolean
     }, ExtArgs["result"]["checkIn"]>
     composites: {}
@@ -13658,6 +14128,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     group<T extends GroupDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GroupDefaultArgs<ExtArgs>>): Prisma__GroupClient<$Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    assignmentQuestion<T extends CheckIn$assignmentQuestionArgs<ExtArgs> = {}>(args?: Subset<T, CheckIn$assignmentQuestionArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    reviewedBy<T extends CheckIn$reviewedByArgs<ExtArgs> = {}>(args?: Subset<T, CheckIn$reviewedByArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     tasks<T extends CheckIn$tasksArgs<ExtArgs> = {}>(args?: Subset<T, CheckIn$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     verifications<T extends CheckIn$verificationsArgs<ExtArgs> = {}>(args?: Subset<T, CheckIn$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SubmissionVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     penalties<T extends CheckIn$penaltiesArgs<ExtArgs> = {}>(args?: Subset<T, CheckIn$penaltiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PenaltyEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -13699,6 +14171,7 @@ export namespace Prisma {
     readonly reflection: FieldRef<"CheckIn", 'String'>
     readonly proofText: FieldRef<"CheckIn", 'String'>
     readonly proofLink: FieldRef<"CheckIn", 'String'>
+    readonly reviewNote: FieldRef<"CheckIn", 'String'>
     readonly aiSummary: FieldRef<"CheckIn", 'String'>
     readonly aiConfidence: FieldRef<"CheckIn", 'Int'>
     readonly status: FieldRef<"CheckIn", 'CheckInStatus'>
@@ -13707,8 +14180,11 @@ export namespace Prisma {
     readonly createdAt: FieldRef<"CheckIn", 'DateTime'>
     readonly updatedAt: FieldRef<"CheckIn", 'DateTime'>
     readonly verifiedAt: FieldRef<"CheckIn", 'DateTime'>
+    readonly reviewedAt: FieldRef<"CheckIn", 'DateTime'>
     readonly userId: FieldRef<"CheckIn", 'String'>
     readonly groupId: FieldRef<"CheckIn", 'String'>
+    readonly assignmentQuestionId: FieldRef<"CheckIn", 'String'>
+    readonly reviewedById: FieldRef<"CheckIn", 'String'>
     readonly isEarlyBird: FieldRef<"CheckIn", 'Boolean'>
   }
     
@@ -14111,6 +14587,44 @@ export namespace Prisma {
   }
 
   /**
+   * CheckIn.assignmentQuestion
+   */
+  export type CheckIn$assignmentQuestionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    where?: AssignmentQuestionWhereInput
+  }
+
+  /**
+   * CheckIn.reviewedBy
+   */
+  export type CheckIn$reviewedByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
    * CheckIn.tasks
    */
   export type CheckIn$tasksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14294,6 +14808,2286 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: CheckInInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Assignment
+   */
+
+  export type AggregateAssignment = {
+    _count: AssignmentCountAggregateOutputType | null
+    _min: AssignmentMinAggregateOutputType | null
+    _max: AssignmentMaxAggregateOutputType | null
+  }
+
+  export type AssignmentMinAggregateOutputType = {
+    id: string | null
+    title: string | null
+    details: string | null
+    dueAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    groupId: string | null
+    createdById: string | null
+  }
+
+  export type AssignmentMaxAggregateOutputType = {
+    id: string | null
+    title: string | null
+    details: string | null
+    dueAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    groupId: string | null
+    createdById: string | null
+  }
+
+  export type AssignmentCountAggregateOutputType = {
+    id: number
+    title: number
+    details: number
+    dueAt: number
+    createdAt: number
+    updatedAt: number
+    groupId: number
+    createdById: number
+    _all: number
+  }
+
+
+  export type AssignmentMinAggregateInputType = {
+    id?: true
+    title?: true
+    details?: true
+    dueAt?: true
+    createdAt?: true
+    updatedAt?: true
+    groupId?: true
+    createdById?: true
+  }
+
+  export type AssignmentMaxAggregateInputType = {
+    id?: true
+    title?: true
+    details?: true
+    dueAt?: true
+    createdAt?: true
+    updatedAt?: true
+    groupId?: true
+    createdById?: true
+  }
+
+  export type AssignmentCountAggregateInputType = {
+    id?: true
+    title?: true
+    details?: true
+    dueAt?: true
+    createdAt?: true
+    updatedAt?: true
+    groupId?: true
+    createdById?: true
+    _all?: true
+  }
+
+  export type AssignmentAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Assignment to aggregate.
+     */
+    where?: AssignmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assignments to fetch.
+     */
+    orderBy?: AssignmentOrderByWithRelationInput | AssignmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AssignmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assignments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assignments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Assignments
+    **/
+    _count?: true | AssignmentCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AssignmentMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AssignmentMaxAggregateInputType
+  }
+
+  export type GetAssignmentAggregateType<T extends AssignmentAggregateArgs> = {
+        [P in keyof T & keyof AggregateAssignment]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAssignment[P]>
+      : GetScalarType<T[P], AggregateAssignment[P]>
+  }
+
+
+
+
+  export type AssignmentGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentWhereInput
+    orderBy?: AssignmentOrderByWithAggregationInput | AssignmentOrderByWithAggregationInput[]
+    by: AssignmentScalarFieldEnum[] | AssignmentScalarFieldEnum
+    having?: AssignmentScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AssignmentCountAggregateInputType | true
+    _min?: AssignmentMinAggregateInputType
+    _max?: AssignmentMaxAggregateInputType
+  }
+
+  export type AssignmentGroupByOutputType = {
+    id: string
+    title: string
+    details: string | null
+    dueAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    groupId: string
+    createdById: string
+    _count: AssignmentCountAggregateOutputType | null
+    _min: AssignmentMinAggregateOutputType | null
+    _max: AssignmentMaxAggregateOutputType | null
+  }
+
+  type GetAssignmentGroupByPayload<T extends AssignmentGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AssignmentGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AssignmentGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AssignmentGroupByOutputType[P]>
+            : GetScalarType<T[P], AssignmentGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AssignmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    details?: boolean
+    dueAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    groupId?: boolean
+    createdById?: boolean
+    group?: boolean | GroupDefaultArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    questions?: boolean | Assignment$questionsArgs<ExtArgs>
+    _count?: boolean | AssignmentCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignment"]>
+
+  export type AssignmentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    details?: boolean
+    dueAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    groupId?: boolean
+    createdById?: boolean
+    group?: boolean | GroupDefaultArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignment"]>
+
+  export type AssignmentSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    title?: boolean
+    details?: boolean
+    dueAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    groupId?: boolean
+    createdById?: boolean
+    group?: boolean | GroupDefaultArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignment"]>
+
+  export type AssignmentSelectScalar = {
+    id?: boolean
+    title?: boolean
+    details?: boolean
+    dueAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    groupId?: boolean
+    createdById?: boolean
+  }
+
+  export type AssignmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "details" | "dueAt" | "createdAt" | "updatedAt" | "groupId" | "createdById", ExtArgs["result"]["assignment"]>
+  export type AssignmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    group?: boolean | GroupDefaultArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+    questions?: boolean | Assignment$questionsArgs<ExtArgs>
+    _count?: boolean | AssignmentCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AssignmentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    group?: boolean | GroupDefaultArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type AssignmentIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    group?: boolean | GroupDefaultArgs<ExtArgs>
+    createdBy?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $AssignmentPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Assignment"
+    objects: {
+      group: Prisma.$GroupPayload<ExtArgs>
+      createdBy: Prisma.$UserPayload<ExtArgs>
+      questions: Prisma.$AssignmentQuestionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      title: string
+      details: string | null
+      dueAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+      groupId: string
+      createdById: string
+    }, ExtArgs["result"]["assignment"]>
+    composites: {}
+  }
+
+  type AssignmentGetPayload<S extends boolean | null | undefined | AssignmentDefaultArgs> = $Result.GetResult<Prisma.$AssignmentPayload, S>
+
+  type AssignmentCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AssignmentFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AssignmentCountAggregateInputType | true
+    }
+
+  export interface AssignmentDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Assignment'], meta: { name: 'Assignment' } }
+    /**
+     * Find zero or one Assignment that matches the filter.
+     * @param {AssignmentFindUniqueArgs} args - Arguments to find a Assignment
+     * @example
+     * // Get one Assignment
+     * const assignment = await prisma.assignment.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AssignmentFindUniqueArgs>(args: SelectSubset<T, AssignmentFindUniqueArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Assignment that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AssignmentFindUniqueOrThrowArgs} args - Arguments to find a Assignment
+     * @example
+     * // Get one Assignment
+     * const assignment = await prisma.assignment.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AssignmentFindUniqueOrThrowArgs>(args: SelectSubset<T, AssignmentFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Assignment that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentFindFirstArgs} args - Arguments to find a Assignment
+     * @example
+     * // Get one Assignment
+     * const assignment = await prisma.assignment.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AssignmentFindFirstArgs>(args?: SelectSubset<T, AssignmentFindFirstArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Assignment that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentFindFirstOrThrowArgs} args - Arguments to find a Assignment
+     * @example
+     * // Get one Assignment
+     * const assignment = await prisma.assignment.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AssignmentFindFirstOrThrowArgs>(args?: SelectSubset<T, AssignmentFindFirstOrThrowArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Assignments that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Assignments
+     * const assignments = await prisma.assignment.findMany()
+     * 
+     * // Get first 10 Assignments
+     * const assignments = await prisma.assignment.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const assignmentWithIdOnly = await prisma.assignment.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AssignmentFindManyArgs>(args?: SelectSubset<T, AssignmentFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Assignment.
+     * @param {AssignmentCreateArgs} args - Arguments to create a Assignment.
+     * @example
+     * // Create one Assignment
+     * const Assignment = await prisma.assignment.create({
+     *   data: {
+     *     // ... data to create a Assignment
+     *   }
+     * })
+     * 
+     */
+    create<T extends AssignmentCreateArgs>(args: SelectSubset<T, AssignmentCreateArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Assignments.
+     * @param {AssignmentCreateManyArgs} args - Arguments to create many Assignments.
+     * @example
+     * // Create many Assignments
+     * const assignment = await prisma.assignment.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AssignmentCreateManyArgs>(args?: SelectSubset<T, AssignmentCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Assignments and returns the data saved in the database.
+     * @param {AssignmentCreateManyAndReturnArgs} args - Arguments to create many Assignments.
+     * @example
+     * // Create many Assignments
+     * const assignment = await prisma.assignment.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Assignments and only return the `id`
+     * const assignmentWithIdOnly = await prisma.assignment.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AssignmentCreateManyAndReturnArgs>(args?: SelectSubset<T, AssignmentCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Assignment.
+     * @param {AssignmentDeleteArgs} args - Arguments to delete one Assignment.
+     * @example
+     * // Delete one Assignment
+     * const Assignment = await prisma.assignment.delete({
+     *   where: {
+     *     // ... filter to delete one Assignment
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AssignmentDeleteArgs>(args: SelectSubset<T, AssignmentDeleteArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Assignment.
+     * @param {AssignmentUpdateArgs} args - Arguments to update one Assignment.
+     * @example
+     * // Update one Assignment
+     * const assignment = await prisma.assignment.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AssignmentUpdateArgs>(args: SelectSubset<T, AssignmentUpdateArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Assignments.
+     * @param {AssignmentDeleteManyArgs} args - Arguments to filter Assignments to delete.
+     * @example
+     * // Delete a few Assignments
+     * const { count } = await prisma.assignment.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AssignmentDeleteManyArgs>(args?: SelectSubset<T, AssignmentDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Assignments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Assignments
+     * const assignment = await prisma.assignment.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AssignmentUpdateManyArgs>(args: SelectSubset<T, AssignmentUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Assignments and returns the data updated in the database.
+     * @param {AssignmentUpdateManyAndReturnArgs} args - Arguments to update many Assignments.
+     * @example
+     * // Update many Assignments
+     * const assignment = await prisma.assignment.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Assignments and only return the `id`
+     * const assignmentWithIdOnly = await prisma.assignment.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AssignmentUpdateManyAndReturnArgs>(args: SelectSubset<T, AssignmentUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Assignment.
+     * @param {AssignmentUpsertArgs} args - Arguments to update or create a Assignment.
+     * @example
+     * // Update or create a Assignment
+     * const assignment = await prisma.assignment.upsert({
+     *   create: {
+     *     // ... data to create a Assignment
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Assignment we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AssignmentUpsertArgs>(args: SelectSubset<T, AssignmentUpsertArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Assignments.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentCountArgs} args - Arguments to filter Assignments to count.
+     * @example
+     * // Count the number of Assignments
+     * const count = await prisma.assignment.count({
+     *   where: {
+     *     // ... the filter for the Assignments we want to count
+     *   }
+     * })
+    **/
+    count<T extends AssignmentCountArgs>(
+      args?: Subset<T, AssignmentCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AssignmentCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Assignment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AssignmentAggregateArgs>(args: Subset<T, AssignmentAggregateArgs>): Prisma.PrismaPromise<GetAssignmentAggregateType<T>>
+
+    /**
+     * Group by Assignment.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AssignmentGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AssignmentGroupByArgs['orderBy'] }
+        : { orderBy?: AssignmentGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AssignmentGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAssignmentGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Assignment model
+   */
+  readonly fields: AssignmentFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Assignment.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AssignmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    group<T extends GroupDefaultArgs<ExtArgs> = {}>(args?: Subset<T, GroupDefaultArgs<ExtArgs>>): Prisma__GroupClient<$Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    questions<T extends Assignment$questionsArgs<ExtArgs> = {}>(args?: Subset<T, Assignment$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Assignment model
+   */
+  interface AssignmentFieldRefs {
+    readonly id: FieldRef<"Assignment", 'String'>
+    readonly title: FieldRef<"Assignment", 'String'>
+    readonly details: FieldRef<"Assignment", 'String'>
+    readonly dueAt: FieldRef<"Assignment", 'DateTime'>
+    readonly createdAt: FieldRef<"Assignment", 'DateTime'>
+    readonly updatedAt: FieldRef<"Assignment", 'DateTime'>
+    readonly groupId: FieldRef<"Assignment", 'String'>
+    readonly createdById: FieldRef<"Assignment", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Assignment findUnique
+   */
+  export type AssignmentFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Assignment to fetch.
+     */
+    where: AssignmentWhereUniqueInput
+  }
+
+  /**
+   * Assignment findUniqueOrThrow
+   */
+  export type AssignmentFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Assignment to fetch.
+     */
+    where: AssignmentWhereUniqueInput
+  }
+
+  /**
+   * Assignment findFirst
+   */
+  export type AssignmentFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Assignment to fetch.
+     */
+    where?: AssignmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assignments to fetch.
+     */
+    orderBy?: AssignmentOrderByWithRelationInput | AssignmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Assignments.
+     */
+    cursor?: AssignmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assignments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assignments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Assignments.
+     */
+    distinct?: AssignmentScalarFieldEnum | AssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * Assignment findFirstOrThrow
+   */
+  export type AssignmentFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Assignment to fetch.
+     */
+    where?: AssignmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assignments to fetch.
+     */
+    orderBy?: AssignmentOrderByWithRelationInput | AssignmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Assignments.
+     */
+    cursor?: AssignmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assignments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assignments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Assignments.
+     */
+    distinct?: AssignmentScalarFieldEnum | AssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * Assignment findMany
+   */
+  export type AssignmentFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * Filter, which Assignments to fetch.
+     */
+    where?: AssignmentWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Assignments to fetch.
+     */
+    orderBy?: AssignmentOrderByWithRelationInput | AssignmentOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Assignments.
+     */
+    cursor?: AssignmentWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Assignments from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Assignments.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Assignments.
+     */
+    distinct?: AssignmentScalarFieldEnum | AssignmentScalarFieldEnum[]
+  }
+
+  /**
+   * Assignment create
+   */
+  export type AssignmentCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Assignment.
+     */
+    data: XOR<AssignmentCreateInput, AssignmentUncheckedCreateInput>
+  }
+
+  /**
+   * Assignment createMany
+   */
+  export type AssignmentCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Assignments.
+     */
+    data: AssignmentCreateManyInput | AssignmentCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Assignment createManyAndReturn
+   */
+  export type AssignmentCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * The data used to create many Assignments.
+     */
+    data: AssignmentCreateManyInput | AssignmentCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Assignment update
+   */
+  export type AssignmentUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Assignment.
+     */
+    data: XOR<AssignmentUpdateInput, AssignmentUncheckedUpdateInput>
+    /**
+     * Choose, which Assignment to update.
+     */
+    where: AssignmentWhereUniqueInput
+  }
+
+  /**
+   * Assignment updateMany
+   */
+  export type AssignmentUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Assignments.
+     */
+    data: XOR<AssignmentUpdateManyMutationInput, AssignmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Assignments to update
+     */
+    where?: AssignmentWhereInput
+    /**
+     * Limit how many Assignments to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Assignment updateManyAndReturn
+   */
+  export type AssignmentUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * The data used to update Assignments.
+     */
+    data: XOR<AssignmentUpdateManyMutationInput, AssignmentUncheckedUpdateManyInput>
+    /**
+     * Filter which Assignments to update
+     */
+    where?: AssignmentWhereInput
+    /**
+     * Limit how many Assignments to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Assignment upsert
+   */
+  export type AssignmentUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Assignment to update in case it exists.
+     */
+    where: AssignmentWhereUniqueInput
+    /**
+     * In case the Assignment found by the `where` argument doesn't exist, create a new Assignment with this data.
+     */
+    create: XOR<AssignmentCreateInput, AssignmentUncheckedCreateInput>
+    /**
+     * In case the Assignment was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AssignmentUpdateInput, AssignmentUncheckedUpdateInput>
+  }
+
+  /**
+   * Assignment delete
+   */
+  export type AssignmentDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+    /**
+     * Filter which Assignment to delete.
+     */
+    where: AssignmentWhereUniqueInput
+  }
+
+  /**
+   * Assignment deleteMany
+   */
+  export type AssignmentDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Assignments to delete
+     */
+    where?: AssignmentWhereInput
+    /**
+     * Limit how many Assignments to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Assignment.questions
+   */
+  export type Assignment$questionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    where?: AssignmentQuestionWhereInput
+    orderBy?: AssignmentQuestionOrderByWithRelationInput | AssignmentQuestionOrderByWithRelationInput[]
+    cursor?: AssignmentQuestionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AssignmentQuestionScalarFieldEnum | AssignmentQuestionScalarFieldEnum[]
+  }
+
+  /**
+   * Assignment without action
+   */
+  export type AssignmentDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Assignment
+     */
+    select?: AssignmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Assignment
+     */
+    omit?: AssignmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AssignmentQuestion
+   */
+
+  export type AggregateAssignmentQuestion = {
+    _count: AssignmentQuestionCountAggregateOutputType | null
+    _avg: AssignmentQuestionAvgAggregateOutputType | null
+    _sum: AssignmentQuestionSumAggregateOutputType | null
+    _min: AssignmentQuestionMinAggregateOutputType | null
+    _max: AssignmentQuestionMaxAggregateOutputType | null
+  }
+
+  export type AssignmentQuestionAvgAggregateOutputType = {
+    order: number | null
+  }
+
+  export type AssignmentQuestionSumAggregateOutputType = {
+    order: number | null
+  }
+
+  export type AssignmentQuestionMinAggregateOutputType = {
+    id: string | null
+    prompt: string | null
+    order: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    assignmentId: string | null
+  }
+
+  export type AssignmentQuestionMaxAggregateOutputType = {
+    id: string | null
+    prompt: string | null
+    order: number | null
+    createdAt: Date | null
+    updatedAt: Date | null
+    assignmentId: string | null
+  }
+
+  export type AssignmentQuestionCountAggregateOutputType = {
+    id: number
+    prompt: number
+    order: number
+    createdAt: number
+    updatedAt: number
+    assignmentId: number
+    _all: number
+  }
+
+
+  export type AssignmentQuestionAvgAggregateInputType = {
+    order?: true
+  }
+
+  export type AssignmentQuestionSumAggregateInputType = {
+    order?: true
+  }
+
+  export type AssignmentQuestionMinAggregateInputType = {
+    id?: true
+    prompt?: true
+    order?: true
+    createdAt?: true
+    updatedAt?: true
+    assignmentId?: true
+  }
+
+  export type AssignmentQuestionMaxAggregateInputType = {
+    id?: true
+    prompt?: true
+    order?: true
+    createdAt?: true
+    updatedAt?: true
+    assignmentId?: true
+  }
+
+  export type AssignmentQuestionCountAggregateInputType = {
+    id?: true
+    prompt?: true
+    order?: true
+    createdAt?: true
+    updatedAt?: true
+    assignmentId?: true
+    _all?: true
+  }
+
+  export type AssignmentQuestionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AssignmentQuestion to aggregate.
+     */
+    where?: AssignmentQuestionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssignmentQuestions to fetch.
+     */
+    orderBy?: AssignmentQuestionOrderByWithRelationInput | AssignmentQuestionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AssignmentQuestionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssignmentQuestions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssignmentQuestions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AssignmentQuestions
+    **/
+    _count?: true | AssignmentQuestionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AssignmentQuestionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AssignmentQuestionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AssignmentQuestionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AssignmentQuestionMaxAggregateInputType
+  }
+
+  export type GetAssignmentQuestionAggregateType<T extends AssignmentQuestionAggregateArgs> = {
+        [P in keyof T & keyof AggregateAssignmentQuestion]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAssignmentQuestion[P]>
+      : GetScalarType<T[P], AggregateAssignmentQuestion[P]>
+  }
+
+
+
+
+  export type AssignmentQuestionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AssignmentQuestionWhereInput
+    orderBy?: AssignmentQuestionOrderByWithAggregationInput | AssignmentQuestionOrderByWithAggregationInput[]
+    by: AssignmentQuestionScalarFieldEnum[] | AssignmentQuestionScalarFieldEnum
+    having?: AssignmentQuestionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AssignmentQuestionCountAggregateInputType | true
+    _avg?: AssignmentQuestionAvgAggregateInputType
+    _sum?: AssignmentQuestionSumAggregateInputType
+    _min?: AssignmentQuestionMinAggregateInputType
+    _max?: AssignmentQuestionMaxAggregateInputType
+  }
+
+  export type AssignmentQuestionGroupByOutputType = {
+    id: string
+    prompt: string
+    order: number
+    createdAt: Date
+    updatedAt: Date
+    assignmentId: string
+    _count: AssignmentQuestionCountAggregateOutputType | null
+    _avg: AssignmentQuestionAvgAggregateOutputType | null
+    _sum: AssignmentQuestionSumAggregateOutputType | null
+    _min: AssignmentQuestionMinAggregateOutputType | null
+    _max: AssignmentQuestionMaxAggregateOutputType | null
+  }
+
+  type GetAssignmentQuestionGroupByPayload<T extends AssignmentQuestionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AssignmentQuestionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AssignmentQuestionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AssignmentQuestionGroupByOutputType[P]>
+            : GetScalarType<T[P], AssignmentQuestionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AssignmentQuestionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    prompt?: boolean
+    order?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    assignmentId?: boolean
+    assignment?: boolean | AssignmentDefaultArgs<ExtArgs>
+    checkIns?: boolean | AssignmentQuestion$checkInsArgs<ExtArgs>
+    _count?: boolean | AssignmentQuestionCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignmentQuestion"]>
+
+  export type AssignmentQuestionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    prompt?: boolean
+    order?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    assignmentId?: boolean
+    assignment?: boolean | AssignmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignmentQuestion"]>
+
+  export type AssignmentQuestionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    prompt?: boolean
+    order?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    assignmentId?: boolean
+    assignment?: boolean | AssignmentDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["assignmentQuestion"]>
+
+  export type AssignmentQuestionSelectScalar = {
+    id?: boolean
+    prompt?: boolean
+    order?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    assignmentId?: boolean
+  }
+
+  export type AssignmentQuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "prompt" | "order" | "createdAt" | "updatedAt" | "assignmentId", ExtArgs["result"]["assignmentQuestion"]>
+  export type AssignmentQuestionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    assignment?: boolean | AssignmentDefaultArgs<ExtArgs>
+    checkIns?: boolean | AssignmentQuestion$checkInsArgs<ExtArgs>
+    _count?: boolean | AssignmentQuestionCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type AssignmentQuestionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    assignment?: boolean | AssignmentDefaultArgs<ExtArgs>
+  }
+  export type AssignmentQuestionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    assignment?: boolean | AssignmentDefaultArgs<ExtArgs>
+  }
+
+  export type $AssignmentQuestionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AssignmentQuestion"
+    objects: {
+      assignment: Prisma.$AssignmentPayload<ExtArgs>
+      checkIns: Prisma.$CheckInPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      prompt: string
+      order: number
+      createdAt: Date
+      updatedAt: Date
+      assignmentId: string
+    }, ExtArgs["result"]["assignmentQuestion"]>
+    composites: {}
+  }
+
+  type AssignmentQuestionGetPayload<S extends boolean | null | undefined | AssignmentQuestionDefaultArgs> = $Result.GetResult<Prisma.$AssignmentQuestionPayload, S>
+
+  type AssignmentQuestionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AssignmentQuestionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AssignmentQuestionCountAggregateInputType | true
+    }
+
+  export interface AssignmentQuestionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AssignmentQuestion'], meta: { name: 'AssignmentQuestion' } }
+    /**
+     * Find zero or one AssignmentQuestion that matches the filter.
+     * @param {AssignmentQuestionFindUniqueArgs} args - Arguments to find a AssignmentQuestion
+     * @example
+     * // Get one AssignmentQuestion
+     * const assignmentQuestion = await prisma.assignmentQuestion.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AssignmentQuestionFindUniqueArgs>(args: SelectSubset<T, AssignmentQuestionFindUniqueArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AssignmentQuestion that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AssignmentQuestionFindUniqueOrThrowArgs} args - Arguments to find a AssignmentQuestion
+     * @example
+     * // Get one AssignmentQuestion
+     * const assignmentQuestion = await prisma.assignmentQuestion.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AssignmentQuestionFindUniqueOrThrowArgs>(args: SelectSubset<T, AssignmentQuestionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AssignmentQuestion that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentQuestionFindFirstArgs} args - Arguments to find a AssignmentQuestion
+     * @example
+     * // Get one AssignmentQuestion
+     * const assignmentQuestion = await prisma.assignmentQuestion.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AssignmentQuestionFindFirstArgs>(args?: SelectSubset<T, AssignmentQuestionFindFirstArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AssignmentQuestion that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentQuestionFindFirstOrThrowArgs} args - Arguments to find a AssignmentQuestion
+     * @example
+     * // Get one AssignmentQuestion
+     * const assignmentQuestion = await prisma.assignmentQuestion.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AssignmentQuestionFindFirstOrThrowArgs>(args?: SelectSubset<T, AssignmentQuestionFindFirstOrThrowArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AssignmentQuestions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentQuestionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AssignmentQuestions
+     * const assignmentQuestions = await prisma.assignmentQuestion.findMany()
+     * 
+     * // Get first 10 AssignmentQuestions
+     * const assignmentQuestions = await prisma.assignmentQuestion.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const assignmentQuestionWithIdOnly = await prisma.assignmentQuestion.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AssignmentQuestionFindManyArgs>(args?: SelectSubset<T, AssignmentQuestionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AssignmentQuestion.
+     * @param {AssignmentQuestionCreateArgs} args - Arguments to create a AssignmentQuestion.
+     * @example
+     * // Create one AssignmentQuestion
+     * const AssignmentQuestion = await prisma.assignmentQuestion.create({
+     *   data: {
+     *     // ... data to create a AssignmentQuestion
+     *   }
+     * })
+     * 
+     */
+    create<T extends AssignmentQuestionCreateArgs>(args: SelectSubset<T, AssignmentQuestionCreateArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AssignmentQuestions.
+     * @param {AssignmentQuestionCreateManyArgs} args - Arguments to create many AssignmentQuestions.
+     * @example
+     * // Create many AssignmentQuestions
+     * const assignmentQuestion = await prisma.assignmentQuestion.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AssignmentQuestionCreateManyArgs>(args?: SelectSubset<T, AssignmentQuestionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many AssignmentQuestions and returns the data saved in the database.
+     * @param {AssignmentQuestionCreateManyAndReturnArgs} args - Arguments to create many AssignmentQuestions.
+     * @example
+     * // Create many AssignmentQuestions
+     * const assignmentQuestion = await prisma.assignmentQuestion.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many AssignmentQuestions and only return the `id`
+     * const assignmentQuestionWithIdOnly = await prisma.assignmentQuestion.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends AssignmentQuestionCreateManyAndReturnArgs>(args?: SelectSubset<T, AssignmentQuestionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a AssignmentQuestion.
+     * @param {AssignmentQuestionDeleteArgs} args - Arguments to delete one AssignmentQuestion.
+     * @example
+     * // Delete one AssignmentQuestion
+     * const AssignmentQuestion = await prisma.assignmentQuestion.delete({
+     *   where: {
+     *     // ... filter to delete one AssignmentQuestion
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AssignmentQuestionDeleteArgs>(args: SelectSubset<T, AssignmentQuestionDeleteArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AssignmentQuestion.
+     * @param {AssignmentQuestionUpdateArgs} args - Arguments to update one AssignmentQuestion.
+     * @example
+     * // Update one AssignmentQuestion
+     * const assignmentQuestion = await prisma.assignmentQuestion.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AssignmentQuestionUpdateArgs>(args: SelectSubset<T, AssignmentQuestionUpdateArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AssignmentQuestions.
+     * @param {AssignmentQuestionDeleteManyArgs} args - Arguments to filter AssignmentQuestions to delete.
+     * @example
+     * // Delete a few AssignmentQuestions
+     * const { count } = await prisma.assignmentQuestion.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AssignmentQuestionDeleteManyArgs>(args?: SelectSubset<T, AssignmentQuestionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AssignmentQuestions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentQuestionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AssignmentQuestions
+     * const assignmentQuestion = await prisma.assignmentQuestion.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AssignmentQuestionUpdateManyArgs>(args: SelectSubset<T, AssignmentQuestionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AssignmentQuestions and returns the data updated in the database.
+     * @param {AssignmentQuestionUpdateManyAndReturnArgs} args - Arguments to update many AssignmentQuestions.
+     * @example
+     * // Update many AssignmentQuestions
+     * const assignmentQuestion = await prisma.assignmentQuestion.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more AssignmentQuestions and only return the `id`
+     * const assignmentQuestionWithIdOnly = await prisma.assignmentQuestion.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends AssignmentQuestionUpdateManyAndReturnArgs>(args: SelectSubset<T, AssignmentQuestionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one AssignmentQuestion.
+     * @param {AssignmentQuestionUpsertArgs} args - Arguments to update or create a AssignmentQuestion.
+     * @example
+     * // Update or create a AssignmentQuestion
+     * const assignmentQuestion = await prisma.assignmentQuestion.upsert({
+     *   create: {
+     *     // ... data to create a AssignmentQuestion
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AssignmentQuestion we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AssignmentQuestionUpsertArgs>(args: SelectSubset<T, AssignmentQuestionUpsertArgs<ExtArgs>>): Prisma__AssignmentQuestionClient<$Result.GetResult<Prisma.$AssignmentQuestionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of AssignmentQuestions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentQuestionCountArgs} args - Arguments to filter AssignmentQuestions to count.
+     * @example
+     * // Count the number of AssignmentQuestions
+     * const count = await prisma.assignmentQuestion.count({
+     *   where: {
+     *     // ... the filter for the AssignmentQuestions we want to count
+     *   }
+     * })
+    **/
+    count<T extends AssignmentQuestionCountArgs>(
+      args?: Subset<T, AssignmentQuestionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AssignmentQuestionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AssignmentQuestion.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentQuestionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AssignmentQuestionAggregateArgs>(args: Subset<T, AssignmentQuestionAggregateArgs>): Prisma.PrismaPromise<GetAssignmentQuestionAggregateType<T>>
+
+    /**
+     * Group by AssignmentQuestion.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AssignmentQuestionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AssignmentQuestionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AssignmentQuestionGroupByArgs['orderBy'] }
+        : { orderBy?: AssignmentQuestionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AssignmentQuestionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAssignmentQuestionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AssignmentQuestion model
+   */
+  readonly fields: AssignmentQuestionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AssignmentQuestion.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AssignmentQuestionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    assignment<T extends AssignmentDefaultArgs<ExtArgs> = {}>(args?: Subset<T, AssignmentDefaultArgs<ExtArgs>>): Prisma__AssignmentClient<$Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    checkIns<T extends AssignmentQuestion$checkInsArgs<ExtArgs> = {}>(args?: Subset<T, AssignmentQuestion$checkInsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CheckInPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AssignmentQuestion model
+   */
+  interface AssignmentQuestionFieldRefs {
+    readonly id: FieldRef<"AssignmentQuestion", 'String'>
+    readonly prompt: FieldRef<"AssignmentQuestion", 'String'>
+    readonly order: FieldRef<"AssignmentQuestion", 'Int'>
+    readonly createdAt: FieldRef<"AssignmentQuestion", 'DateTime'>
+    readonly updatedAt: FieldRef<"AssignmentQuestion", 'DateTime'>
+    readonly assignmentId: FieldRef<"AssignmentQuestion", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AssignmentQuestion findUnique
+   */
+  export type AssignmentQuestionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentQuestion to fetch.
+     */
+    where: AssignmentQuestionWhereUniqueInput
+  }
+
+  /**
+   * AssignmentQuestion findUniqueOrThrow
+   */
+  export type AssignmentQuestionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentQuestion to fetch.
+     */
+    where: AssignmentQuestionWhereUniqueInput
+  }
+
+  /**
+   * AssignmentQuestion findFirst
+   */
+  export type AssignmentQuestionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentQuestion to fetch.
+     */
+    where?: AssignmentQuestionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssignmentQuestions to fetch.
+     */
+    orderBy?: AssignmentQuestionOrderByWithRelationInput | AssignmentQuestionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AssignmentQuestions.
+     */
+    cursor?: AssignmentQuestionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssignmentQuestions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssignmentQuestions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AssignmentQuestions.
+     */
+    distinct?: AssignmentQuestionScalarFieldEnum | AssignmentQuestionScalarFieldEnum[]
+  }
+
+  /**
+   * AssignmentQuestion findFirstOrThrow
+   */
+  export type AssignmentQuestionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentQuestion to fetch.
+     */
+    where?: AssignmentQuestionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssignmentQuestions to fetch.
+     */
+    orderBy?: AssignmentQuestionOrderByWithRelationInput | AssignmentQuestionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AssignmentQuestions.
+     */
+    cursor?: AssignmentQuestionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssignmentQuestions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssignmentQuestions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AssignmentQuestions.
+     */
+    distinct?: AssignmentQuestionScalarFieldEnum | AssignmentQuestionScalarFieldEnum[]
+  }
+
+  /**
+   * AssignmentQuestion findMany
+   */
+  export type AssignmentQuestionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * Filter, which AssignmentQuestions to fetch.
+     */
+    where?: AssignmentQuestionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AssignmentQuestions to fetch.
+     */
+    orderBy?: AssignmentQuestionOrderByWithRelationInput | AssignmentQuestionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AssignmentQuestions.
+     */
+    cursor?: AssignmentQuestionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AssignmentQuestions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AssignmentQuestions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AssignmentQuestions.
+     */
+    distinct?: AssignmentQuestionScalarFieldEnum | AssignmentQuestionScalarFieldEnum[]
+  }
+
+  /**
+   * AssignmentQuestion create
+   */
+  export type AssignmentQuestionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a AssignmentQuestion.
+     */
+    data: XOR<AssignmentQuestionCreateInput, AssignmentQuestionUncheckedCreateInput>
+  }
+
+  /**
+   * AssignmentQuestion createMany
+   */
+  export type AssignmentQuestionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AssignmentQuestions.
+     */
+    data: AssignmentQuestionCreateManyInput | AssignmentQuestionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * AssignmentQuestion createManyAndReturn
+   */
+  export type AssignmentQuestionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * The data used to create many AssignmentQuestions.
+     */
+    data: AssignmentQuestionCreateManyInput | AssignmentQuestionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AssignmentQuestion update
+   */
+  export type AssignmentQuestionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a AssignmentQuestion.
+     */
+    data: XOR<AssignmentQuestionUpdateInput, AssignmentQuestionUncheckedUpdateInput>
+    /**
+     * Choose, which AssignmentQuestion to update.
+     */
+    where: AssignmentQuestionWhereUniqueInput
+  }
+
+  /**
+   * AssignmentQuestion updateMany
+   */
+  export type AssignmentQuestionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AssignmentQuestions.
+     */
+    data: XOR<AssignmentQuestionUpdateManyMutationInput, AssignmentQuestionUncheckedUpdateManyInput>
+    /**
+     * Filter which AssignmentQuestions to update
+     */
+    where?: AssignmentQuestionWhereInput
+    /**
+     * Limit how many AssignmentQuestions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AssignmentQuestion updateManyAndReturn
+   */
+  export type AssignmentQuestionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * The data used to update AssignmentQuestions.
+     */
+    data: XOR<AssignmentQuestionUpdateManyMutationInput, AssignmentQuestionUncheckedUpdateManyInput>
+    /**
+     * Filter which AssignmentQuestions to update
+     */
+    where?: AssignmentQuestionWhereInput
+    /**
+     * Limit how many AssignmentQuestions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * AssignmentQuestion upsert
+   */
+  export type AssignmentQuestionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the AssignmentQuestion to update in case it exists.
+     */
+    where: AssignmentQuestionWhereUniqueInput
+    /**
+     * In case the AssignmentQuestion found by the `where` argument doesn't exist, create a new AssignmentQuestion with this data.
+     */
+    create: XOR<AssignmentQuestionCreateInput, AssignmentQuestionUncheckedCreateInput>
+    /**
+     * In case the AssignmentQuestion was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AssignmentQuestionUpdateInput, AssignmentQuestionUncheckedUpdateInput>
+  }
+
+  /**
+   * AssignmentQuestion delete
+   */
+  export type AssignmentQuestionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
+    /**
+     * Filter which AssignmentQuestion to delete.
+     */
+    where: AssignmentQuestionWhereUniqueInput
+  }
+
+  /**
+   * AssignmentQuestion deleteMany
+   */
+  export type AssignmentQuestionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AssignmentQuestions to delete
+     */
+    where?: AssignmentQuestionWhereInput
+    /**
+     * Limit how many AssignmentQuestions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AssignmentQuestion.checkIns
+   */
+  export type AssignmentQuestion$checkInsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CheckIn
+     */
+    select?: CheckInSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CheckIn
+     */
+    omit?: CheckInOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CheckInInclude<ExtArgs> | null
+    where?: CheckInWhereInput
+    orderBy?: CheckInOrderByWithRelationInput | CheckInOrderByWithRelationInput[]
+    cursor?: CheckInWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CheckInScalarFieldEnum | CheckInScalarFieldEnum[]
+  }
+
+  /**
+   * AssignmentQuestion without action
+   */
+  export type AssignmentQuestionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AssignmentQuestion
+     */
+    select?: AssignmentQuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AssignmentQuestion
+     */
+    omit?: AssignmentQuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AssignmentQuestionInclude<ExtArgs> | null
   }
 
 
@@ -32509,14 +35303,17 @@ export namespace Prisma {
     title: 'title',
     details: 'details',
     category: 'category',
+    priority: 'priority',
     targetMinutes: 'targetMinutes',
     status: 'status',
+    dueAt: 'dueAt',
     day: 'day',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     completedAt: 'completedAt',
     userId: 'userId',
     groupId: 'groupId',
+    broadcastKey: 'broadcastKey',
     checkInId: 'checkInId',
     templateId: 'templateId',
     isChallengeMode: 'isChallengeMode',
@@ -32533,6 +35330,7 @@ export namespace Prisma {
     reflection: 'reflection',
     proofText: 'proofText',
     proofLink: 'proofLink',
+    reviewNote: 'reviewNote',
     aiSummary: 'aiSummary',
     aiConfidence: 'aiConfidence',
     status: 'status',
@@ -32541,12 +35339,41 @@ export namespace Prisma {
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
     verifiedAt: 'verifiedAt',
+    reviewedAt: 'reviewedAt',
     userId: 'userId',
     groupId: 'groupId',
+    assignmentQuestionId: 'assignmentQuestionId',
+    reviewedById: 'reviewedById',
     isEarlyBird: 'isEarlyBird'
   };
 
   export type CheckInScalarFieldEnum = (typeof CheckInScalarFieldEnum)[keyof typeof CheckInScalarFieldEnum]
+
+
+  export const AssignmentScalarFieldEnum: {
+    id: 'id',
+    title: 'title',
+    details: 'details',
+    dueAt: 'dueAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    groupId: 'groupId',
+    createdById: 'createdById'
+  };
+
+  export type AssignmentScalarFieldEnum = (typeof AssignmentScalarFieldEnum)[keyof typeof AssignmentScalarFieldEnum]
+
+
+  export const AssignmentQuestionScalarFieldEnum: {
+    id: 'id',
+    prompt: 'prompt',
+    order: 'order',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+    assignmentId: 'assignmentId'
+  };
+
+  export type AssignmentQuestionScalarFieldEnum = (typeof AssignmentQuestionScalarFieldEnum)[keyof typeof AssignmentQuestionScalarFieldEnum]
 
 
   export const SubmissionVerificationScalarFieldEnum: {
@@ -32968,6 +35795,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'TaskPriority'
+   */
+  export type EnumTaskPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskPriority'>
+    
+
+
+  /**
+   * Reference to a field of type 'TaskPriority[]'
+   */
+  export type ListEnumTaskPriorityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskPriority[]'>
+    
+
+
+  /**
    * Reference to a field of type 'TaskStatus'
    */
   export type EnumTaskStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TaskStatus'>
@@ -33171,6 +36012,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateListRelationFilter
     createdTaskTemplates?: TaskTemplateListRelationFilter
     messageReactions?: GroupMessageReactionListRelationFilter
+    createdAssignments?: AssignmentListRelationFilter
+    reviewedCheckIns?: CheckInListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -33203,6 +36046,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateOrderByRelationAggregateInput
     createdTaskTemplates?: TaskTemplateOrderByRelationAggregateInput
     messageReactions?: GroupMessageReactionOrderByRelationAggregateInput
+    createdAssignments?: AssignmentOrderByRelationAggregateInput
+    reviewedCheckIns?: CheckInOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -33238,6 +36083,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateListRelationFilter
     createdTaskTemplates?: TaskTemplateListRelationFilter
     messageReactions?: GroupMessageReactionListRelationFilter
+    createdAssignments?: AssignmentListRelationFilter
+    reviewedCheckIns?: CheckInListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -33530,6 +36377,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapListRelationFilter
     confessionPosts?: ConfessionPostListRelationFilter
     redemptionTasks?: RedemptionTaskListRelationFilter
+    assignments?: AssignmentListRelationFilter
   }
 
   export type GroupOrderByWithRelationInput = {
@@ -33563,6 +36411,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapOrderByRelationAggregateInput
     confessionPosts?: ConfessionPostOrderByRelationAggregateInput
     redemptionTasks?: RedemptionTaskOrderByRelationAggregateInput
+    assignments?: AssignmentOrderByRelationAggregateInput
   }
 
   export type GroupWhereUniqueInput = Prisma.AtLeast<{
@@ -33599,6 +36448,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapListRelationFilter
     confessionPosts?: ConfessionPostListRelationFilter
     redemptionTasks?: RedemptionTaskListRelationFilter
+    assignments?: AssignmentListRelationFilter
   }, "id" | "inviteCode">
 
   export type GroupOrderByWithAggregationInput = {
@@ -33754,14 +36604,17 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     details?: StringNullableFilter<"Task"> | string | null
     category?: EnumTaskCategoryFilter<"Task"> | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     targetMinutes?: IntNullableFilter<"Task"> | number | null
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+    dueAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     day?: DateTimeFilter<"Task"> | Date | string
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     userId?: StringFilter<"Task"> | string
     groupId?: StringFilter<"Task"> | string
+    broadcastKey?: StringNullableFilter<"Task"> | string | null
     checkInId?: StringNullableFilter<"Task"> | string | null
     templateId?: StringNullableFilter<"Task"> | string | null
     isChallengeMode?: BoolFilter<"Task"> | boolean
@@ -33778,14 +36631,17 @@ export namespace Prisma {
     title?: SortOrder
     details?: SortOrderInput | SortOrder
     category?: SortOrder
+    priority?: SortOrder
     targetMinutes?: SortOrderInput | SortOrder
     status?: SortOrder
+    dueAt?: SortOrderInput | SortOrder
     day?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     completedAt?: SortOrderInput | SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    broadcastKey?: SortOrderInput | SortOrder
     checkInId?: SortOrderInput | SortOrder
     templateId?: SortOrderInput | SortOrder
     isChallengeMode?: SortOrder
@@ -33805,14 +36661,17 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     details?: StringNullableFilter<"Task"> | string | null
     category?: EnumTaskCategoryFilter<"Task"> | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     targetMinutes?: IntNullableFilter<"Task"> | number | null
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+    dueAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     day?: DateTimeFilter<"Task"> | Date | string
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     userId?: StringFilter<"Task"> | string
     groupId?: StringFilter<"Task"> | string
+    broadcastKey?: StringNullableFilter<"Task"> | string | null
     checkInId?: StringNullableFilter<"Task"> | string | null
     templateId?: StringNullableFilter<"Task"> | string | null
     isChallengeMode?: BoolFilter<"Task"> | boolean
@@ -33829,14 +36688,17 @@ export namespace Prisma {
     title?: SortOrder
     details?: SortOrderInput | SortOrder
     category?: SortOrder
+    priority?: SortOrder
     targetMinutes?: SortOrderInput | SortOrder
     status?: SortOrder
+    dueAt?: SortOrderInput | SortOrder
     day?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     completedAt?: SortOrderInput | SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    broadcastKey?: SortOrderInput | SortOrder
     checkInId?: SortOrderInput | SortOrder
     templateId?: SortOrderInput | SortOrder
     isChallengeMode?: SortOrder
@@ -33857,14 +36719,17 @@ export namespace Prisma {
     title?: StringWithAggregatesFilter<"Task"> | string
     details?: StringNullableWithAggregatesFilter<"Task"> | string | null
     category?: EnumTaskCategoryWithAggregatesFilter<"Task"> | $Enums.TaskCategory
+    priority?: EnumTaskPriorityWithAggregatesFilter<"Task"> | $Enums.TaskPriority
     targetMinutes?: IntNullableWithAggregatesFilter<"Task"> | number | null
     status?: EnumTaskStatusWithAggregatesFilter<"Task"> | $Enums.TaskStatus
+    dueAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     day?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     createdAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Task"> | Date | string
     completedAt?: DateTimeNullableWithAggregatesFilter<"Task"> | Date | string | null
     userId?: StringWithAggregatesFilter<"Task"> | string
     groupId?: StringWithAggregatesFilter<"Task"> | string
+    broadcastKey?: StringNullableWithAggregatesFilter<"Task"> | string | null
     checkInId?: StringNullableWithAggregatesFilter<"Task"> | string | null
     templateId?: StringNullableWithAggregatesFilter<"Task"> | string | null
     isChallengeMode?: BoolWithAggregatesFilter<"Task"> | boolean
@@ -33881,6 +36746,7 @@ export namespace Prisma {
     reflection?: StringNullableFilter<"CheckIn"> | string | null
     proofText?: StringNullableFilter<"CheckIn"> | string | null
     proofLink?: StringNullableFilter<"CheckIn"> | string | null
+    reviewNote?: StringNullableFilter<"CheckIn"> | string | null
     aiSummary?: StringNullableFilter<"CheckIn"> | string | null
     aiConfidence?: IntNullableFilter<"CheckIn"> | number | null
     status?: EnumCheckInStatusFilter<"CheckIn"> | $Enums.CheckInStatus
@@ -33889,11 +36755,16 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"CheckIn"> | Date | string
     updatedAt?: DateTimeFilter<"CheckIn"> | Date | string
     verifiedAt?: DateTimeNullableFilter<"CheckIn"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"CheckIn"> | Date | string | null
     userId?: StringFilter<"CheckIn"> | string
     groupId?: StringFilter<"CheckIn"> | string
+    assignmentQuestionId?: StringNullableFilter<"CheckIn"> | string | null
+    reviewedById?: StringNullableFilter<"CheckIn"> | string | null
     isEarlyBird?: BoolFilter<"CheckIn"> | boolean
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     group?: XOR<GroupScalarRelationFilter, GroupWhereInput>
+    assignmentQuestion?: XOR<AssignmentQuestionNullableScalarRelationFilter, AssignmentQuestionWhereInput> | null
+    reviewedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     tasks?: TaskListRelationFilter
     verifications?: SubmissionVerificationListRelationFilter
     penalties?: PenaltyEventListRelationFilter
@@ -33909,6 +36780,7 @@ export namespace Prisma {
     reflection?: SortOrderInput | SortOrder
     proofText?: SortOrderInput | SortOrder
     proofLink?: SortOrderInput | SortOrder
+    reviewNote?: SortOrderInput | SortOrder
     aiSummary?: SortOrderInput | SortOrder
     aiConfidence?: SortOrderInput | SortOrder
     status?: SortOrder
@@ -33917,11 +36789,16 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     verifiedAt?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    assignmentQuestionId?: SortOrderInput | SortOrder
+    reviewedById?: SortOrderInput | SortOrder
     isEarlyBird?: SortOrder
     user?: UserOrderByWithRelationInput
     group?: GroupOrderByWithRelationInput
+    assignmentQuestion?: AssignmentQuestionOrderByWithRelationInput
+    reviewedBy?: UserOrderByWithRelationInput
     tasks?: TaskOrderByRelationAggregateInput
     verifications?: SubmissionVerificationOrderByRelationAggregateInput
     penalties?: PenaltyEventOrderByRelationAggregateInput
@@ -33940,6 +36817,7 @@ export namespace Prisma {
     reflection?: StringNullableFilter<"CheckIn"> | string | null
     proofText?: StringNullableFilter<"CheckIn"> | string | null
     proofLink?: StringNullableFilter<"CheckIn"> | string | null
+    reviewNote?: StringNullableFilter<"CheckIn"> | string | null
     aiSummary?: StringNullableFilter<"CheckIn"> | string | null
     aiConfidence?: IntNullableFilter<"CheckIn"> | number | null
     status?: EnumCheckInStatusFilter<"CheckIn"> | $Enums.CheckInStatus
@@ -33948,11 +36826,16 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"CheckIn"> | Date | string
     updatedAt?: DateTimeFilter<"CheckIn"> | Date | string
     verifiedAt?: DateTimeNullableFilter<"CheckIn"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"CheckIn"> | Date | string | null
     userId?: StringFilter<"CheckIn"> | string
     groupId?: StringFilter<"CheckIn"> | string
+    assignmentQuestionId?: StringNullableFilter<"CheckIn"> | string | null
+    reviewedById?: StringNullableFilter<"CheckIn"> | string | null
     isEarlyBird?: BoolFilter<"CheckIn"> | boolean
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     group?: XOR<GroupScalarRelationFilter, GroupWhereInput>
+    assignmentQuestion?: XOR<AssignmentQuestionNullableScalarRelationFilter, AssignmentQuestionWhereInput> | null
+    reviewedBy?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     tasks?: TaskListRelationFilter
     verifications?: SubmissionVerificationListRelationFilter
     penalties?: PenaltyEventListRelationFilter
@@ -33968,6 +36851,7 @@ export namespace Prisma {
     reflection?: SortOrderInput | SortOrder
     proofText?: SortOrderInput | SortOrder
     proofLink?: SortOrderInput | SortOrder
+    reviewNote?: SortOrderInput | SortOrder
     aiSummary?: SortOrderInput | SortOrder
     aiConfidence?: SortOrderInput | SortOrder
     status?: SortOrder
@@ -33976,8 +36860,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     verifiedAt?: SortOrderInput | SortOrder
+    reviewedAt?: SortOrderInput | SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    assignmentQuestionId?: SortOrderInput | SortOrder
+    reviewedById?: SortOrderInput | SortOrder
     isEarlyBird?: SortOrder
     _count?: CheckInCountOrderByAggregateInput
     _avg?: CheckInAvgOrderByAggregateInput
@@ -33995,6 +36882,7 @@ export namespace Prisma {
     reflection?: StringNullableWithAggregatesFilter<"CheckIn"> | string | null
     proofText?: StringNullableWithAggregatesFilter<"CheckIn"> | string | null
     proofLink?: StringNullableWithAggregatesFilter<"CheckIn"> | string | null
+    reviewNote?: StringNullableWithAggregatesFilter<"CheckIn"> | string | null
     aiSummary?: StringNullableWithAggregatesFilter<"CheckIn"> | string | null
     aiConfidence?: IntNullableWithAggregatesFilter<"CheckIn"> | number | null
     status?: EnumCheckInStatusWithAggregatesFilter<"CheckIn"> | $Enums.CheckInStatus
@@ -34003,9 +36891,153 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"CheckIn"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"CheckIn"> | Date | string
     verifiedAt?: DateTimeNullableWithAggregatesFilter<"CheckIn"> | Date | string | null
+    reviewedAt?: DateTimeNullableWithAggregatesFilter<"CheckIn"> | Date | string | null
     userId?: StringWithAggregatesFilter<"CheckIn"> | string
     groupId?: StringWithAggregatesFilter<"CheckIn"> | string
+    assignmentQuestionId?: StringNullableWithAggregatesFilter<"CheckIn"> | string | null
+    reviewedById?: StringNullableWithAggregatesFilter<"CheckIn"> | string | null
     isEarlyBird?: BoolWithAggregatesFilter<"CheckIn"> | boolean
+  }
+
+  export type AssignmentWhereInput = {
+    AND?: AssignmentWhereInput | AssignmentWhereInput[]
+    OR?: AssignmentWhereInput[]
+    NOT?: AssignmentWhereInput | AssignmentWhereInput[]
+    id?: StringFilter<"Assignment"> | string
+    title?: StringFilter<"Assignment"> | string
+    details?: StringNullableFilter<"Assignment"> | string | null
+    dueAt?: DateTimeNullableFilter<"Assignment"> | Date | string | null
+    createdAt?: DateTimeFilter<"Assignment"> | Date | string
+    updatedAt?: DateTimeFilter<"Assignment"> | Date | string
+    groupId?: StringFilter<"Assignment"> | string
+    createdById?: StringFilter<"Assignment"> | string
+    group?: XOR<GroupScalarRelationFilter, GroupWhereInput>
+    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    questions?: AssignmentQuestionListRelationFilter
+  }
+
+  export type AssignmentOrderByWithRelationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    details?: SortOrderInput | SortOrder
+    dueAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    groupId?: SortOrder
+    createdById?: SortOrder
+    group?: GroupOrderByWithRelationInput
+    createdBy?: UserOrderByWithRelationInput
+    questions?: AssignmentQuestionOrderByRelationAggregateInput
+  }
+
+  export type AssignmentWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AssignmentWhereInput | AssignmentWhereInput[]
+    OR?: AssignmentWhereInput[]
+    NOT?: AssignmentWhereInput | AssignmentWhereInput[]
+    title?: StringFilter<"Assignment"> | string
+    details?: StringNullableFilter<"Assignment"> | string | null
+    dueAt?: DateTimeNullableFilter<"Assignment"> | Date | string | null
+    createdAt?: DateTimeFilter<"Assignment"> | Date | string
+    updatedAt?: DateTimeFilter<"Assignment"> | Date | string
+    groupId?: StringFilter<"Assignment"> | string
+    createdById?: StringFilter<"Assignment"> | string
+    group?: XOR<GroupScalarRelationFilter, GroupWhereInput>
+    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
+    questions?: AssignmentQuestionListRelationFilter
+  }, "id">
+
+  export type AssignmentOrderByWithAggregationInput = {
+    id?: SortOrder
+    title?: SortOrder
+    details?: SortOrderInput | SortOrder
+    dueAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    groupId?: SortOrder
+    createdById?: SortOrder
+    _count?: AssignmentCountOrderByAggregateInput
+    _max?: AssignmentMaxOrderByAggregateInput
+    _min?: AssignmentMinOrderByAggregateInput
+  }
+
+  export type AssignmentScalarWhereWithAggregatesInput = {
+    AND?: AssignmentScalarWhereWithAggregatesInput | AssignmentScalarWhereWithAggregatesInput[]
+    OR?: AssignmentScalarWhereWithAggregatesInput[]
+    NOT?: AssignmentScalarWhereWithAggregatesInput | AssignmentScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Assignment"> | string
+    title?: StringWithAggregatesFilter<"Assignment"> | string
+    details?: StringNullableWithAggregatesFilter<"Assignment"> | string | null
+    dueAt?: DateTimeNullableWithAggregatesFilter<"Assignment"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Assignment"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Assignment"> | Date | string
+    groupId?: StringWithAggregatesFilter<"Assignment"> | string
+    createdById?: StringWithAggregatesFilter<"Assignment"> | string
+  }
+
+  export type AssignmentQuestionWhereInput = {
+    AND?: AssignmentQuestionWhereInput | AssignmentQuestionWhereInput[]
+    OR?: AssignmentQuestionWhereInput[]
+    NOT?: AssignmentQuestionWhereInput | AssignmentQuestionWhereInput[]
+    id?: StringFilter<"AssignmentQuestion"> | string
+    prompt?: StringFilter<"AssignmentQuestion"> | string
+    order?: IntFilter<"AssignmentQuestion"> | number
+    createdAt?: DateTimeFilter<"AssignmentQuestion"> | Date | string
+    updatedAt?: DateTimeFilter<"AssignmentQuestion"> | Date | string
+    assignmentId?: StringFilter<"AssignmentQuestion"> | string
+    assignment?: XOR<AssignmentScalarRelationFilter, AssignmentWhereInput>
+    checkIns?: CheckInListRelationFilter
+  }
+
+  export type AssignmentQuestionOrderByWithRelationInput = {
+    id?: SortOrder
+    prompt?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    assignmentId?: SortOrder
+    assignment?: AssignmentOrderByWithRelationInput
+    checkIns?: CheckInOrderByRelationAggregateInput
+  }
+
+  export type AssignmentQuestionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: AssignmentQuestionWhereInput | AssignmentQuestionWhereInput[]
+    OR?: AssignmentQuestionWhereInput[]
+    NOT?: AssignmentQuestionWhereInput | AssignmentQuestionWhereInput[]
+    prompt?: StringFilter<"AssignmentQuestion"> | string
+    order?: IntFilter<"AssignmentQuestion"> | number
+    createdAt?: DateTimeFilter<"AssignmentQuestion"> | Date | string
+    updatedAt?: DateTimeFilter<"AssignmentQuestion"> | Date | string
+    assignmentId?: StringFilter<"AssignmentQuestion"> | string
+    assignment?: XOR<AssignmentScalarRelationFilter, AssignmentWhereInput>
+    checkIns?: CheckInListRelationFilter
+  }, "id">
+
+  export type AssignmentQuestionOrderByWithAggregationInput = {
+    id?: SortOrder
+    prompt?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    assignmentId?: SortOrder
+    _count?: AssignmentQuestionCountOrderByAggregateInput
+    _avg?: AssignmentQuestionAvgOrderByAggregateInput
+    _max?: AssignmentQuestionMaxOrderByAggregateInput
+    _min?: AssignmentQuestionMinOrderByAggregateInput
+    _sum?: AssignmentQuestionSumOrderByAggregateInput
+  }
+
+  export type AssignmentQuestionScalarWhereWithAggregatesInput = {
+    AND?: AssignmentQuestionScalarWhereWithAggregatesInput | AssignmentQuestionScalarWhereWithAggregatesInput[]
+    OR?: AssignmentQuestionScalarWhereWithAggregatesInput[]
+    NOT?: AssignmentQuestionScalarWhereWithAggregatesInput | AssignmentQuestionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AssignmentQuestion"> | string
+    prompt?: StringWithAggregatesFilter<"AssignmentQuestion"> | string
+    order?: IntWithAggregatesFilter<"AssignmentQuestion"> | number
+    createdAt?: DateTimeWithAggregatesFilter<"AssignmentQuestion"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"AssignmentQuestion"> | Date | string
+    assignmentId?: StringWithAggregatesFilter<"AssignmentQuestion"> | string
   }
 
   export type SubmissionVerificationWhereInput = {
@@ -35239,6 +38271,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -35271,6 +38305,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUpdateInput = {
@@ -35303,6 +38339,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -35335,6 +38373,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -35656,6 +38696,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateInput = {
@@ -35688,6 +38729,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUpdateInput = {
@@ -35720,6 +38762,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateInput = {
@@ -35752,6 +38795,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupCreateManyInput = {
@@ -35922,12 +38966,15 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
+    broadcastKey?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
     scope?: $Enums.TaskScope
@@ -35942,14 +38989,17 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     userId: string
     groupId: string
+    broadcastKey?: string | null
     checkInId?: string | null
     templateId?: string | null
     isChallengeMode?: boolean
@@ -35962,12 +39012,15 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: EnumTaskScopeFieldUpdateOperationsInput | $Enums.TaskScope
@@ -35982,14 +39035,17 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     checkInId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
@@ -36002,14 +39058,17 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     userId: string
     groupId: string
+    broadcastKey?: string | null
     checkInId?: string | null
     templateId?: string | null
     isChallengeMode?: boolean
@@ -36022,12 +39081,15 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: EnumTaskScopeFieldUpdateOperationsInput | $Enums.TaskScope
@@ -36038,14 +39100,17 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     checkInId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
@@ -36059,6 +39124,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -36067,9 +39133,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
     group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
@@ -36085,6 +39154,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -36093,8 +39163,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
@@ -36111,6 +39184,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -36119,9 +39193,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
@@ -36137,6 +39214,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -36145,8 +39223,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
@@ -36163,6 +39244,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -36171,8 +39253,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
   }
 
@@ -36182,6 +39267,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -36190,6 +39276,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -36199,6 +39286,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -36207,9 +39295,157 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type AssignmentCreateInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    group: GroupCreateNestedOneWithoutAssignmentsInput
+    createdBy: UserCreateNestedOneWithoutCreatedAssignmentsInput
+    questions?: AssignmentQuestionCreateNestedManyWithoutAssignmentInput
+  }
+
+  export type AssignmentUncheckedCreateInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupId: string
+    createdById: string
+    questions?: AssignmentQuestionUncheckedCreateNestedManyWithoutAssignmentInput
+  }
+
+  export type AssignmentUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    group?: GroupUpdateOneRequiredWithoutAssignmentsNestedInput
+    createdBy?: UserUpdateOneRequiredWithoutCreatedAssignmentsNestedInput
+    questions?: AssignmentQuestionUpdateManyWithoutAssignmentNestedInput
+  }
+
+  export type AssignmentUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    createdById?: StringFieldUpdateOperationsInput | string
+    questions?: AssignmentQuestionUncheckedUpdateManyWithoutAssignmentNestedInput
+  }
+
+  export type AssignmentCreateManyInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupId: string
+    createdById: string
+  }
+
+  export type AssignmentUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssignmentUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    createdById?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type AssignmentQuestionCreateInput = {
+    id?: string
+    prompt: string
+    order: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignment: AssignmentCreateNestedOneWithoutQuestionsInput
+    checkIns?: CheckInCreateNestedManyWithoutAssignmentQuestionInput
+  }
+
+  export type AssignmentQuestionUncheckedCreateInput = {
+    id?: string
+    prompt: string
+    order: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignmentId: string
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutAssignmentQuestionInput
+  }
+
+  export type AssignmentQuestionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignment?: AssignmentUpdateOneRequiredWithoutQuestionsNestedInput
+    checkIns?: CheckInUpdateManyWithoutAssignmentQuestionNestedInput
+  }
+
+  export type AssignmentQuestionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignmentId?: StringFieldUpdateOperationsInput | string
+    checkIns?: CheckInUncheckedUpdateManyWithoutAssignmentQuestionNestedInput
+  }
+
+  export type AssignmentQuestionCreateManyInput = {
+    id?: string
+    prompt: string
+    order: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignmentId: string
+  }
+
+  export type AssignmentQuestionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AssignmentQuestionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignmentId?: StringFieldUpdateOperationsInput | string
   }
 
   export type SubmissionVerificationCreateInput = {
@@ -37615,6 +40851,12 @@ export namespace Prisma {
     none?: GroupMessageReactionWhereInput
   }
 
+  export type AssignmentListRelationFilter = {
+    every?: AssignmentWhereInput
+    some?: AssignmentWhereInput
+    none?: AssignmentWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -37689,6 +40931,10 @@ export namespace Prisma {
   }
 
   export type GroupMessageReactionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AssignmentOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -38245,6 +41491,13 @@ export namespace Prisma {
     not?: NestedEnumTaskCategoryFilter<$PrismaModel> | $Enums.TaskCategory
   }
 
+  export type EnumTaskPriorityFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskPriority | EnumTaskPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskPriority[] | ListEnumTaskPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TaskPriority[] | ListEnumTaskPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumTaskPriorityFilter<$PrismaModel> | $Enums.TaskPriority
+  }
+
   export type IntNullableFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel> | null
     in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
@@ -38285,14 +41538,17 @@ export namespace Prisma {
     title?: SortOrder
     details?: SortOrder
     category?: SortOrder
+    priority?: SortOrder
     targetMinutes?: SortOrder
     status?: SortOrder
+    dueAt?: SortOrder
     day?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     completedAt?: SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    broadcastKey?: SortOrder
     checkInId?: SortOrder
     templateId?: SortOrder
     isChallengeMode?: SortOrder
@@ -38309,14 +41565,17 @@ export namespace Prisma {
     title?: SortOrder
     details?: SortOrder
     category?: SortOrder
+    priority?: SortOrder
     targetMinutes?: SortOrder
     status?: SortOrder
+    dueAt?: SortOrder
     day?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     completedAt?: SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    broadcastKey?: SortOrder
     checkInId?: SortOrder
     templateId?: SortOrder
     isChallengeMode?: SortOrder
@@ -38329,14 +41588,17 @@ export namespace Prisma {
     title?: SortOrder
     details?: SortOrder
     category?: SortOrder
+    priority?: SortOrder
     targetMinutes?: SortOrder
     status?: SortOrder
+    dueAt?: SortOrder
     day?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     completedAt?: SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    broadcastKey?: SortOrder
     checkInId?: SortOrder
     templateId?: SortOrder
     isChallengeMode?: SortOrder
@@ -38356,6 +41618,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTaskCategoryFilter<$PrismaModel>
     _max?: NestedEnumTaskCategoryFilter<$PrismaModel>
+  }
+
+  export type EnumTaskPriorityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskPriority | EnumTaskPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskPriority[] | ListEnumTaskPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TaskPriority[] | ListEnumTaskPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumTaskPriorityWithAggregatesFilter<$PrismaModel> | $Enums.TaskPriority
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTaskPriorityFilter<$PrismaModel>
+    _max?: NestedEnumTaskPriorityFilter<$PrismaModel>
   }
 
   export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -38401,12 +41673,23 @@ export namespace Prisma {
     not?: NestedEnumCheckInStatusFilter<$PrismaModel> | $Enums.CheckInStatus
   }
 
+  export type AssignmentQuestionNullableScalarRelationFilter = {
+    is?: AssignmentQuestionWhereInput | null
+    isNot?: AssignmentQuestionWhereInput | null
+  }
+
+  export type UserNullableScalarRelationFilter = {
+    is?: UserWhereInput | null
+    isNot?: UserWhereInput | null
+  }
+
   export type CheckInCountOrderByAggregateInput = {
     id?: SortOrder
     day?: SortOrder
     reflection?: SortOrder
     proofText?: SortOrder
     proofLink?: SortOrder
+    reviewNote?: SortOrder
     aiSummary?: SortOrder
     aiConfidence?: SortOrder
     status?: SortOrder
@@ -38415,8 +41698,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     verifiedAt?: SortOrder
+    reviewedAt?: SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    assignmentQuestionId?: SortOrder
+    reviewedById?: SortOrder
     isEarlyBird?: SortOrder
   }
 
@@ -38432,6 +41718,7 @@ export namespace Prisma {
     reflection?: SortOrder
     proofText?: SortOrder
     proofLink?: SortOrder
+    reviewNote?: SortOrder
     aiSummary?: SortOrder
     aiConfidence?: SortOrder
     status?: SortOrder
@@ -38440,8 +41727,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     verifiedAt?: SortOrder
+    reviewedAt?: SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    assignmentQuestionId?: SortOrder
+    reviewedById?: SortOrder
     isEarlyBird?: SortOrder
   }
 
@@ -38451,6 +41741,7 @@ export namespace Prisma {
     reflection?: SortOrder
     proofText?: SortOrder
     proofLink?: SortOrder
+    reviewNote?: SortOrder
     aiSummary?: SortOrder
     aiConfidence?: SortOrder
     status?: SortOrder
@@ -38459,8 +41750,11 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     verifiedAt?: SortOrder
+    reviewedAt?: SortOrder
     userId?: SortOrder
     groupId?: SortOrder
+    assignmentQuestionId?: SortOrder
+    reviewedById?: SortOrder
     isEarlyBird?: SortOrder
   }
 
@@ -38478,6 +41772,89 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumCheckInStatusFilter<$PrismaModel>
     _max?: NestedEnumCheckInStatusFilter<$PrismaModel>
+  }
+
+  export type AssignmentQuestionListRelationFilter = {
+    every?: AssignmentQuestionWhereInput
+    some?: AssignmentQuestionWhereInput
+    none?: AssignmentQuestionWhereInput
+  }
+
+  export type AssignmentQuestionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AssignmentCountOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    details?: SortOrder
+    dueAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    groupId?: SortOrder
+    createdById?: SortOrder
+  }
+
+  export type AssignmentMaxOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    details?: SortOrder
+    dueAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    groupId?: SortOrder
+    createdById?: SortOrder
+  }
+
+  export type AssignmentMinOrderByAggregateInput = {
+    id?: SortOrder
+    title?: SortOrder
+    details?: SortOrder
+    dueAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    groupId?: SortOrder
+    createdById?: SortOrder
+  }
+
+  export type AssignmentScalarRelationFilter = {
+    is?: AssignmentWhereInput
+    isNot?: AssignmentWhereInput
+  }
+
+  export type AssignmentQuestionCountOrderByAggregateInput = {
+    id?: SortOrder
+    prompt?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    assignmentId?: SortOrder
+  }
+
+  export type AssignmentQuestionAvgOrderByAggregateInput = {
+    order?: SortOrder
+  }
+
+  export type AssignmentQuestionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    prompt?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    assignmentId?: SortOrder
+  }
+
+  export type AssignmentQuestionMinOrderByAggregateInput = {
+    id?: SortOrder
+    prompt?: SortOrder
+    order?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    assignmentId?: SortOrder
+  }
+
+  export type AssignmentQuestionSumOrderByAggregateInput = {
+    order?: SortOrder
   }
 
   export type EnumVerificationVerdictFilter<$PrismaModel = never> = {
@@ -38629,11 +42006,6 @@ export namespace Prisma {
     updatedAt?: SortOrder
     userId?: SortOrder
     groupId?: SortOrder
-  }
-
-  export type UserNullableScalarRelationFilter = {
-    is?: UserWhereInput | null
-    isNot?: UserWhereInput | null
   }
 
   export type TaskTemplateCountOrderByAggregateInput = {
@@ -39408,6 +42780,20 @@ export namespace Prisma {
     connect?: GroupMessageReactionWhereUniqueInput | GroupMessageReactionWhereUniqueInput[]
   }
 
+  export type AssignmentCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<AssignmentCreateWithoutCreatedByInput, AssignmentUncheckedCreateWithoutCreatedByInput> | AssignmentCreateWithoutCreatedByInput[] | AssignmentUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: AssignmentCreateOrConnectWithoutCreatedByInput | AssignmentCreateOrConnectWithoutCreatedByInput[]
+    createMany?: AssignmentCreateManyCreatedByInputEnvelope
+    connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+  }
+
+  export type CheckInCreateNestedManyWithoutReviewedByInput = {
+    create?: XOR<CheckInCreateWithoutReviewedByInput, CheckInUncheckedCreateWithoutReviewedByInput> | CheckInCreateWithoutReviewedByInput[] | CheckInUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutReviewedByInput | CheckInCreateOrConnectWithoutReviewedByInput[]
+    createMany?: CheckInCreateManyReviewedByInputEnvelope
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -39539,6 +42925,20 @@ export namespace Prisma {
     connectOrCreate?: GroupMessageReactionCreateOrConnectWithoutUserInput | GroupMessageReactionCreateOrConnectWithoutUserInput[]
     createMany?: GroupMessageReactionCreateManyUserInputEnvelope
     connect?: GroupMessageReactionWhereUniqueInput | GroupMessageReactionWhereUniqueInput[]
+  }
+
+  export type AssignmentUncheckedCreateNestedManyWithoutCreatedByInput = {
+    create?: XOR<AssignmentCreateWithoutCreatedByInput, AssignmentUncheckedCreateWithoutCreatedByInput> | AssignmentCreateWithoutCreatedByInput[] | AssignmentUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: AssignmentCreateOrConnectWithoutCreatedByInput | AssignmentCreateOrConnectWithoutCreatedByInput[]
+    createMany?: AssignmentCreateManyCreatedByInputEnvelope
+    connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+  }
+
+  export type CheckInUncheckedCreateNestedManyWithoutReviewedByInput = {
+    create?: XOR<CheckInCreateWithoutReviewedByInput, CheckInUncheckedCreateWithoutReviewedByInput> | CheckInCreateWithoutReviewedByInput[] | CheckInUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutReviewedByInput | CheckInCreateOrConnectWithoutReviewedByInput[]
+    createMany?: CheckInCreateManyReviewedByInputEnvelope
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -39839,6 +43239,34 @@ export namespace Prisma {
     deleteMany?: GroupMessageReactionScalarWhereInput | GroupMessageReactionScalarWhereInput[]
   }
 
+  export type AssignmentUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<AssignmentCreateWithoutCreatedByInput, AssignmentUncheckedCreateWithoutCreatedByInput> | AssignmentCreateWithoutCreatedByInput[] | AssignmentUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: AssignmentCreateOrConnectWithoutCreatedByInput | AssignmentCreateOrConnectWithoutCreatedByInput[]
+    upsert?: AssignmentUpsertWithWhereUniqueWithoutCreatedByInput | AssignmentUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: AssignmentCreateManyCreatedByInputEnvelope
+    set?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    disconnect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    delete?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    update?: AssignmentUpdateWithWhereUniqueWithoutCreatedByInput | AssignmentUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: AssignmentUpdateManyWithWhereWithoutCreatedByInput | AssignmentUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: AssignmentScalarWhereInput | AssignmentScalarWhereInput[]
+  }
+
+  export type CheckInUpdateManyWithoutReviewedByNestedInput = {
+    create?: XOR<CheckInCreateWithoutReviewedByInput, CheckInUncheckedCreateWithoutReviewedByInput> | CheckInCreateWithoutReviewedByInput[] | CheckInUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutReviewedByInput | CheckInCreateOrConnectWithoutReviewedByInput[]
+    upsert?: CheckInUpsertWithWhereUniqueWithoutReviewedByInput | CheckInUpsertWithWhereUniqueWithoutReviewedByInput[]
+    createMany?: CheckInCreateManyReviewedByInputEnvelope
+    set?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    disconnect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    delete?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    update?: CheckInUpdateWithWhereUniqueWithoutReviewedByInput | CheckInUpdateWithWhereUniqueWithoutReviewedByInput[]
+    updateMany?: CheckInUpdateManyWithWhereWithoutReviewedByInput | CheckInUpdateManyWithWhereWithoutReviewedByInput[]
+    deleteMany?: CheckInScalarWhereInput | CheckInScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -40105,6 +43533,34 @@ export namespace Prisma {
     deleteMany?: GroupMessageReactionScalarWhereInput | GroupMessageReactionScalarWhereInput[]
   }
 
+  export type AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput = {
+    create?: XOR<AssignmentCreateWithoutCreatedByInput, AssignmentUncheckedCreateWithoutCreatedByInput> | AssignmentCreateWithoutCreatedByInput[] | AssignmentUncheckedCreateWithoutCreatedByInput[]
+    connectOrCreate?: AssignmentCreateOrConnectWithoutCreatedByInput | AssignmentCreateOrConnectWithoutCreatedByInput[]
+    upsert?: AssignmentUpsertWithWhereUniqueWithoutCreatedByInput | AssignmentUpsertWithWhereUniqueWithoutCreatedByInput[]
+    createMany?: AssignmentCreateManyCreatedByInputEnvelope
+    set?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    disconnect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    delete?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    update?: AssignmentUpdateWithWhereUniqueWithoutCreatedByInput | AssignmentUpdateWithWhereUniqueWithoutCreatedByInput[]
+    updateMany?: AssignmentUpdateManyWithWhereWithoutCreatedByInput | AssignmentUpdateManyWithWhereWithoutCreatedByInput[]
+    deleteMany?: AssignmentScalarWhereInput | AssignmentScalarWhereInput[]
+  }
+
+  export type CheckInUncheckedUpdateManyWithoutReviewedByNestedInput = {
+    create?: XOR<CheckInCreateWithoutReviewedByInput, CheckInUncheckedCreateWithoutReviewedByInput> | CheckInCreateWithoutReviewedByInput[] | CheckInUncheckedCreateWithoutReviewedByInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutReviewedByInput | CheckInCreateOrConnectWithoutReviewedByInput[]
+    upsert?: CheckInUpsertWithWhereUniqueWithoutReviewedByInput | CheckInUpsertWithWhereUniqueWithoutReviewedByInput[]
+    createMany?: CheckInCreateManyReviewedByInputEnvelope
+    set?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    disconnect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    delete?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    update?: CheckInUpdateWithWhereUniqueWithoutReviewedByInput | CheckInUpdateWithWhereUniqueWithoutReviewedByInput[]
+    updateMany?: CheckInUpdateManyWithWhereWithoutReviewedByInput | CheckInUpdateManyWithWhereWithoutReviewedByInput[]
+    deleteMany?: CheckInScalarWhereInput | CheckInScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutSessionsInput = {
     create?: XOR<UserCreateWithoutSessionsInput, UserUncheckedCreateWithoutSessionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutSessionsInput
@@ -40241,6 +43697,13 @@ export namespace Prisma {
     connect?: RedemptionTaskWhereUniqueInput | RedemptionTaskWhereUniqueInput[]
   }
 
+  export type AssignmentCreateNestedManyWithoutGroupInput = {
+    create?: XOR<AssignmentCreateWithoutGroupInput, AssignmentUncheckedCreateWithoutGroupInput> | AssignmentCreateWithoutGroupInput[] | AssignmentUncheckedCreateWithoutGroupInput[]
+    connectOrCreate?: AssignmentCreateOrConnectWithoutGroupInput | AssignmentCreateOrConnectWithoutGroupInput[]
+    createMany?: AssignmentCreateManyGroupInputEnvelope
+    connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+  }
+
   export type UserGroupUncheckedCreateNestedManyWithoutGroupInput = {
     create?: XOR<UserGroupCreateWithoutGroupInput, UserGroupUncheckedCreateWithoutGroupInput> | UserGroupCreateWithoutGroupInput[] | UserGroupUncheckedCreateWithoutGroupInput[]
     connectOrCreate?: UserGroupCreateOrConnectWithoutGroupInput | UserGroupCreateOrConnectWithoutGroupInput[]
@@ -40337,6 +43800,13 @@ export namespace Prisma {
     connectOrCreate?: RedemptionTaskCreateOrConnectWithoutGroupInput | RedemptionTaskCreateOrConnectWithoutGroupInput[]
     createMany?: RedemptionTaskCreateManyGroupInputEnvelope
     connect?: RedemptionTaskWhereUniqueInput | RedemptionTaskWhereUniqueInput[]
+  }
+
+  export type AssignmentUncheckedCreateNestedManyWithoutGroupInput = {
+    create?: XOR<AssignmentCreateWithoutGroupInput, AssignmentUncheckedCreateWithoutGroupInput> | AssignmentCreateWithoutGroupInput[] | AssignmentUncheckedCreateWithoutGroupInput[]
+    connectOrCreate?: AssignmentCreateOrConnectWithoutGroupInput | AssignmentCreateOrConnectWithoutGroupInput[]
+    createMany?: AssignmentCreateManyGroupInputEnvelope
+    connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
   }
 
   export type EnumGroupVisibilityFieldUpdateOperationsInput = {
@@ -40559,6 +44029,20 @@ export namespace Prisma {
     deleteMany?: RedemptionTaskScalarWhereInput | RedemptionTaskScalarWhereInput[]
   }
 
+  export type AssignmentUpdateManyWithoutGroupNestedInput = {
+    create?: XOR<AssignmentCreateWithoutGroupInput, AssignmentUncheckedCreateWithoutGroupInput> | AssignmentCreateWithoutGroupInput[] | AssignmentUncheckedCreateWithoutGroupInput[]
+    connectOrCreate?: AssignmentCreateOrConnectWithoutGroupInput | AssignmentCreateOrConnectWithoutGroupInput[]
+    upsert?: AssignmentUpsertWithWhereUniqueWithoutGroupInput | AssignmentUpsertWithWhereUniqueWithoutGroupInput[]
+    createMany?: AssignmentCreateManyGroupInputEnvelope
+    set?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    disconnect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    delete?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    update?: AssignmentUpdateWithWhereUniqueWithoutGroupInput | AssignmentUpdateWithWhereUniqueWithoutGroupInput[]
+    updateMany?: AssignmentUpdateManyWithWhereWithoutGroupInput | AssignmentUpdateManyWithWhereWithoutGroupInput[]
+    deleteMany?: AssignmentScalarWhereInput | AssignmentScalarWhereInput[]
+  }
+
   export type UserGroupUncheckedUpdateManyWithoutGroupNestedInput = {
     create?: XOR<UserGroupCreateWithoutGroupInput, UserGroupUncheckedCreateWithoutGroupInput> | UserGroupCreateWithoutGroupInput[] | UserGroupUncheckedCreateWithoutGroupInput[]
     connectOrCreate?: UserGroupCreateOrConnectWithoutGroupInput | UserGroupCreateOrConnectWithoutGroupInput[]
@@ -40755,6 +44239,20 @@ export namespace Prisma {
     deleteMany?: RedemptionTaskScalarWhereInput | RedemptionTaskScalarWhereInput[]
   }
 
+  export type AssignmentUncheckedUpdateManyWithoutGroupNestedInput = {
+    create?: XOR<AssignmentCreateWithoutGroupInput, AssignmentUncheckedCreateWithoutGroupInput> | AssignmentCreateWithoutGroupInput[] | AssignmentUncheckedCreateWithoutGroupInput[]
+    connectOrCreate?: AssignmentCreateOrConnectWithoutGroupInput | AssignmentCreateOrConnectWithoutGroupInput[]
+    upsert?: AssignmentUpsertWithWhereUniqueWithoutGroupInput | AssignmentUpsertWithWhereUniqueWithoutGroupInput[]
+    createMany?: AssignmentCreateManyGroupInputEnvelope
+    set?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    disconnect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    delete?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    connect?: AssignmentWhereUniqueInput | AssignmentWhereUniqueInput[]
+    update?: AssignmentUpdateWithWhereUniqueWithoutGroupInput | AssignmentUpdateWithWhereUniqueWithoutGroupInput[]
+    updateMany?: AssignmentUpdateManyWithWhereWithoutGroupInput | AssignmentUpdateManyWithWhereWithoutGroupInput[]
+    deleteMany?: AssignmentScalarWhereInput | AssignmentScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutGroupsInput = {
     create?: XOR<UserCreateWithoutGroupsInput, UserUncheckedCreateWithoutGroupsInput>
     connectOrCreate?: UserCreateOrConnectWithoutGroupsInput
@@ -40813,6 +44311,10 @@ export namespace Prisma {
 
   export type EnumTaskCategoryFieldUpdateOperationsInput = {
     set?: $Enums.TaskCategory
+  }
+
+  export type EnumTaskPriorityFieldUpdateOperationsInput = {
+    set?: $Enums.TaskPriority
   }
 
   export type NullableIntFieldUpdateOperationsInput = {
@@ -40877,6 +44379,18 @@ export namespace Prisma {
     create?: XOR<GroupCreateWithoutCheckInsInput, GroupUncheckedCreateWithoutCheckInsInput>
     connectOrCreate?: GroupCreateOrConnectWithoutCheckInsInput
     connect?: GroupWhereUniqueInput
+  }
+
+  export type AssignmentQuestionCreateNestedOneWithoutCheckInsInput = {
+    create?: XOR<AssignmentQuestionCreateWithoutCheckInsInput, AssignmentQuestionUncheckedCreateWithoutCheckInsInput>
+    connectOrCreate?: AssignmentQuestionCreateOrConnectWithoutCheckInsInput
+    connect?: AssignmentQuestionWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutReviewedCheckInsInput = {
+    create?: XOR<UserCreateWithoutReviewedCheckInsInput, UserUncheckedCreateWithoutReviewedCheckInsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewedCheckInsInput
+    connect?: UserWhereUniqueInput
   }
 
   export type TaskCreateNestedManyWithoutCheckInInput = {
@@ -40995,6 +44509,26 @@ export namespace Prisma {
     upsert?: GroupUpsertWithoutCheckInsInput
     connect?: GroupWhereUniqueInput
     update?: XOR<XOR<GroupUpdateToOneWithWhereWithoutCheckInsInput, GroupUpdateWithoutCheckInsInput>, GroupUncheckedUpdateWithoutCheckInsInput>
+  }
+
+  export type AssignmentQuestionUpdateOneWithoutCheckInsNestedInput = {
+    create?: XOR<AssignmentQuestionCreateWithoutCheckInsInput, AssignmentQuestionUncheckedCreateWithoutCheckInsInput>
+    connectOrCreate?: AssignmentQuestionCreateOrConnectWithoutCheckInsInput
+    upsert?: AssignmentQuestionUpsertWithoutCheckInsInput
+    disconnect?: AssignmentQuestionWhereInput | boolean
+    delete?: AssignmentQuestionWhereInput | boolean
+    connect?: AssignmentQuestionWhereUniqueInput
+    update?: XOR<XOR<AssignmentQuestionUpdateToOneWithWhereWithoutCheckInsInput, AssignmentQuestionUpdateWithoutCheckInsInput>, AssignmentQuestionUncheckedUpdateWithoutCheckInsInput>
+  }
+
+  export type UserUpdateOneWithoutReviewedCheckInsNestedInput = {
+    create?: XOR<UserCreateWithoutReviewedCheckInsInput, UserUncheckedCreateWithoutReviewedCheckInsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutReviewedCheckInsInput
+    upsert?: UserUpsertWithoutReviewedCheckInsInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutReviewedCheckInsInput, UserUpdateWithoutReviewedCheckInsInput>, UserUncheckedUpdateWithoutReviewedCheckInsInput>
   }
 
   export type TaskUpdateManyWithoutCheckInNestedInput = {
@@ -41191,6 +44725,132 @@ export namespace Prisma {
     update?: CheckInReactionUpdateWithWhereUniqueWithoutCheckInInput | CheckInReactionUpdateWithWhereUniqueWithoutCheckInInput[]
     updateMany?: CheckInReactionUpdateManyWithWhereWithoutCheckInInput | CheckInReactionUpdateManyWithWhereWithoutCheckInInput[]
     deleteMany?: CheckInReactionScalarWhereInput | CheckInReactionScalarWhereInput[]
+  }
+
+  export type GroupCreateNestedOneWithoutAssignmentsInput = {
+    create?: XOR<GroupCreateWithoutAssignmentsInput, GroupUncheckedCreateWithoutAssignmentsInput>
+    connectOrCreate?: GroupCreateOrConnectWithoutAssignmentsInput
+    connect?: GroupWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutCreatedAssignmentsInput = {
+    create?: XOR<UserCreateWithoutCreatedAssignmentsInput, UserUncheckedCreateWithoutCreatedAssignmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedAssignmentsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type AssignmentQuestionCreateNestedManyWithoutAssignmentInput = {
+    create?: XOR<AssignmentQuestionCreateWithoutAssignmentInput, AssignmentQuestionUncheckedCreateWithoutAssignmentInput> | AssignmentQuestionCreateWithoutAssignmentInput[] | AssignmentQuestionUncheckedCreateWithoutAssignmentInput[]
+    connectOrCreate?: AssignmentQuestionCreateOrConnectWithoutAssignmentInput | AssignmentQuestionCreateOrConnectWithoutAssignmentInput[]
+    createMany?: AssignmentQuestionCreateManyAssignmentInputEnvelope
+    connect?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+  }
+
+  export type AssignmentQuestionUncheckedCreateNestedManyWithoutAssignmentInput = {
+    create?: XOR<AssignmentQuestionCreateWithoutAssignmentInput, AssignmentQuestionUncheckedCreateWithoutAssignmentInput> | AssignmentQuestionCreateWithoutAssignmentInput[] | AssignmentQuestionUncheckedCreateWithoutAssignmentInput[]
+    connectOrCreate?: AssignmentQuestionCreateOrConnectWithoutAssignmentInput | AssignmentQuestionCreateOrConnectWithoutAssignmentInput[]
+    createMany?: AssignmentQuestionCreateManyAssignmentInputEnvelope
+    connect?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+  }
+
+  export type GroupUpdateOneRequiredWithoutAssignmentsNestedInput = {
+    create?: XOR<GroupCreateWithoutAssignmentsInput, GroupUncheckedCreateWithoutAssignmentsInput>
+    connectOrCreate?: GroupCreateOrConnectWithoutAssignmentsInput
+    upsert?: GroupUpsertWithoutAssignmentsInput
+    connect?: GroupWhereUniqueInput
+    update?: XOR<XOR<GroupUpdateToOneWithWhereWithoutAssignmentsInput, GroupUpdateWithoutAssignmentsInput>, GroupUncheckedUpdateWithoutAssignmentsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutCreatedAssignmentsNestedInput = {
+    create?: XOR<UserCreateWithoutCreatedAssignmentsInput, UserUncheckedCreateWithoutCreatedAssignmentsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCreatedAssignmentsInput
+    upsert?: UserUpsertWithoutCreatedAssignmentsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCreatedAssignmentsInput, UserUpdateWithoutCreatedAssignmentsInput>, UserUncheckedUpdateWithoutCreatedAssignmentsInput>
+  }
+
+  export type AssignmentQuestionUpdateManyWithoutAssignmentNestedInput = {
+    create?: XOR<AssignmentQuestionCreateWithoutAssignmentInput, AssignmentQuestionUncheckedCreateWithoutAssignmentInput> | AssignmentQuestionCreateWithoutAssignmentInput[] | AssignmentQuestionUncheckedCreateWithoutAssignmentInput[]
+    connectOrCreate?: AssignmentQuestionCreateOrConnectWithoutAssignmentInput | AssignmentQuestionCreateOrConnectWithoutAssignmentInput[]
+    upsert?: AssignmentQuestionUpsertWithWhereUniqueWithoutAssignmentInput | AssignmentQuestionUpsertWithWhereUniqueWithoutAssignmentInput[]
+    createMany?: AssignmentQuestionCreateManyAssignmentInputEnvelope
+    set?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+    disconnect?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+    delete?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+    connect?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+    update?: AssignmentQuestionUpdateWithWhereUniqueWithoutAssignmentInput | AssignmentQuestionUpdateWithWhereUniqueWithoutAssignmentInput[]
+    updateMany?: AssignmentQuestionUpdateManyWithWhereWithoutAssignmentInput | AssignmentQuestionUpdateManyWithWhereWithoutAssignmentInput[]
+    deleteMany?: AssignmentQuestionScalarWhereInput | AssignmentQuestionScalarWhereInput[]
+  }
+
+  export type AssignmentQuestionUncheckedUpdateManyWithoutAssignmentNestedInput = {
+    create?: XOR<AssignmentQuestionCreateWithoutAssignmentInput, AssignmentQuestionUncheckedCreateWithoutAssignmentInput> | AssignmentQuestionCreateWithoutAssignmentInput[] | AssignmentQuestionUncheckedCreateWithoutAssignmentInput[]
+    connectOrCreate?: AssignmentQuestionCreateOrConnectWithoutAssignmentInput | AssignmentQuestionCreateOrConnectWithoutAssignmentInput[]
+    upsert?: AssignmentQuestionUpsertWithWhereUniqueWithoutAssignmentInput | AssignmentQuestionUpsertWithWhereUniqueWithoutAssignmentInput[]
+    createMany?: AssignmentQuestionCreateManyAssignmentInputEnvelope
+    set?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+    disconnect?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+    delete?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+    connect?: AssignmentQuestionWhereUniqueInput | AssignmentQuestionWhereUniqueInput[]
+    update?: AssignmentQuestionUpdateWithWhereUniqueWithoutAssignmentInput | AssignmentQuestionUpdateWithWhereUniqueWithoutAssignmentInput[]
+    updateMany?: AssignmentQuestionUpdateManyWithWhereWithoutAssignmentInput | AssignmentQuestionUpdateManyWithWhereWithoutAssignmentInput[]
+    deleteMany?: AssignmentQuestionScalarWhereInput | AssignmentQuestionScalarWhereInput[]
+  }
+
+  export type AssignmentCreateNestedOneWithoutQuestionsInput = {
+    create?: XOR<AssignmentCreateWithoutQuestionsInput, AssignmentUncheckedCreateWithoutQuestionsInput>
+    connectOrCreate?: AssignmentCreateOrConnectWithoutQuestionsInput
+    connect?: AssignmentWhereUniqueInput
+  }
+
+  export type CheckInCreateNestedManyWithoutAssignmentQuestionInput = {
+    create?: XOR<CheckInCreateWithoutAssignmentQuestionInput, CheckInUncheckedCreateWithoutAssignmentQuestionInput> | CheckInCreateWithoutAssignmentQuestionInput[] | CheckInUncheckedCreateWithoutAssignmentQuestionInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutAssignmentQuestionInput | CheckInCreateOrConnectWithoutAssignmentQuestionInput[]
+    createMany?: CheckInCreateManyAssignmentQuestionInputEnvelope
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+  }
+
+  export type CheckInUncheckedCreateNestedManyWithoutAssignmentQuestionInput = {
+    create?: XOR<CheckInCreateWithoutAssignmentQuestionInput, CheckInUncheckedCreateWithoutAssignmentQuestionInput> | CheckInCreateWithoutAssignmentQuestionInput[] | CheckInUncheckedCreateWithoutAssignmentQuestionInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutAssignmentQuestionInput | CheckInCreateOrConnectWithoutAssignmentQuestionInput[]
+    createMany?: CheckInCreateManyAssignmentQuestionInputEnvelope
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+  }
+
+  export type AssignmentUpdateOneRequiredWithoutQuestionsNestedInput = {
+    create?: XOR<AssignmentCreateWithoutQuestionsInput, AssignmentUncheckedCreateWithoutQuestionsInput>
+    connectOrCreate?: AssignmentCreateOrConnectWithoutQuestionsInput
+    upsert?: AssignmentUpsertWithoutQuestionsInput
+    connect?: AssignmentWhereUniqueInput
+    update?: XOR<XOR<AssignmentUpdateToOneWithWhereWithoutQuestionsInput, AssignmentUpdateWithoutQuestionsInput>, AssignmentUncheckedUpdateWithoutQuestionsInput>
+  }
+
+  export type CheckInUpdateManyWithoutAssignmentQuestionNestedInput = {
+    create?: XOR<CheckInCreateWithoutAssignmentQuestionInput, CheckInUncheckedCreateWithoutAssignmentQuestionInput> | CheckInCreateWithoutAssignmentQuestionInput[] | CheckInUncheckedCreateWithoutAssignmentQuestionInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutAssignmentQuestionInput | CheckInCreateOrConnectWithoutAssignmentQuestionInput[]
+    upsert?: CheckInUpsertWithWhereUniqueWithoutAssignmentQuestionInput | CheckInUpsertWithWhereUniqueWithoutAssignmentQuestionInput[]
+    createMany?: CheckInCreateManyAssignmentQuestionInputEnvelope
+    set?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    disconnect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    delete?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    update?: CheckInUpdateWithWhereUniqueWithoutAssignmentQuestionInput | CheckInUpdateWithWhereUniqueWithoutAssignmentQuestionInput[]
+    updateMany?: CheckInUpdateManyWithWhereWithoutAssignmentQuestionInput | CheckInUpdateManyWithWhereWithoutAssignmentQuestionInput[]
+    deleteMany?: CheckInScalarWhereInput | CheckInScalarWhereInput[]
+  }
+
+  export type CheckInUncheckedUpdateManyWithoutAssignmentQuestionNestedInput = {
+    create?: XOR<CheckInCreateWithoutAssignmentQuestionInput, CheckInUncheckedCreateWithoutAssignmentQuestionInput> | CheckInCreateWithoutAssignmentQuestionInput[] | CheckInUncheckedCreateWithoutAssignmentQuestionInput[]
+    connectOrCreate?: CheckInCreateOrConnectWithoutAssignmentQuestionInput | CheckInCreateOrConnectWithoutAssignmentQuestionInput[]
+    upsert?: CheckInUpsertWithWhereUniqueWithoutAssignmentQuestionInput | CheckInUpsertWithWhereUniqueWithoutAssignmentQuestionInput[]
+    createMany?: CheckInCreateManyAssignmentQuestionInputEnvelope
+    set?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    disconnect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    delete?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    connect?: CheckInWhereUniqueInput | CheckInWhereUniqueInput[]
+    update?: CheckInUpdateWithWhereUniqueWithoutAssignmentQuestionInput | CheckInUpdateWithWhereUniqueWithoutAssignmentQuestionInput[]
+    updateMany?: CheckInUpdateManyWithWhereWithoutAssignmentQuestionInput | CheckInUpdateManyWithWhereWithoutAssignmentQuestionInput[]
+    deleteMany?: CheckInScalarWhereInput | CheckInScalarWhereInput[]
   }
 
   export type CheckInCreateNestedOneWithoutVerificationsInput = {
@@ -42103,6 +45763,13 @@ export namespace Prisma {
     not?: NestedEnumTaskCategoryFilter<$PrismaModel> | $Enums.TaskCategory
   }
 
+  export type NestedEnumTaskPriorityFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskPriority | EnumTaskPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskPriority[] | ListEnumTaskPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TaskPriority[] | ListEnumTaskPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumTaskPriorityFilter<$PrismaModel> | $Enums.TaskPriority
+  }
+
   export type NestedEnumTaskStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.TaskStatus | EnumTaskStatusFieldRefInput<$PrismaModel>
     in?: $Enums.TaskStatus[] | ListEnumTaskStatusFieldRefInput<$PrismaModel>
@@ -42125,6 +45792,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumTaskCategoryFilter<$PrismaModel>
     _max?: NestedEnumTaskCategoryFilter<$PrismaModel>
+  }
+
+  export type NestedEnumTaskPriorityWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.TaskPriority | EnumTaskPriorityFieldRefInput<$PrismaModel>
+    in?: $Enums.TaskPriority[] | ListEnumTaskPriorityFieldRefInput<$PrismaModel>
+    notIn?: $Enums.TaskPriority[] | ListEnumTaskPriorityFieldRefInput<$PrismaModel>
+    not?: NestedEnumTaskPriorityWithAggregatesFilter<$PrismaModel> | $Enums.TaskPriority
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumTaskPriorityFilter<$PrismaModel>
+    _max?: NestedEnumTaskPriorityFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -42570,6 +46247,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutCreatedByInput = {
@@ -42601,6 +46279,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutCreatedByInput = {
@@ -42618,12 +46297,15 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
+    broadcastKey?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
     scope?: $Enums.TaskScope
@@ -42637,13 +46319,16 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     groupId: string
+    broadcastKey?: string | null
     checkInId?: string | null
     templateId?: string | null
     isChallengeMode?: boolean
@@ -42667,6 +46352,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -42675,8 +46361,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
@@ -42692,6 +46381,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -42700,7 +46390,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
@@ -43011,6 +46704,106 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AssignmentCreateWithoutCreatedByInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    group: GroupCreateNestedOneWithoutAssignmentsInput
+    questions?: AssignmentQuestionCreateNestedManyWithoutAssignmentInput
+  }
+
+  export type AssignmentUncheckedCreateWithoutCreatedByInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupId: string
+    questions?: AssignmentQuestionUncheckedCreateNestedManyWithoutAssignmentInput
+  }
+
+  export type AssignmentCreateOrConnectWithoutCreatedByInput = {
+    where: AssignmentWhereUniqueInput
+    create: XOR<AssignmentCreateWithoutCreatedByInput, AssignmentUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type AssignmentCreateManyCreatedByInputEnvelope = {
+    data: AssignmentCreateManyCreatedByInput | AssignmentCreateManyCreatedByInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type CheckInCreateWithoutReviewedByInput = {
+    id?: string
+    day: Date | string
+    reflection?: string | null
+    proofText?: string | null
+    proofLink?: string | null
+    reviewNote?: string | null
+    aiSummary?: string | null
+    aiConfidence?: number | null
+    status?: $Enums.CheckInStatus
+    pointsAwarded?: number
+    penaltyApplied?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    isEarlyBird?: boolean
+    user: UserCreateNestedOneWithoutCheckInsInput
+    group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    tasks?: TaskCreateNestedManyWithoutCheckInInput
+    verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
+    penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
+    startFiles?: StartFileCreateNestedManyWithoutCheckInInput
+    endFiles?: EndFileCreateNestedManyWithoutCheckInInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutCheckInInput
+    reactions?: CheckInReactionCreateNestedManyWithoutCheckInInput
+  }
+
+  export type CheckInUncheckedCreateWithoutReviewedByInput = {
+    id?: string
+    day: Date | string
+    reflection?: string | null
+    proofText?: string | null
+    proofLink?: string | null
+    reviewNote?: string | null
+    aiSummary?: string | null
+    aiConfidence?: number | null
+    status?: $Enums.CheckInStatus
+    pointsAwarded?: number
+    penaltyApplied?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    userId: string
+    groupId: string
+    assignmentQuestionId?: string | null
+    isEarlyBird?: boolean
+    tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
+    verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
+    penalties?: PenaltyEventUncheckedCreateNestedManyWithoutCheckInInput
+    startFiles?: StartFileUncheckedCreateNestedManyWithoutCheckInInput
+    endFiles?: EndFileUncheckedCreateNestedManyWithoutCheckInInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutCheckInInput
+    reactions?: CheckInReactionUncheckedCreateNestedManyWithoutCheckInInput
+  }
+
+  export type CheckInCreateOrConnectWithoutReviewedByInput = {
+    where: CheckInWhereUniqueInput
+    create: XOR<CheckInCreateWithoutReviewedByInput, CheckInUncheckedCreateWithoutReviewedByInput>
+  }
+
+  export type CheckInCreateManyReviewedByInputEnvelope = {
+    data: CheckInCreateManyReviewedByInput | CheckInCreateManyReviewedByInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SessionUpsertWithWhereUniqueWithoutUserInput = {
     where: SessionWhereUniqueInput
     update: XOR<SessionUpdateWithoutUserInput, SessionUncheckedUpdateWithoutUserInput>
@@ -43280,14 +47073,17 @@ export namespace Prisma {
     title?: StringFilter<"Task"> | string
     details?: StringNullableFilter<"Task"> | string | null
     category?: EnumTaskCategoryFilter<"Task"> | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFilter<"Task"> | $Enums.TaskPriority
     targetMinutes?: IntNullableFilter<"Task"> | number | null
     status?: EnumTaskStatusFilter<"Task"> | $Enums.TaskStatus
+    dueAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     day?: DateTimeFilter<"Task"> | Date | string
     createdAt?: DateTimeFilter<"Task"> | Date | string
     updatedAt?: DateTimeFilter<"Task"> | Date | string
     completedAt?: DateTimeNullableFilter<"Task"> | Date | string | null
     userId?: StringFilter<"Task"> | string
     groupId?: StringFilter<"Task"> | string
+    broadcastKey?: StringNullableFilter<"Task"> | string | null
     checkInId?: StringNullableFilter<"Task"> | string | null
     templateId?: StringNullableFilter<"Task"> | string | null
     isChallengeMode?: BoolFilter<"Task"> | boolean
@@ -43320,6 +47116,7 @@ export namespace Prisma {
     reflection?: StringNullableFilter<"CheckIn"> | string | null
     proofText?: StringNullableFilter<"CheckIn"> | string | null
     proofLink?: StringNullableFilter<"CheckIn"> | string | null
+    reviewNote?: StringNullableFilter<"CheckIn"> | string | null
     aiSummary?: StringNullableFilter<"CheckIn"> | string | null
     aiConfidence?: IntNullableFilter<"CheckIn"> | number | null
     status?: EnumCheckInStatusFilter<"CheckIn"> | $Enums.CheckInStatus
@@ -43328,8 +47125,11 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"CheckIn"> | Date | string
     updatedAt?: DateTimeFilter<"CheckIn"> | Date | string
     verifiedAt?: DateTimeNullableFilter<"CheckIn"> | Date | string | null
+    reviewedAt?: DateTimeNullableFilter<"CheckIn"> | Date | string | null
     userId?: StringFilter<"CheckIn"> | string
     groupId?: StringFilter<"CheckIn"> | string
+    assignmentQuestionId?: StringNullableFilter<"CheckIn"> | string | null
+    reviewedById?: StringNullableFilter<"CheckIn"> | string | null
     isEarlyBird?: BoolFilter<"CheckIn"> | boolean
   }
 
@@ -43592,6 +47392,52 @@ export namespace Prisma {
     messageId?: StringFilter<"GroupMessageReaction"> | string
   }
 
+  export type AssignmentUpsertWithWhereUniqueWithoutCreatedByInput = {
+    where: AssignmentWhereUniqueInput
+    update: XOR<AssignmentUpdateWithoutCreatedByInput, AssignmentUncheckedUpdateWithoutCreatedByInput>
+    create: XOR<AssignmentCreateWithoutCreatedByInput, AssignmentUncheckedCreateWithoutCreatedByInput>
+  }
+
+  export type AssignmentUpdateWithWhereUniqueWithoutCreatedByInput = {
+    where: AssignmentWhereUniqueInput
+    data: XOR<AssignmentUpdateWithoutCreatedByInput, AssignmentUncheckedUpdateWithoutCreatedByInput>
+  }
+
+  export type AssignmentUpdateManyWithWhereWithoutCreatedByInput = {
+    where: AssignmentScalarWhereInput
+    data: XOR<AssignmentUpdateManyMutationInput, AssignmentUncheckedUpdateManyWithoutCreatedByInput>
+  }
+
+  export type AssignmentScalarWhereInput = {
+    AND?: AssignmentScalarWhereInput | AssignmentScalarWhereInput[]
+    OR?: AssignmentScalarWhereInput[]
+    NOT?: AssignmentScalarWhereInput | AssignmentScalarWhereInput[]
+    id?: StringFilter<"Assignment"> | string
+    title?: StringFilter<"Assignment"> | string
+    details?: StringNullableFilter<"Assignment"> | string | null
+    dueAt?: DateTimeNullableFilter<"Assignment"> | Date | string | null
+    createdAt?: DateTimeFilter<"Assignment"> | Date | string
+    updatedAt?: DateTimeFilter<"Assignment"> | Date | string
+    groupId?: StringFilter<"Assignment"> | string
+    createdById?: StringFilter<"Assignment"> | string
+  }
+
+  export type CheckInUpsertWithWhereUniqueWithoutReviewedByInput = {
+    where: CheckInWhereUniqueInput
+    update: XOR<CheckInUpdateWithoutReviewedByInput, CheckInUncheckedUpdateWithoutReviewedByInput>
+    create: XOR<CheckInCreateWithoutReviewedByInput, CheckInUncheckedCreateWithoutReviewedByInput>
+  }
+
+  export type CheckInUpdateWithWhereUniqueWithoutReviewedByInput = {
+    where: CheckInWhereUniqueInput
+    data: XOR<CheckInUpdateWithoutReviewedByInput, CheckInUncheckedUpdateWithoutReviewedByInput>
+  }
+
+  export type CheckInUpdateManyWithWhereWithoutReviewedByInput = {
+    where: CheckInScalarWhereInput
+    data: XOR<CheckInUpdateManyMutationInput, CheckInUncheckedUpdateManyWithoutReviewedByInput>
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id: string
     name: string
@@ -43621,6 +47467,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -43652,6 +47500,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -43699,6 +47549,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -43730,6 +47582,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -43761,6 +47615,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -43792,6 +47648,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -43839,6 +47697,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -43870,6 +47730,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutCreatedGroupsInput = {
@@ -43901,6 +47763,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedGroupsInput = {
@@ -43932,6 +47796,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedGroupsInput = {
@@ -43984,12 +47850,15 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
+    broadcastKey?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
     scope?: $Enums.TaskScope
@@ -44003,13 +47872,16 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     userId: string
+    broadcastKey?: string | null
     checkInId?: string | null
     templateId?: string | null
     isChallengeMode?: boolean
@@ -44033,6 +47905,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -44041,8 +47914,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
@@ -44058,6 +47934,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -44066,7 +47943,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
@@ -44453,6 +48333,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type AssignmentCreateWithoutGroupInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: UserCreateNestedOneWithoutCreatedAssignmentsInput
+    questions?: AssignmentQuestionCreateNestedManyWithoutAssignmentInput
+  }
+
+  export type AssignmentUncheckedCreateWithoutGroupInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById: string
+    questions?: AssignmentQuestionUncheckedCreateNestedManyWithoutAssignmentInput
+  }
+
+  export type AssignmentCreateOrConnectWithoutGroupInput = {
+    where: AssignmentWhereUniqueInput
+    create: XOR<AssignmentCreateWithoutGroupInput, AssignmentUncheckedCreateWithoutGroupInput>
+  }
+
+  export type AssignmentCreateManyGroupInputEnvelope = {
+    data: AssignmentCreateManyGroupInput | AssignmentCreateManyGroupInput[]
+    skipDuplicates?: boolean
+  }
+
   export type UserUpsertWithoutCreatedGroupsInput = {
     update: XOR<UserUpdateWithoutCreatedGroupsInput, UserUncheckedUpdateWithoutCreatedGroupsInput>
     create: XOR<UserCreateWithoutCreatedGroupsInput, UserUncheckedCreateWithoutCreatedGroupsInput>
@@ -44493,6 +48405,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
@@ -44524,6 +48438,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserGroupUpsertWithWhereUniqueWithoutGroupInput = {
@@ -44817,6 +48733,22 @@ export namespace Prisma {
     penaltyEventId?: StringNullableFilter<"RedemptionTask"> | string | null
   }
 
+  export type AssignmentUpsertWithWhereUniqueWithoutGroupInput = {
+    where: AssignmentWhereUniqueInput
+    update: XOR<AssignmentUpdateWithoutGroupInput, AssignmentUncheckedUpdateWithoutGroupInput>
+    create: XOR<AssignmentCreateWithoutGroupInput, AssignmentUncheckedCreateWithoutGroupInput>
+  }
+
+  export type AssignmentUpdateWithWhereUniqueWithoutGroupInput = {
+    where: AssignmentWhereUniqueInput
+    data: XOR<AssignmentUpdateWithoutGroupInput, AssignmentUncheckedUpdateWithoutGroupInput>
+  }
+
+  export type AssignmentUpdateManyWithWhereWithoutGroupInput = {
+    where: AssignmentScalarWhereInput
+    data: XOR<AssignmentUpdateManyMutationInput, AssignmentUncheckedUpdateManyWithoutGroupInput>
+  }
+
   export type UserCreateWithoutGroupsInput = {
     id: string
     name: string
@@ -44846,6 +48778,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutGroupsInput = {
@@ -44877,6 +48811,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutGroupsInput = {
@@ -44913,6 +48849,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutUsersInput = {
@@ -44944,6 +48881,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutUsersInput = {
@@ -44991,6 +48929,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGroupsInput = {
@@ -45022,6 +48962,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutUsersInput = {
@@ -45064,6 +49006,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutUsersInput = {
@@ -45095,6 +49038,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type UserCreateWithoutTasksInput = {
@@ -45126,6 +49070,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutTasksInput = {
@@ -45157,6 +49103,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutTasksInput = {
@@ -45193,6 +49141,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutTasksInput = {
@@ -45224,6 +49173,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutTasksInput = {
@@ -45237,6 +49187,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -45245,9 +49196,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
     group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
     startFiles?: StartFileCreateNestedManyWithoutCheckInInput
@@ -45262,6 +49216,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -45270,8 +49225,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventUncheckedCreateNestedManyWithoutCheckInInput
@@ -45361,6 +49319,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTasksInput = {
@@ -45392,6 +49352,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutTasksInput = {
@@ -45434,6 +49396,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutTasksInput = {
@@ -45465,6 +49428,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type CheckInUpsertWithoutTasksInput = {
@@ -45484,6 +49448,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -45492,9 +49457,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
     startFiles?: StartFileUpdateManyWithoutCheckInNestedInput
@@ -45509,6 +49477,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -45517,8 +49486,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUncheckedUpdateManyWithoutCheckInNestedInput
@@ -45598,6 +49570,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutCheckInsInput = {
@@ -45629,6 +49603,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutCheckInsInput = {
@@ -45665,6 +49641,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutCheckInsInput = {
@@ -45696,6 +49673,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutCheckInsInput = {
@@ -45703,17 +49681,114 @@ export namespace Prisma {
     create: XOR<GroupCreateWithoutCheckInsInput, GroupUncheckedCreateWithoutCheckInsInput>
   }
 
+  export type AssignmentQuestionCreateWithoutCheckInsInput = {
+    id?: string
+    prompt: string
+    order: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignment: AssignmentCreateNestedOneWithoutQuestionsInput
+  }
+
+  export type AssignmentQuestionUncheckedCreateWithoutCheckInsInput = {
+    id?: string
+    prompt: string
+    order: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    assignmentId: string
+  }
+
+  export type AssignmentQuestionCreateOrConnectWithoutCheckInsInput = {
+    where: AssignmentQuestionWhereUniqueInput
+    create: XOR<AssignmentQuestionCreateWithoutCheckInsInput, AssignmentQuestionUncheckedCreateWithoutCheckInsInput>
+  }
+
+  export type UserCreateWithoutReviewedCheckInsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    role?: $Enums.UserRole
+    isBlocked?: boolean | null
+    penaltyCount?: number
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    checkInReactions?: CheckInReactionCreateNestedManyWithoutUserInput
+    milestoneBadges?: MilestoneBadgeCreateNestedManyWithoutUserInput
+    confessionPosts?: ConfessionPostCreateNestedManyWithoutUserInput
+    confessionUpvotes?: ConfessionUpvoteCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    groups?: UserGroupCreateNestedManyWithoutUserInput
+    createdGroups?: GroupCreateNestedManyWithoutCreatedByInput
+    tasks?: TaskCreateNestedManyWithoutUserInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    messages?: GroupMessageCreateNestedManyWithoutUserInput
+    submissionVerifications?: SubmissionVerificationCreateNestedManyWithoutReviewerInput
+    penaltyEvents?: PenaltyEventCreateNestedManyWithoutUserInput
+    startFiles?: StartFileCreateNestedManyWithoutUserInput
+    endFiles?: EndFileCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
+    taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
+    createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
+    messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserUncheckedCreateWithoutReviewedCheckInsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    role?: $Enums.UserRole
+    isBlocked?: boolean | null
+    penaltyCount?: number
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    checkInReactions?: CheckInReactionUncheckedCreateNestedManyWithoutUserInput
+    milestoneBadges?: MilestoneBadgeUncheckedCreateNestedManyWithoutUserInput
+    confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutUserInput
+    confessionUpvotes?: ConfessionUpvoteUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    groups?: UserGroupUncheckedCreateNestedManyWithoutUserInput
+    createdGroups?: GroupUncheckedCreateNestedManyWithoutCreatedByInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    messages?: GroupMessageUncheckedCreateNestedManyWithoutUserInput
+    submissionVerifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutReviewerInput
+    penaltyEvents?: PenaltyEventUncheckedCreateNestedManyWithoutUserInput
+    startFiles?: StartFileUncheckedCreateNestedManyWithoutUserInput
+    endFiles?: EndFileUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
+    taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
+    createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+  }
+
+  export type UserCreateOrConnectWithoutReviewedCheckInsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutReviewedCheckInsInput, UserUncheckedCreateWithoutReviewedCheckInsInput>
+  }
+
   export type TaskCreateWithoutCheckInInput = {
     id?: string
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
+    broadcastKey?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
     scope?: $Enums.TaskScope
@@ -45727,14 +49802,17 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     userId: string
     groupId: string
+    broadcastKey?: string | null
     templateId?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
@@ -45967,6 +50045,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCheckInsInput = {
@@ -45998,6 +50078,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutCheckInsInput = {
@@ -46040,6 +50122,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutCheckInsInput = {
@@ -46071,6 +50154,113 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
+  }
+
+  export type AssignmentQuestionUpsertWithoutCheckInsInput = {
+    update: XOR<AssignmentQuestionUpdateWithoutCheckInsInput, AssignmentQuestionUncheckedUpdateWithoutCheckInsInput>
+    create: XOR<AssignmentQuestionCreateWithoutCheckInsInput, AssignmentQuestionUncheckedCreateWithoutCheckInsInput>
+    where?: AssignmentQuestionWhereInput
+  }
+
+  export type AssignmentQuestionUpdateToOneWithWhereWithoutCheckInsInput = {
+    where?: AssignmentQuestionWhereInput
+    data: XOR<AssignmentQuestionUpdateWithoutCheckInsInput, AssignmentQuestionUncheckedUpdateWithoutCheckInsInput>
+  }
+
+  export type AssignmentQuestionUpdateWithoutCheckInsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignment?: AssignmentUpdateOneRequiredWithoutQuestionsNestedInput
+  }
+
+  export type AssignmentQuestionUncheckedUpdateWithoutCheckInsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    assignmentId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type UserUpsertWithoutReviewedCheckInsInput = {
+    update: XOR<UserUpdateWithoutReviewedCheckInsInput, UserUncheckedUpdateWithoutReviewedCheckInsInput>
+    create: XOR<UserCreateWithoutReviewedCheckInsInput, UserUncheckedCreateWithoutReviewedCheckInsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutReviewedCheckInsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutReviewedCheckInsInput, UserUncheckedUpdateWithoutReviewedCheckInsInput>
+  }
+
+  export type UserUpdateWithoutReviewedCheckInsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isBlocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    penaltyCount?: IntFieldUpdateOperationsInput | number
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    checkInReactions?: CheckInReactionUpdateManyWithoutUserNestedInput
+    milestoneBadges?: MilestoneBadgeUpdateManyWithoutUserNestedInput
+    confessionPosts?: ConfessionPostUpdateManyWithoutUserNestedInput
+    confessionUpvotes?: ConfessionUpvoteUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    groups?: UserGroupUpdateManyWithoutUserNestedInput
+    createdGroups?: GroupUpdateManyWithoutCreatedByNestedInput
+    tasks?: TaskUpdateManyWithoutUserNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    messages?: GroupMessageUpdateManyWithoutUserNestedInput
+    submissionVerifications?: SubmissionVerificationUpdateManyWithoutReviewerNestedInput
+    penaltyEvents?: PenaltyEventUpdateManyWithoutUserNestedInput
+    startFiles?: StartFileUpdateManyWithoutUserNestedInput
+    endFiles?: EndFileUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
+    taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
+    createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
+    messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutReviewedCheckInsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isBlocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    penaltyCount?: IntFieldUpdateOperationsInput | number
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    checkInReactions?: CheckInReactionUncheckedUpdateManyWithoutUserNestedInput
+    milestoneBadges?: MilestoneBadgeUncheckedUpdateManyWithoutUserNestedInput
+    confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutUserNestedInput
+    confessionUpvotes?: ConfessionUpvoteUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    groups?: UserGroupUncheckedUpdateManyWithoutUserNestedInput
+    createdGroups?: GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    messages?: GroupMessageUncheckedUpdateManyWithoutUserNestedInput
+    submissionVerifications?: SubmissionVerificationUncheckedUpdateManyWithoutReviewerNestedInput
+    penaltyEvents?: PenaltyEventUncheckedUpdateManyWithoutUserNestedInput
+    startFiles?: StartFileUncheckedUpdateManyWithoutUserNestedInput
+    endFiles?: EndFileUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
+    taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
+    createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutCheckInInput = {
@@ -46185,12 +50375,388 @@ export namespace Prisma {
     data: XOR<CheckInReactionUpdateManyMutationInput, CheckInReactionUncheckedUpdateManyWithoutCheckInInput>
   }
 
-  export type CheckInCreateWithoutVerificationsInput = {
+  export type GroupCreateWithoutAssignmentsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    link?: string | null
+    visibility?: $Enums.GroupVisibility
+    focusType?: $Enums.GroupFocusType
+    taskPostingMode?: $Enums.TaskPostingMode
+    penaltyMode?: $Enums.PenaltyMode
+    inviteCode: string
+    inviteExpiresAt: Date | string
+    maxMembers?: number
+    dailyPenalty?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdBy: UserCreateNestedOneWithoutCreatedGroupsInput
+    users?: UserGroupCreateNestedManyWithoutGroupInput
+    tasks?: TaskCreateNestedManyWithoutGroupInput
+    checkIns?: CheckInCreateNestedManyWithoutGroupInput
+    messages?: GroupMessageCreateNestedManyWithoutGroupInput
+    penaltyEvents?: PenaltyEventCreateNestedManyWithoutGroupInput
+    startFiles?: StartFileCreateNestedManyWithoutGroupInput
+    endFiles?: EndFileCreateNestedManyWithoutGroupInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutGroupInput
+    taskTemplates?: TaskTemplateCreateNestedManyWithoutGroupInput
+    documents?: GroupDocumentCreateNestedManyWithoutGroupInput
+    hallOfFameEntries?: HallOfFameCreateNestedManyWithoutGroupInput
+    weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
+    confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
+    redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+  }
+
+  export type GroupUncheckedCreateWithoutAssignmentsInput = {
+    id?: string
+    name: string
+    description?: string | null
+    link?: string | null
+    visibility?: $Enums.GroupVisibility
+    focusType?: $Enums.GroupFocusType
+    taskPostingMode?: $Enums.TaskPostingMode
+    penaltyMode?: $Enums.PenaltyMode
+    inviteCode: string
+    inviteExpiresAt: Date | string
+    maxMembers?: number
+    dailyPenalty?: number
+    createdById: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserGroupUncheckedCreateNestedManyWithoutGroupInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutGroupInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutGroupInput
+    messages?: GroupMessageUncheckedCreateNestedManyWithoutGroupInput
+    penaltyEvents?: PenaltyEventUncheckedCreateNestedManyWithoutGroupInput
+    startFiles?: StartFileUncheckedCreateNestedManyWithoutGroupInput
+    endFiles?: EndFileUncheckedCreateNestedManyWithoutGroupInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutGroupInput
+    taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutGroupInput
+    documents?: GroupDocumentUncheckedCreateNestedManyWithoutGroupInput
+    hallOfFameEntries?: HallOfFameUncheckedCreateNestedManyWithoutGroupInput
+    weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
+    confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
+    redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+  }
+
+  export type GroupCreateOrConnectWithoutAssignmentsInput = {
+    where: GroupWhereUniqueInput
+    create: XOR<GroupCreateWithoutAssignmentsInput, GroupUncheckedCreateWithoutAssignmentsInput>
+  }
+
+  export type UserCreateWithoutCreatedAssignmentsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    role?: $Enums.UserRole
+    isBlocked?: boolean | null
+    penaltyCount?: number
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    checkInReactions?: CheckInReactionCreateNestedManyWithoutUserInput
+    milestoneBadges?: MilestoneBadgeCreateNestedManyWithoutUserInput
+    confessionPosts?: ConfessionPostCreateNestedManyWithoutUserInput
+    confessionUpvotes?: ConfessionUpvoteCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    groups?: UserGroupCreateNestedManyWithoutUserInput
+    createdGroups?: GroupCreateNestedManyWithoutCreatedByInput
+    tasks?: TaskCreateNestedManyWithoutUserInput
+    checkIns?: CheckInCreateNestedManyWithoutUserInput
+    messages?: GroupMessageCreateNestedManyWithoutUserInput
+    submissionVerifications?: SubmissionVerificationCreateNestedManyWithoutReviewerInput
+    penaltyEvents?: PenaltyEventCreateNestedManyWithoutUserInput
+    startFiles?: StartFileCreateNestedManyWithoutUserInput
+    endFiles?: EndFileCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
+    taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
+    createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
+    messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
+  }
+
+  export type UserUncheckedCreateWithoutCreatedAssignmentsInput = {
+    id: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    role?: $Enums.UserRole
+    isBlocked?: boolean | null
+    penaltyCount?: number
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    checkInReactions?: CheckInReactionUncheckedCreateNestedManyWithoutUserInput
+    milestoneBadges?: MilestoneBadgeUncheckedCreateNestedManyWithoutUserInput
+    confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutUserInput
+    confessionUpvotes?: ConfessionUpvoteUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    groups?: UserGroupUncheckedCreateNestedManyWithoutUserInput
+    createdGroups?: GroupUncheckedCreateNestedManyWithoutCreatedByInput
+    tasks?: TaskUncheckedCreateNestedManyWithoutUserInput
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutUserInput
+    messages?: GroupMessageUncheckedCreateNestedManyWithoutUserInput
+    submissionVerifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutReviewerInput
+    penaltyEvents?: PenaltyEventUncheckedCreateNestedManyWithoutUserInput
+    startFiles?: StartFileUncheckedCreateNestedManyWithoutUserInput
+    endFiles?: EndFileUncheckedCreateNestedManyWithoutUserInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
+    taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
+    createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
+  }
+
+  export type UserCreateOrConnectWithoutCreatedAssignmentsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCreatedAssignmentsInput, UserUncheckedCreateWithoutCreatedAssignmentsInput>
+  }
+
+  export type AssignmentQuestionCreateWithoutAssignmentInput = {
+    id?: string
+    prompt: string
+    order: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    checkIns?: CheckInCreateNestedManyWithoutAssignmentQuestionInput
+  }
+
+  export type AssignmentQuestionUncheckedCreateWithoutAssignmentInput = {
+    id?: string
+    prompt: string
+    order: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    checkIns?: CheckInUncheckedCreateNestedManyWithoutAssignmentQuestionInput
+  }
+
+  export type AssignmentQuestionCreateOrConnectWithoutAssignmentInput = {
+    where: AssignmentQuestionWhereUniqueInput
+    create: XOR<AssignmentQuestionCreateWithoutAssignmentInput, AssignmentQuestionUncheckedCreateWithoutAssignmentInput>
+  }
+
+  export type AssignmentQuestionCreateManyAssignmentInputEnvelope = {
+    data: AssignmentQuestionCreateManyAssignmentInput | AssignmentQuestionCreateManyAssignmentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type GroupUpsertWithoutAssignmentsInput = {
+    update: XOR<GroupUpdateWithoutAssignmentsInput, GroupUncheckedUpdateWithoutAssignmentsInput>
+    create: XOR<GroupCreateWithoutAssignmentsInput, GroupUncheckedCreateWithoutAssignmentsInput>
+    where?: GroupWhereInput
+  }
+
+  export type GroupUpdateToOneWithWhereWithoutAssignmentsInput = {
+    where?: GroupWhereInput
+    data: XOR<GroupUpdateWithoutAssignmentsInput, GroupUncheckedUpdateWithoutAssignmentsInput>
+  }
+
+  export type GroupUpdateWithoutAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+    focusType?: EnumGroupFocusTypeFieldUpdateOperationsInput | $Enums.GroupFocusType
+    taskPostingMode?: EnumTaskPostingModeFieldUpdateOperationsInput | $Enums.TaskPostingMode
+    penaltyMode?: EnumPenaltyModeFieldUpdateOperationsInput | $Enums.PenaltyMode
+    inviteCode?: StringFieldUpdateOperationsInput | string
+    inviteExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maxMembers?: IntFieldUpdateOperationsInput | number
+    dailyPenalty?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
+    users?: UserGroupUpdateManyWithoutGroupNestedInput
+    tasks?: TaskUpdateManyWithoutGroupNestedInput
+    checkIns?: CheckInUpdateManyWithoutGroupNestedInput
+    messages?: GroupMessageUpdateManyWithoutGroupNestedInput
+    penaltyEvents?: PenaltyEventUpdateManyWithoutGroupNestedInput
+    startFiles?: StartFileUpdateManyWithoutGroupNestedInput
+    endFiles?: EndFileUpdateManyWithoutGroupNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutGroupNestedInput
+    taskTemplates?: TaskTemplateUpdateManyWithoutGroupNestedInput
+    documents?: GroupDocumentUpdateManyWithoutGroupNestedInput
+    hallOfFameEntries?: HallOfFameUpdateManyWithoutGroupNestedInput
+    weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
+    confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
+    redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+  }
+
+  export type GroupUncheckedUpdateWithoutAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    link?: NullableStringFieldUpdateOperationsInput | string | null
+    visibility?: EnumGroupVisibilityFieldUpdateOperationsInput | $Enums.GroupVisibility
+    focusType?: EnumGroupFocusTypeFieldUpdateOperationsInput | $Enums.GroupFocusType
+    taskPostingMode?: EnumTaskPostingModeFieldUpdateOperationsInput | $Enums.TaskPostingMode
+    penaltyMode?: EnumPenaltyModeFieldUpdateOperationsInput | $Enums.PenaltyMode
+    inviteCode?: StringFieldUpdateOperationsInput | string
+    inviteExpiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    maxMembers?: IntFieldUpdateOperationsInput | number
+    dailyPenalty?: IntFieldUpdateOperationsInput | number
+    createdById?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserGroupUncheckedUpdateManyWithoutGroupNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutGroupNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutGroupNestedInput
+    messages?: GroupMessageUncheckedUpdateManyWithoutGroupNestedInput
+    penaltyEvents?: PenaltyEventUncheckedUpdateManyWithoutGroupNestedInput
+    startFiles?: StartFileUncheckedUpdateManyWithoutGroupNestedInput
+    endFiles?: EndFileUncheckedUpdateManyWithoutGroupNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutGroupNestedInput
+    taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutGroupNestedInput
+    documents?: GroupDocumentUncheckedUpdateManyWithoutGroupNestedInput
+    hallOfFameEntries?: HallOfFameUncheckedUpdateManyWithoutGroupNestedInput
+    weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
+    confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
+    redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+  }
+
+  export type UserUpsertWithoutCreatedAssignmentsInput = {
+    update: XOR<UserUpdateWithoutCreatedAssignmentsInput, UserUncheckedUpdateWithoutCreatedAssignmentsInput>
+    create: XOR<UserCreateWithoutCreatedAssignmentsInput, UserUncheckedCreateWithoutCreatedAssignmentsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCreatedAssignmentsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCreatedAssignmentsInput, UserUncheckedUpdateWithoutCreatedAssignmentsInput>
+  }
+
+  export type UserUpdateWithoutCreatedAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isBlocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    penaltyCount?: IntFieldUpdateOperationsInput | number
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    checkInReactions?: CheckInReactionUpdateManyWithoutUserNestedInput
+    milestoneBadges?: MilestoneBadgeUpdateManyWithoutUserNestedInput
+    confessionPosts?: ConfessionPostUpdateManyWithoutUserNestedInput
+    confessionUpvotes?: ConfessionUpvoteUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    groups?: UserGroupUpdateManyWithoutUserNestedInput
+    createdGroups?: GroupUpdateManyWithoutCreatedByNestedInput
+    tasks?: TaskUpdateManyWithoutUserNestedInput
+    checkIns?: CheckInUpdateManyWithoutUserNestedInput
+    messages?: GroupMessageUpdateManyWithoutUserNestedInput
+    submissionVerifications?: SubmissionVerificationUpdateManyWithoutReviewerNestedInput
+    penaltyEvents?: PenaltyEventUpdateManyWithoutUserNestedInput
+    startFiles?: StartFileUpdateManyWithoutUserNestedInput
+    endFiles?: EndFileUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
+    taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
+    createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
+    messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCreatedAssignmentsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    isBlocked?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    penaltyCount?: IntFieldUpdateOperationsInput | number
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    checkInReactions?: CheckInReactionUncheckedUpdateManyWithoutUserNestedInput
+    milestoneBadges?: MilestoneBadgeUncheckedUpdateManyWithoutUserNestedInput
+    confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutUserNestedInput
+    confessionUpvotes?: ConfessionUpvoteUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    groups?: UserGroupUncheckedUpdateManyWithoutUserNestedInput
+    createdGroups?: GroupUncheckedUpdateManyWithoutCreatedByNestedInput
+    tasks?: TaskUncheckedUpdateManyWithoutUserNestedInput
+    checkIns?: CheckInUncheckedUpdateManyWithoutUserNestedInput
+    messages?: GroupMessageUncheckedUpdateManyWithoutUserNestedInput
+    submissionVerifications?: SubmissionVerificationUncheckedUpdateManyWithoutReviewerNestedInput
+    penaltyEvents?: PenaltyEventUncheckedUpdateManyWithoutUserNestedInput
+    startFiles?: StartFileUncheckedUpdateManyWithoutUserNestedInput
+    endFiles?: EndFileUncheckedUpdateManyWithoutUserNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
+    taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
+    createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
+  }
+
+  export type AssignmentQuestionUpsertWithWhereUniqueWithoutAssignmentInput = {
+    where: AssignmentQuestionWhereUniqueInput
+    update: XOR<AssignmentQuestionUpdateWithoutAssignmentInput, AssignmentQuestionUncheckedUpdateWithoutAssignmentInput>
+    create: XOR<AssignmentQuestionCreateWithoutAssignmentInput, AssignmentQuestionUncheckedCreateWithoutAssignmentInput>
+  }
+
+  export type AssignmentQuestionUpdateWithWhereUniqueWithoutAssignmentInput = {
+    where: AssignmentQuestionWhereUniqueInput
+    data: XOR<AssignmentQuestionUpdateWithoutAssignmentInput, AssignmentQuestionUncheckedUpdateWithoutAssignmentInput>
+  }
+
+  export type AssignmentQuestionUpdateManyWithWhereWithoutAssignmentInput = {
+    where: AssignmentQuestionScalarWhereInput
+    data: XOR<AssignmentQuestionUpdateManyMutationInput, AssignmentQuestionUncheckedUpdateManyWithoutAssignmentInput>
+  }
+
+  export type AssignmentQuestionScalarWhereInput = {
+    AND?: AssignmentQuestionScalarWhereInput | AssignmentQuestionScalarWhereInput[]
+    OR?: AssignmentQuestionScalarWhereInput[]
+    NOT?: AssignmentQuestionScalarWhereInput | AssignmentQuestionScalarWhereInput[]
+    id?: StringFilter<"AssignmentQuestion"> | string
+    prompt?: StringFilter<"AssignmentQuestion"> | string
+    order?: IntFilter<"AssignmentQuestion"> | number
+    createdAt?: DateTimeFilter<"AssignmentQuestion"> | Date | string
+    updatedAt?: DateTimeFilter<"AssignmentQuestion"> | Date | string
+    assignmentId?: StringFilter<"AssignmentQuestion"> | string
+  }
+
+  export type AssignmentCreateWithoutQuestionsInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    group: GroupCreateNestedOneWithoutAssignmentsInput
+    createdBy: UserCreateNestedOneWithoutCreatedAssignmentsInput
+  }
+
+  export type AssignmentUncheckedCreateWithoutQuestionsInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupId: string
+    createdById: string
+  }
+
+  export type AssignmentCreateOrConnectWithoutQuestionsInput = {
+    where: AssignmentWhereUniqueInput
+    create: XOR<AssignmentCreateWithoutQuestionsInput, AssignmentUncheckedCreateWithoutQuestionsInput>
+  }
+
+  export type CheckInCreateWithoutAssignmentQuestionInput = {
     id?: string
     day: Date | string
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -46199,9 +50765,129 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
     group: GroupCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
+    tasks?: TaskCreateNestedManyWithoutCheckInInput
+    verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
+    penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
+    startFiles?: StartFileCreateNestedManyWithoutCheckInInput
+    endFiles?: EndFileCreateNestedManyWithoutCheckInInput
+    notificationLogs?: NotificationLogCreateNestedManyWithoutCheckInInput
+    reactions?: CheckInReactionCreateNestedManyWithoutCheckInInput
+  }
+
+  export type CheckInUncheckedCreateWithoutAssignmentQuestionInput = {
+    id?: string
+    day: Date | string
+    reflection?: string | null
+    proofText?: string | null
+    proofLink?: string | null
+    reviewNote?: string | null
+    aiSummary?: string | null
+    aiConfidence?: number | null
+    status?: $Enums.CheckInStatus
+    pointsAwarded?: number
+    penaltyApplied?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    userId: string
+    groupId: string
+    reviewedById?: string | null
+    isEarlyBird?: boolean
+    tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
+    verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
+    penalties?: PenaltyEventUncheckedCreateNestedManyWithoutCheckInInput
+    startFiles?: StartFileUncheckedCreateNestedManyWithoutCheckInInput
+    endFiles?: EndFileUncheckedCreateNestedManyWithoutCheckInInput
+    notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutCheckInInput
+    reactions?: CheckInReactionUncheckedCreateNestedManyWithoutCheckInInput
+  }
+
+  export type CheckInCreateOrConnectWithoutAssignmentQuestionInput = {
+    where: CheckInWhereUniqueInput
+    create: XOR<CheckInCreateWithoutAssignmentQuestionInput, CheckInUncheckedCreateWithoutAssignmentQuestionInput>
+  }
+
+  export type CheckInCreateManyAssignmentQuestionInputEnvelope = {
+    data: CheckInCreateManyAssignmentQuestionInput | CheckInCreateManyAssignmentQuestionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AssignmentUpsertWithoutQuestionsInput = {
+    update: XOR<AssignmentUpdateWithoutQuestionsInput, AssignmentUncheckedUpdateWithoutQuestionsInput>
+    create: XOR<AssignmentCreateWithoutQuestionsInput, AssignmentUncheckedCreateWithoutQuestionsInput>
+    where?: AssignmentWhereInput
+  }
+
+  export type AssignmentUpdateToOneWithWhereWithoutQuestionsInput = {
+    where?: AssignmentWhereInput
+    data: XOR<AssignmentUpdateWithoutQuestionsInput, AssignmentUncheckedUpdateWithoutQuestionsInput>
+  }
+
+  export type AssignmentUpdateWithoutQuestionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    group?: GroupUpdateOneRequiredWithoutAssignmentsNestedInput
+    createdBy?: UserUpdateOneRequiredWithoutCreatedAssignmentsNestedInput
+  }
+
+  export type AssignmentUncheckedUpdateWithoutQuestionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    createdById?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CheckInUpsertWithWhereUniqueWithoutAssignmentQuestionInput = {
+    where: CheckInWhereUniqueInput
+    update: XOR<CheckInUpdateWithoutAssignmentQuestionInput, CheckInUncheckedUpdateWithoutAssignmentQuestionInput>
+    create: XOR<CheckInCreateWithoutAssignmentQuestionInput, CheckInUncheckedCreateWithoutAssignmentQuestionInput>
+  }
+
+  export type CheckInUpdateWithWhereUniqueWithoutAssignmentQuestionInput = {
+    where: CheckInWhereUniqueInput
+    data: XOR<CheckInUpdateWithoutAssignmentQuestionInput, CheckInUncheckedUpdateWithoutAssignmentQuestionInput>
+  }
+
+  export type CheckInUpdateManyWithWhereWithoutAssignmentQuestionInput = {
+    where: CheckInScalarWhereInput
+    data: XOR<CheckInUpdateManyMutationInput, CheckInUncheckedUpdateManyWithoutAssignmentQuestionInput>
+  }
+
+  export type CheckInCreateWithoutVerificationsInput = {
+    id?: string
+    day: Date | string
+    reflection?: string | null
+    proofText?: string | null
+    proofLink?: string | null
+    reviewNote?: string | null
+    aiSummary?: string | null
+    aiConfidence?: number | null
+    status?: $Enums.CheckInStatus
+    pointsAwarded?: number
+    penaltyApplied?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    isEarlyBird?: boolean
+    user: UserCreateNestedOneWithoutCheckInsInput
+    group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
     startFiles?: StartFileCreateNestedManyWithoutCheckInInput
@@ -46216,6 +50902,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -46224,8 +50911,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventUncheckedCreateNestedManyWithoutCheckInInput
@@ -46269,6 +50959,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutSubmissionVerificationsInput = {
@@ -46300,6 +50992,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutSubmissionVerificationsInput = {
@@ -46324,6 +51018,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -46332,9 +51027,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
     startFiles?: StartFileUpdateManyWithoutCheckInNestedInput
@@ -46349,6 +51047,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -46357,8 +51056,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUncheckedUpdateManyWithoutCheckInNestedInput
@@ -46408,6 +51110,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSubmissionVerificationsInput = {
@@ -46439,6 +51143,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutPenaltyEventsInput = {
@@ -46470,6 +51176,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutPenaltyEventsInput = {
@@ -46501,6 +51209,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutPenaltyEventsInput = {
@@ -46537,6 +51247,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutPenaltyEventsInput = {
@@ -46568,6 +51279,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutPenaltyEventsInput = {
@@ -46581,6 +51293,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -46589,9 +51302,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
     group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     startFiles?: StartFileCreateNestedManyWithoutCheckInInput
@@ -46606,6 +51322,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -46614,8 +51331,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
@@ -46670,6 +51390,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPenaltyEventsInput = {
@@ -46701,6 +51423,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutPenaltyEventsInput = {
@@ -46743,6 +51467,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutPenaltyEventsInput = {
@@ -46774,6 +51499,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type CheckInUpsertWithoutPenaltiesInput = {
@@ -46793,6 +51519,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -46801,9 +51528,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     startFiles?: StartFileUpdateManyWithoutCheckInNestedInput
@@ -46818,6 +51548,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -46826,8 +51557,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
@@ -46866,6 +51600,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutMessagesInput = {
@@ -46897,6 +51633,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutMessagesInput = {
@@ -46933,6 +51671,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutMessagesInput = {
@@ -46964,6 +51703,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutMessagesInput = {
@@ -47035,6 +51775,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -47066,6 +51808,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutMessagesInput = {
@@ -47108,6 +51852,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutMessagesInput = {
@@ -47139,6 +51884,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupMessageReactionUpsertWithWhereUniqueWithoutMessageInput = {
@@ -47186,6 +51932,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutTaskTemplatesInput = {
@@ -47217,6 +51965,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutTaskTemplatesInput = {
@@ -47253,6 +52003,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutTaskTemplatesInput = {
@@ -47284,6 +52035,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutTaskTemplatesInput = {
@@ -47320,6 +52072,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutCreatedTaskTemplatesInput = {
@@ -47351,6 +52105,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutCreatedTaskTemplatesInput = {
@@ -47363,12 +52119,15 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
+    broadcastKey?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
     scope?: $Enums.TaskScope
@@ -47382,14 +52141,17 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     userId: string
     groupId: string
+    broadcastKey?: string | null
     checkInId?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
@@ -47446,6 +52208,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTaskTemplatesInput = {
@@ -47477,6 +52241,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutTaskTemplatesInput = {
@@ -47519,6 +52285,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutTaskTemplatesInput = {
@@ -47550,6 +52317,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type UserUpsertWithoutCreatedTaskTemplatesInput = {
@@ -47592,6 +52360,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCreatedTaskTemplatesInput = {
@@ -47623,6 +52393,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type TaskUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -47670,6 +52442,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutStartFilesInput = {
@@ -47701,6 +52475,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutStartFilesInput = {
@@ -47737,6 +52513,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutStartFilesInput = {
@@ -47768,6 +52545,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutStartFilesInput = {
@@ -47781,6 +52559,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -47789,9 +52568,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
     group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
@@ -47806,6 +52588,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -47814,8 +52597,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
@@ -47870,6 +52656,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStartFilesInput = {
@@ -47901,6 +52689,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutStartFilesInput = {
@@ -47943,6 +52733,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutStartFilesInput = {
@@ -47974,6 +52765,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type CheckInUpsertWithoutStartFilesInput = {
@@ -47993,6 +52785,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -48001,9 +52794,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
@@ -48018,6 +52814,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -48026,8 +52823,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
@@ -48066,6 +52866,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutEndFilesInput = {
@@ -48097,6 +52899,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutEndFilesInput = {
@@ -48133,6 +52937,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutEndFilesInput = {
@@ -48164,6 +52969,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutEndFilesInput = {
@@ -48177,6 +52983,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -48185,9 +52992,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
     group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
@@ -48202,6 +53012,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -48210,8 +53021,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
@@ -48266,6 +53080,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEndFilesInput = {
@@ -48297,6 +53113,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutEndFilesInput = {
@@ -48339,6 +53157,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutEndFilesInput = {
@@ -48370,6 +53189,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type CheckInUpsertWithoutEndFilesInput = {
@@ -48389,6 +53209,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -48397,9 +53218,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
@@ -48414,6 +53238,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -48422,8 +53247,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
@@ -48462,6 +53290,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutNotificationLogsInput = {
@@ -48493,6 +53323,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutNotificationLogsInput = {
@@ -48529,6 +53361,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutNotificationLogsInput = {
@@ -48560,6 +53393,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutNotificationLogsInput = {
@@ -48573,6 +53407,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -48581,9 +53416,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
     group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
@@ -48598,6 +53436,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -48606,8 +53445,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
@@ -48662,6 +53504,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationLogsInput = {
@@ -48693,6 +53537,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutNotificationLogsInput = {
@@ -48735,6 +53581,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutNotificationLogsInput = {
@@ -48766,6 +53613,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type CheckInUpsertWithoutNotificationLogsInput = {
@@ -48785,6 +53633,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -48793,9 +53642,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
@@ -48810,6 +53662,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -48818,8 +53671,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
@@ -48858,6 +53714,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogCreateNestedManyWithoutUserInput
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutMessageReactionsInput = {
@@ -48889,6 +53747,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUncheckedCreateNestedManyWithoutUserInput
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutMessageReactionsInput = {
@@ -48965,6 +53825,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUpdateManyWithoutUserNestedInput
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessageReactionsInput = {
@@ -48996,6 +53858,8 @@ export namespace Prisma {
     notificationLogs?: NotificationLogUncheckedUpdateManyWithoutUserNestedInput
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupMessageUpsertWithoutReactionsInput = {
@@ -49062,6 +53926,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutCheckInReactionsInput = {
@@ -49093,6 +53959,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutCheckInReactionsInput = {
@@ -49106,6 +53974,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -49114,9 +53983,12 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     isEarlyBird?: boolean
     user: UserCreateNestedOneWithoutCheckInsInput
     group: GroupCreateNestedOneWithoutCheckInsInput
+    assignmentQuestion?: AssignmentQuestionCreateNestedOneWithoutCheckInsInput
+    reviewedBy?: UserCreateNestedOneWithoutReviewedCheckInsInput
     tasks?: TaskCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationCreateNestedManyWithoutCheckInInput
     penalties?: PenaltyEventCreateNestedManyWithoutCheckInInput
@@ -49131,6 +54003,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -49139,8 +54012,11 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
     tasks?: TaskUncheckedCreateNestedManyWithoutCheckInInput
     verifications?: SubmissionVerificationUncheckedCreateNestedManyWithoutCheckInInput
@@ -49195,6 +54071,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCheckInReactionsInput = {
@@ -49226,6 +54104,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type CheckInUpsertWithoutReactionsInput = {
@@ -49245,6 +54125,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -49253,9 +54134,12 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
@@ -49270,6 +54154,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -49278,8 +54163,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
@@ -49318,6 +54206,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutDocumentsInput = {
@@ -49349,6 +54238,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutDocumentsInput = {
@@ -49396,6 +54286,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutDocumentsInput = {
@@ -49427,6 +54318,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupCreateWithoutHallOfFameEntriesInput = {
@@ -49458,6 +54350,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutHallOfFameEntriesInput = {
@@ -49489,6 +54382,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutHallOfFameEntriesInput = {
@@ -49536,6 +54430,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutHallOfFameEntriesInput = {
@@ -49567,6 +54462,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupCreateWithoutWeeklyRecapsInput = {
@@ -49598,6 +54494,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutWeeklyRecapsInput = {
@@ -49629,6 +54526,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutWeeklyRecapsInput = {
@@ -49676,6 +54574,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutWeeklyRecapsInput = {
@@ -49707,6 +54606,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type UserCreateWithoutMilestoneBadgesInput = {
@@ -49738,6 +54638,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutMilestoneBadgesInput = {
@@ -49769,6 +54671,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutMilestoneBadgesInput = {
@@ -49816,6 +54720,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMilestoneBadgesInput = {
@@ -49847,6 +54753,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserCreateWithoutConfessionPostsInput = {
@@ -49878,6 +54786,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutConfessionPostsInput = {
@@ -49909,6 +54819,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutConfessionPostsInput = {
@@ -49945,6 +54857,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameCreateNestedManyWithoutGroupInput
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutConfessionPostsInput = {
@@ -49976,6 +54889,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUncheckedCreateNestedManyWithoutGroupInput
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     redemptionTasks?: RedemptionTaskUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutConfessionPostsInput = {
@@ -50045,6 +54959,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConfessionPostsInput = {
@@ -50076,6 +54992,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type GroupUpsertWithoutConfessionPostsInput = {
@@ -50118,6 +55036,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUpdateManyWithoutGroupNestedInput
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutConfessionPostsInput = {
@@ -50149,6 +55068,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUncheckedUpdateManyWithoutGroupNestedInput
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type ConfessionUpvoteUpsertWithWhereUniqueWithoutConfessionInput = {
@@ -50196,6 +55116,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserUncheckedCreateWithoutConfessionUpvotesInput = {
@@ -50227,6 +55149,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutUserInput
     createdTaskTemplates?: TaskTemplateUncheckedCreateNestedManyWithoutCreatedByInput
     messageReactions?: GroupMessageReactionUncheckedCreateNestedManyWithoutUserInput
+    createdAssignments?: AssignmentUncheckedCreateNestedManyWithoutCreatedByInput
+    reviewedCheckIns?: CheckInUncheckedCreateNestedManyWithoutReviewedByInput
   }
 
   export type UserCreateOrConnectWithoutConfessionUpvotesInput = {
@@ -50297,6 +55221,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUpdateManyWithoutReviewedByNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConfessionUpvotesInput = {
@@ -50328,6 +55254,8 @@ export namespace Prisma {
     taskTemplates?: TaskTemplateUncheckedUpdateManyWithoutUserNestedInput
     createdTaskTemplates?: TaskTemplateUncheckedUpdateManyWithoutCreatedByNestedInput
     messageReactions?: GroupMessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    createdAssignments?: AssignmentUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviewedCheckIns?: CheckInUncheckedUpdateManyWithoutReviewedByNestedInput
   }
 
   export type ConfessionPostUpsertWithoutUpvotesInput = {
@@ -50388,6 +55316,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameCreateNestedManyWithoutGroupInput
     weeklyRecaps?: WeeklyRecapCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentCreateNestedManyWithoutGroupInput
   }
 
   export type GroupUncheckedCreateWithoutRedemptionTasksInput = {
@@ -50419,6 +55348,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUncheckedCreateNestedManyWithoutGroupInput
     weeklyRecaps?: WeeklyRecapUncheckedCreateNestedManyWithoutGroupInput
     confessionPosts?: ConfessionPostUncheckedCreateNestedManyWithoutGroupInput
+    assignments?: AssignmentUncheckedCreateNestedManyWithoutGroupInput
   }
 
   export type GroupCreateOrConnectWithoutRedemptionTasksInput = {
@@ -50466,6 +55396,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUpdateManyWithoutGroupNestedInput
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutRedemptionTasksInput = {
@@ -50497,6 +55428,7 @@ export namespace Prisma {
     hallOfFameEntries?: HallOfFameUncheckedUpdateManyWithoutGroupNestedInput
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type SessionCreateManyUserInput = {
@@ -50589,13 +55521,16 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     groupId: string
+    broadcastKey?: string | null
     checkInId?: string | null
     templateId?: string | null
     isChallengeMode?: boolean
@@ -50609,6 +55544,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -50617,7 +55553,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     groupId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
   }
 
@@ -50716,6 +55655,38 @@ export namespace Prisma {
     kind: $Enums.GroupMessageReactionKind
     createdAt?: Date | string
     messageId: string
+  }
+
+  export type AssignmentCreateManyCreatedByInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    groupId: string
+  }
+
+  export type CheckInCreateManyReviewedByInput = {
+    id?: string
+    day: Date | string
+    reflection?: string | null
+    proofText?: string | null
+    proofLink?: string | null
+    reviewNote?: string | null
+    aiSummary?: string | null
+    aiConfidence?: number | null
+    status?: $Enums.CheckInStatus
+    pointsAwarded?: number
+    penaltyApplied?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    userId: string
+    groupId: string
+    assignmentQuestionId?: string | null
+    isEarlyBird?: boolean
   }
 
   export type SessionUpdateWithoutUserInput = {
@@ -50953,6 +55924,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateWithoutCreatedByInput = {
@@ -50984,6 +55956,7 @@ export namespace Prisma {
     weeklyRecaps?: WeeklyRecapUncheckedUpdateManyWithoutGroupNestedInput
     confessionPosts?: ConfessionPostUncheckedUpdateManyWithoutGroupNestedInput
     redemptionTasks?: RedemptionTaskUncheckedUpdateManyWithoutGroupNestedInput
+    assignments?: AssignmentUncheckedUpdateManyWithoutGroupNestedInput
   }
 
   export type GroupUncheckedUpdateManyWithoutCreatedByInput = {
@@ -51008,12 +55981,15 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: EnumTaskScopeFieldUpdateOperationsInput | $Enums.TaskScope
@@ -51027,13 +56003,16 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     groupId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     checkInId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
@@ -51046,13 +56025,16 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     groupId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     checkInId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
@@ -51066,6 +56048,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -51074,8 +56057,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
@@ -51091,6 +56077,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -51099,7 +56086,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
@@ -51116,6 +56106,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -51124,7 +56115,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -51425,6 +56419,118 @@ export namespace Prisma {
     messageId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type AssignmentUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    group?: GroupUpdateOneRequiredWithoutAssignmentsNestedInput
+    questions?: AssignmentQuestionUpdateManyWithoutAssignmentNestedInput
+  }
+
+  export type AssignmentUncheckedUpdateWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    questions?: AssignmentQuestionUncheckedUpdateManyWithoutAssignmentNestedInput
+  }
+
+  export type AssignmentUncheckedUpdateManyWithoutCreatedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    groupId?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type CheckInUpdateWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    proofText?: NullableStringFieldUpdateOperationsInput | string | null
+    proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
+    pointsAwarded?: IntFieldUpdateOperationsInput | number
+    penaltyApplied?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
+    user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
+    group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    tasks?: TaskUpdateManyWithoutCheckInNestedInput
+    verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
+    penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
+    startFiles?: StartFileUpdateManyWithoutCheckInNestedInput
+    endFiles?: EndFileUpdateManyWithoutCheckInNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutCheckInNestedInput
+    reactions?: CheckInReactionUpdateManyWithoutCheckInNestedInput
+  }
+
+  export type CheckInUncheckedUpdateWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    proofText?: NullableStringFieldUpdateOperationsInput | string | null
+    proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
+    pointsAwarded?: IntFieldUpdateOperationsInput | number
+    penaltyApplied?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
+    tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
+    verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
+    penalties?: PenaltyEventUncheckedUpdateManyWithoutCheckInNestedInput
+    startFiles?: StartFileUncheckedUpdateManyWithoutCheckInNestedInput
+    endFiles?: EndFileUncheckedUpdateManyWithoutCheckInNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutCheckInNestedInput
+    reactions?: CheckInReactionUncheckedUpdateManyWithoutCheckInNestedInput
+  }
+
+  export type CheckInUncheckedUpdateManyWithoutReviewedByInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    proofText?: NullableStringFieldUpdateOperationsInput | string | null
+    proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
+    pointsAwarded?: IntFieldUpdateOperationsInput | number
+    penaltyApplied?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
+  }
+
   export type UserGroupCreateManyGroupInput = {
     userId: string
     joinedAt?: Date | string
@@ -51445,13 +56551,16 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     userId: string
+    broadcastKey?: string | null
     checkInId?: string | null
     templateId?: string | null
     isChallengeMode?: boolean
@@ -51465,6 +56574,7 @@ export namespace Prisma {
     reflection?: string | null
     proofText?: string | null
     proofLink?: string | null
+    reviewNote?: string | null
     aiSummary?: string | null
     aiConfidence?: number | null
     status?: $Enums.CheckInStatus
@@ -51473,7 +56583,10 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
     userId: string
+    assignmentQuestionId?: string | null
+    reviewedById?: string | null
     isEarlyBird?: boolean
   }
 
@@ -51602,6 +56715,16 @@ export namespace Prisma {
     penaltyEventId?: string | null
   }
 
+  export type AssignmentCreateManyGroupInput = {
+    id?: string
+    title: string
+    details?: string | null
+    dueAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    createdById: string
+  }
+
   export type UserGroupUpdateWithoutGroupInput = {
     joinedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     role?: EnumGroupRoleFieldUpdateOperationsInput | $Enums.GroupRole
@@ -51652,12 +56775,15 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: EnumTaskScopeFieldUpdateOperationsInput | $Enums.TaskScope
@@ -51671,13 +56797,16 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     checkInId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
@@ -51690,13 +56819,16 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     checkInId?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
@@ -51710,6 +56842,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -51718,8 +56851,11 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
+    assignmentQuestion?: AssignmentQuestionUpdateOneWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
     tasks?: TaskUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
     penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
@@ -51735,6 +56871,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -51743,7 +56880,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
     tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
     verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
@@ -51760,6 +56900,7 @@ export namespace Prisma {
     reflection?: NullableStringFieldUpdateOperationsInput | string | null
     proofText?: NullableStringFieldUpdateOperationsInput | string | null
     proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
     aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
     aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
@@ -51768,7 +56909,10 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
+    assignmentQuestionId?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
     isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
   }
 
@@ -52153,19 +57297,54 @@ export namespace Prisma {
     penaltyEventId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type AssignmentUpdateWithoutGroupInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdBy?: UserUpdateOneRequiredWithoutCreatedAssignmentsNestedInput
+    questions?: AssignmentQuestionUpdateManyWithoutAssignmentNestedInput
+  }
+
+  export type AssignmentUncheckedUpdateWithoutGroupInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: StringFieldUpdateOperationsInput | string
+    questions?: AssignmentQuestionUncheckedUpdateManyWithoutAssignmentNestedInput
+  }
+
+  export type AssignmentUncheckedUpdateManyWithoutGroupInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    details?: NullableStringFieldUpdateOperationsInput | string | null
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdById?: StringFieldUpdateOperationsInput | string
+  }
+
   export type TaskCreateManyCheckInInput = {
     id?: string
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     userId: string
     groupId: string
+    broadcastKey?: string | null
     templateId?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
@@ -52235,12 +57414,15 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: EnumTaskScopeFieldUpdateOperationsInput | $Enums.TaskScope
@@ -52254,14 +57436,17 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -52273,14 +57458,17 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     templateId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -52461,6 +57649,142 @@ export namespace Prisma {
     userId?: StringFieldUpdateOperationsInput | string
   }
 
+  export type AssignmentQuestionCreateManyAssignmentInput = {
+    id?: string
+    prompt: string
+    order: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AssignmentQuestionUpdateWithoutAssignmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkIns?: CheckInUpdateManyWithoutAssignmentQuestionNestedInput
+  }
+
+  export type AssignmentQuestionUncheckedUpdateWithoutAssignmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    checkIns?: CheckInUncheckedUpdateManyWithoutAssignmentQuestionNestedInput
+  }
+
+  export type AssignmentQuestionUncheckedUpdateManyWithoutAssignmentInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    prompt?: StringFieldUpdateOperationsInput | string
+    order?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CheckInCreateManyAssignmentQuestionInput = {
+    id?: string
+    day: Date | string
+    reflection?: string | null
+    proofText?: string | null
+    proofLink?: string | null
+    reviewNote?: string | null
+    aiSummary?: string | null
+    aiConfidence?: number | null
+    status?: $Enums.CheckInStatus
+    pointsAwarded?: number
+    penaltyApplied?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    verifiedAt?: Date | string | null
+    reviewedAt?: Date | string | null
+    userId: string
+    groupId: string
+    reviewedById?: string | null
+    isEarlyBird?: boolean
+  }
+
+  export type CheckInUpdateWithoutAssignmentQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    proofText?: NullableStringFieldUpdateOperationsInput | string | null
+    proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
+    pointsAwarded?: IntFieldUpdateOperationsInput | number
+    penaltyApplied?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
+    user?: UserUpdateOneRequiredWithoutCheckInsNestedInput
+    group?: GroupUpdateOneRequiredWithoutCheckInsNestedInput
+    reviewedBy?: UserUpdateOneWithoutReviewedCheckInsNestedInput
+    tasks?: TaskUpdateManyWithoutCheckInNestedInput
+    verifications?: SubmissionVerificationUpdateManyWithoutCheckInNestedInput
+    penalties?: PenaltyEventUpdateManyWithoutCheckInNestedInput
+    startFiles?: StartFileUpdateManyWithoutCheckInNestedInput
+    endFiles?: EndFileUpdateManyWithoutCheckInNestedInput
+    notificationLogs?: NotificationLogUpdateManyWithoutCheckInNestedInput
+    reactions?: CheckInReactionUpdateManyWithoutCheckInNestedInput
+  }
+
+  export type CheckInUncheckedUpdateWithoutAssignmentQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    proofText?: NullableStringFieldUpdateOperationsInput | string | null
+    proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
+    pointsAwarded?: IntFieldUpdateOperationsInput | number
+    penaltyApplied?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
+    tasks?: TaskUncheckedUpdateManyWithoutCheckInNestedInput
+    verifications?: SubmissionVerificationUncheckedUpdateManyWithoutCheckInNestedInput
+    penalties?: PenaltyEventUncheckedUpdateManyWithoutCheckInNestedInput
+    startFiles?: StartFileUncheckedUpdateManyWithoutCheckInNestedInput
+    endFiles?: EndFileUncheckedUpdateManyWithoutCheckInNestedInput
+    notificationLogs?: NotificationLogUncheckedUpdateManyWithoutCheckInNestedInput
+    reactions?: CheckInReactionUncheckedUpdateManyWithoutCheckInNestedInput
+  }
+
+  export type CheckInUncheckedUpdateManyWithoutAssignmentQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    day?: DateTimeFieldUpdateOperationsInput | Date | string
+    reflection?: NullableStringFieldUpdateOperationsInput | string | null
+    proofText?: NullableStringFieldUpdateOperationsInput | string | null
+    proofLink?: NullableStringFieldUpdateOperationsInput | string | null
+    reviewNote?: NullableStringFieldUpdateOperationsInput | string | null
+    aiSummary?: NullableStringFieldUpdateOperationsInput | string | null
+    aiConfidence?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumCheckInStatusFieldUpdateOperationsInput | $Enums.CheckInStatus
+    pointsAwarded?: IntFieldUpdateOperationsInput | number
+    penaltyApplied?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    verifiedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    groupId?: StringFieldUpdateOperationsInput | string
+    reviewedById?: NullableStringFieldUpdateOperationsInput | string | null
+    isEarlyBird?: BoolFieldUpdateOperationsInput | boolean
+  }
+
   export type GroupMessageReactionCreateManyMessageInput = {
     id?: string
     kind: $Enums.GroupMessageReactionKind
@@ -52494,14 +57818,17 @@ export namespace Prisma {
     title: string
     details?: string | null
     category?: $Enums.TaskCategory
+    priority?: $Enums.TaskPriority
     targetMinutes?: number | null
     status?: $Enums.TaskStatus
+    dueAt?: Date | string | null
     day: Date | string
     createdAt?: Date | string
     updatedAt?: Date | string
     completedAt?: Date | string | null
     userId: string
     groupId: string
+    broadcastKey?: string | null
     checkInId?: string | null
     isChallengeMode?: boolean
     earlyBirdCutoff?: Date | string | null
@@ -52513,12 +57840,15 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: EnumTaskScopeFieldUpdateOperationsInput | $Enums.TaskScope
@@ -52532,14 +57862,17 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     checkInId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -52551,14 +57884,17 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     details?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumTaskCategoryFieldUpdateOperationsInput | $Enums.TaskCategory
+    priority?: EnumTaskPriorityFieldUpdateOperationsInput | $Enums.TaskPriority
     targetMinutes?: NullableIntFieldUpdateOperationsInput | number | null
     status?: EnumTaskStatusFieldUpdateOperationsInput | $Enums.TaskStatus
+    dueAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     day?: DateTimeFieldUpdateOperationsInput | Date | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     completedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     userId?: StringFieldUpdateOperationsInput | string
     groupId?: StringFieldUpdateOperationsInput | string
+    broadcastKey?: NullableStringFieldUpdateOperationsInput | string | null
     checkInId?: NullableStringFieldUpdateOperationsInput | string | null
     isChallengeMode?: BoolFieldUpdateOperationsInput | boolean
     earlyBirdCutoff?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

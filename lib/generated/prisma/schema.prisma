@@ -9,6 +9,7 @@ datasource db {
 
 enum TaskStatus {
   PENDING
+  IN_PROGRESS
   COMPLETED
   MISSED
 }
@@ -78,6 +79,12 @@ enum TaskScope {
   GROUP
 }
 
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 enum NotificationKind {
   PRE_DEADLINE_NUDGE
   FLAGGED_SUBMISSION
@@ -142,6 +149,8 @@ model User {
   taskTemplates           TaskTemplate[]           @relation("UserTaskTemplates")
   createdTaskTemplates    TaskTemplate[]           @relation("CreatedTaskTemplates")
   messageReactions        GroupMessageReaction[]
+  createdAssignments      Assignment[]             @relation("AssignmentCreator")
+  reviewedCheckIns        CheckIn[]                @relation("CheckInReviewer")
 
   @@unique([email])
   @@map("user")
@@ -226,6 +235,7 @@ model Group {
   weeklyRecaps      WeeklyRecap[]
   confessionPosts   ConfessionPost[]
   redemptionTasks   RedemptionTask[]
+  assignments       Assignment[]
 
   @@index([createdById])
   @@index([visibility, createdAt])
@@ -260,14 +270,17 @@ model Task {
   title           String
   details         String?
   category        TaskCategory  @default(CUSTOM)
+  priority        TaskPriority  @default(MEDIUM)
   targetMinutes   Int?
   status          TaskStatus    @default(PENDING)
+  dueAt           DateTime?
   day             DateTime
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   completedAt     DateTime?
   userId          String
   groupId         String
+  broadcastKey    String?
   checkInId       String?
   templateId      String?
   isChallengeMode Boolean       @default(false)
@@ -281,39 +294,79 @@ model Task {
   @@index([userId, day])
   @@index([groupId, day])
   @@index([templateId, day], map: "task_template_day_idx")
+  @@index([broadcastKey])
   @@map("task")
 }
 
 model CheckIn {
-  id               String                   @id @default(cuid())
-  day              DateTime
-  reflection       String?
-  proofText        String?
-  proofLink        String?
-  aiSummary        String?
-  aiConfidence     Int?
-  status           CheckInStatus            @default(PENDING)
-  pointsAwarded    Int                      @default(0)
-  penaltyApplied   Int                      @default(0)
-  createdAt        DateTime                 @default(now())
-  updatedAt        DateTime                 @updatedAt
-  verifiedAt       DateTime?
-  userId           String
-  groupId          String
-  user             User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group            Group                    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  tasks            Task[]
-  verifications    SubmissionVerification[]
-  penalties        PenaltyEvent[]
-  startFiles       StartFile[]
-  endFiles         EndFile[]
-  notificationLogs NotificationLog[]
-  reactions        CheckInReaction[]
-  isEarlyBird      Boolean                  @default(false)
+  id                   String                   @id @default(cuid())
+  day                  DateTime
+  reflection           String?
+  proofText            String?
+  proofLink            String?
+  reviewNote           String?
+  aiSummary            String?
+  aiConfidence         Int?
+  status               CheckInStatus            @default(PENDING)
+  pointsAwarded        Int                      @default(0)
+  penaltyApplied       Int                      @default(0)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  verifiedAt           DateTime?
+  reviewedAt           DateTime?
+  userId               String
+  groupId              String
+  assignmentQuestionId String?
+  reviewedById         String?
+  user                 User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group                Group                    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  assignmentQuestion   AssignmentQuestion?      @relation(fields: [assignmentQuestionId], references: [id], onDelete: SetNull)
+  reviewedBy           User?                    @relation("CheckInReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  tasks                Task[]
+  verifications        SubmissionVerification[]
+  penalties            PenaltyEvent[]
+  startFiles           StartFile[]
+  endFiles             EndFile[]
+  notificationLogs     NotificationLog[]
+  reactions            CheckInReaction[]
+  isEarlyBird          Boolean                  @default(false)
 
   @@index([groupId, day])
   @@index([userId, day])
+  @@index([assignmentQuestionId])
   @@map("check_in")
+}
+
+model Assignment {
+  id          String               @id @default(cuid())
+  title       String
+  details     String?
+  dueAt       DateTime?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  groupId     String
+  createdById String
+  group       Group                @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy   User                 @relation("AssignmentCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  questions   AssignmentQuestion[]
+
+  @@index([groupId, createdAt])
+  @@index([createdById])
+  @@map("assignment")
+}
+
+model AssignmentQuestion {
+  id           String     @id @default(cuid())
+  prompt       String
+  order        Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  checkIns     CheckIn[]
+
+  @@index([assignmentId, order])
+  @@map("assignment_question")
 }
 
 model SubmissionVerification {
