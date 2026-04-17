@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getAuth } from "./lib/auth";
 
 // Routes that require authentication
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/admin",
   "/leader",
+  "/leaderboard",
   "/groups",
   "/tasks",
   "/proof-work",
@@ -13,27 +15,39 @@ const PROTECTED_PREFIXES = [
   "/profile",
 ];
 
-// Routes only for unauthenticated users (redirect to dashboard if already logged in)
+// Routes only for unauthenticated users
 const AUTH_ROUTES = ["/login", "/signup"];
 
-// better-auth stores the session token in this cookie
-const SESSION_COOKIE = "better-auth.session_token";
-
-function hasSession(request: NextRequest): boolean {
-  return !!request.cookies.get(SESSION_COOKIE)?.value;
+async function hasSession(request: NextRequest) {
+  try {
+    const session = await getAuth().api.getSession({
+      headers: request.headers,
+    });
+    return !!session;
+  } catch (err) {
+    console.error("Session check failed:", err);
+    return false;
+  }
 }
 
-export function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const loggedIn = hasSession(request);
 
-  // Logged-in user hitting landing page or auth routes → send to dashboard
-  if (loggedIn && (pathname === "/" || AUTH_ROUTES.some((r) => pathname.startsWith(r)))) {
+  const loggedIn = await hasSession(request);
+
+  // 🔹 If logged in and visiting login/signup → redirect to dashboard
+  if (
+    loggedIn &&
+    (pathname === "/" || AUTH_ROUTES.some((route) => pathname.startsWith(route)))
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Unauthenticated user hitting a protected route → send to login
-  if (!loggedIn && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
+  // 🔹 If NOT logged in and trying to access protected route → redirect to login
+  if (
+    !loggedIn &&
+    PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+  ) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
@@ -46,9 +60,8 @@ export const config = {
   matcher: [
     /*
      * Match all paths except:
-     * - _next/static, _next/image (Next.js internals)
-     * - favicon.ico
-     * - api routes (auth handles its own session)
+     * - Next.js internals
+     * - API routes (Better Auth handles them)
      */
     "/((?!_next/static|_next/image|favicon.ico|api/).*)",
   ],
