@@ -29,11 +29,10 @@ function createAuth() {
     },
 
     cookies: {
-      session: {
-        name: "better-auth.session",
+      session_token: {
         attributes: {
           httpOnly: true,
-          secure: true,      // 🔥 THIS FIXES YOUR LOOP
+          secure: true,
           sameSite: "lax",
           path: "/",
         },

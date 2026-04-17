@@ -14,12 +14,12 @@ const PROTECTED_PREFIXES = [
 
 const AUTH_ROUTES = ["/login", "/signup"];
 
-// Must match the cookie name in your auth config exactly
-// In production (HTTPS on Render), better-auth prepends __Secure-
+// better-auth default cookie name is "better-auth.session_token"
+// On HTTPS (production/Render), it gets the __Secure- prefix automatically
 const SESSION_COOKIE =
   process.env.NODE_ENV === "production"
-    ? "__Secure-better-auth.session"
-    : "better-auth.session";
+    ? "__Secure-better-auth.session_token"
+    : "better-auth.session_token";
 
 function hasSession(request: NextRequest): boolean {
   return !!request.cookies.get(SESSION_COOKIE)?.value;
