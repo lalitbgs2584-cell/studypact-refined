@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { startOfDay, endOfDay } from "date-fns";
+import type { TaskStatus } from "@prisma/client";
 
 import { db } from "@/lib/db";
 import { requireSession } from "@/lib/workspace";
@@ -8,7 +9,7 @@ export type FocusLogTask = {
   id: string;
   title: string;
   details: string | null;
-  status: string;
+  status: TaskStatus;
   blockType: string;
   targetMinutes: number | null;
 };

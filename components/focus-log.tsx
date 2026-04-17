@@ -1,18 +1,10 @@
 import { TaskStatus } from "@prisma/client";
+import type { FocusLogTask } from "@/lib/sidebar-data";
 
 const BLOCK_DOT: Record<string, string> = {
   DEEP_WORK: "#4ade80",
   LEARNING: "#f97316",
   PROJECTS: "#a78bfa",
-};
-
-type FocusTask = {
-  id: string;
-  title: string;
-  details: string | null;
-  status: TaskStatus;
-  blockType: string;
-  targetMinutes: number | null;
 };
 
 function formatMinutes(mins: number) {
@@ -22,8 +14,8 @@ function formatMinutes(mins: number) {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function StatusDot({ blockType, status }: { blockType: string; status: TaskStatus }) {
-  const isPending = status === TaskStatus.PENDING || status === TaskStatus.IN_PROGRESS;
+function StatusDot({ blockType, status }: { blockType: string; status: string }) {
+  const isPending = status === "PENDING" || status === "IN_PROGRESS";
   if (isPending) {
     return (
       <svg width="13" height="13" viewBox="0 0 13 13" style={{ flexShrink: 0 }}>
@@ -35,19 +27,14 @@ function StatusDot({ blockType, status }: { blockType: string; status: TaskStatu
   return (
     <span
       style={{
-        width: 11,
-        height: 11,
-        borderRadius: "50%",
-        background: color,
-        flexShrink: 0,
-        display: "inline-block",
-        boxShadow: `0 0 7px ${color}99`,
+        width: 11, height: 11, borderRadius: "50%", background: color,
+        flexShrink: 0, display: "inline-block", boxShadow: `0 0 7px ${color}99`,
       }}
     />
   );
 }
 
-export function FocusLog({ tasks }: { tasks: FocusTask[] }) {
+export function FocusLog({ tasks }: { tasks: FocusLogTask[] }) {
   const today = new Date();
   const dateLabel = today
     .toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })
@@ -73,23 +60,16 @@ export function FocusLog({ tasks }: { tasks: FocusTask[] }) {
         ) : (
           <div className="space-y-5">
             {tasks.map((task) => {
-              const isPending = task.status === TaskStatus.PENDING || task.status === TaskStatus.IN_PROGRESS;
-              const statusText =
-                task.status === TaskStatus.COMPLETED || task.status === TaskStatus.LATE
-                  ? null
-                  : task.status === TaskStatus.MISSED
-                    ? "Missed"
-                    : "Upcoming";
+              const isPending = task.status === "PENDING" || task.status === "IN_PROGRESS";
+              const isCompleted = task.status === TaskStatus.COMPLETED;
+              const statusText = isCompleted ? null : task.status === "MISSED" ? "Missed" : "Upcoming";
 
               return (
                 <div key={task.id} className="flex gap-3">
-                  {/* Left: dot + vertical line */}
                   <div className="flex flex-col items-center gap-1 pt-0.5">
                     <StatusDot blockType={task.blockType} status={task.status} />
                     <div style={{ width: 1, flex: 1, background: "rgba(255,255,255,0.07)", minHeight: 16 }} />
                   </div>
-
-                  {/* Right: content */}
                   <div className="pb-1" style={{ opacity: isPending ? 0.55 : 1 }}>
                     <div
                       className="text-sm font-semibold leading-snug"
@@ -112,9 +92,7 @@ export function FocusLog({ tasks }: { tasks: FocusTask[] }) {
                         {formatMinutes(task.targetMinutes)}
                       </span>
                     ) : isPending ? (
-                      <span className="inline-block mt-1 text-[10px] text-white/30">
-                        {statusText}
-                      </span>
+                      <span className="inline-block mt-1 text-[10px] text-white/30">{statusText}</span>
                     ) : null}
                   </div>
                 </div>
