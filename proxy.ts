@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Routes that require authentication
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/admin",
@@ -13,11 +12,14 @@ const PROTECTED_PREFIXES = [
   "/profile",
 ];
 
-// Routes only for unauthenticated users (redirect to dashboard if already logged in)
 const AUTH_ROUTES = ["/login", "/signup"];
 
-// better-auth stores the session token in this cookie
-const SESSION_COOKIE = "better-auth.session_token";
+// Must match the cookie name in your auth config exactly
+// In production (HTTPS on Render), better-auth prepends __Secure-
+const SESSION_COOKIE =
+  process.env.NODE_ENV === "production"
+    ? "__Secure-better-auth.session"
+    : "better-auth.session";
 
 function hasSession(request: NextRequest): boolean {
   return !!request.cookies.get(SESSION_COOKIE)?.value;
@@ -27,12 +29,10 @@ export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const loggedIn = hasSession(request);
 
-  // Logged-in user hitting landing page or auth routes → send to dashboard
   if (loggedIn && (pathname === "/" || AUTH_ROUTES.some((r) => pathname.startsWith(r)))) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Unauthenticated user hitting a protected route → send to login
   if (!loggedIn && PROTECTED_PREFIXES.some((p) => pathname.startsWith(p))) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
@@ -43,7 +43,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|api/).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/).*)",],
 };
