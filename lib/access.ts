@@ -48,6 +48,30 @@ export const requirePortalSession = cache(async () => {
   return { session, access };
 });
 
+/**
+ * Lightweight access check for the sidebar — avoids loading all group
+ * members / workspace data. Only fetches what we need: isAdmin + isLeader.
+ */
+export const getSidebarAccess = cache(async () => {
+  const session = await requireSession();
+  const [user, leaderCount] = await Promise.all([
+    db.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true, isBlocked: true },
+    }),
+    db.userGroup.count({
+      where: { userId: session.user.id, role: "admin" },
+    }),
+  ]);
+
+  if (user?.isBlocked) redirect("/?blocked=1");
+
+  return {
+    isAdmin: user?.role === "admin",
+    isLeader: leaderCount > 0,
+  };
+});
+
 export async function requireAdminAccess() {
   const context = await requirePortalSession();
   if (!context.access.isAdmin) {

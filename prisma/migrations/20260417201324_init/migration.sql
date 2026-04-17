@@ -38,6 +38,21 @@ CREATE TYPE "TaskScope" AS ENUM ('PERSONAL', 'GROUP');
 CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH');
 
 -- CreateEnum
+CREATE TYPE "TaskDifficulty" AS ENUM ('EASY', 'MEDIUM', 'HARD');
+
+-- CreateEnum
+CREATE TYPE "StudyBlock" AS ENUM ('DEEP_WORK', 'LEARNING', 'PROJECTS');
+
+-- CreateEnum
+CREATE TYPE "TrackerLogStatus" AS ENUM ('PENDING', 'COMPLETED', 'MISSED', 'LATE');
+
+-- CreateEnum
+CREATE TYPE "ReflectionUnderstanding" AS ENUM ('UNDERSTOOD', 'PARTIALLY_UNDERSTOOD', 'NOT_UNDERSTOOD');
+
+-- CreateEnum
+CREATE TYPE "WeeklyTrend" AS ENUM ('IMPROVING', 'STABLE', 'DECLINING');
+
+-- CreateEnum
 CREATE TYPE "NotificationKind" AS ENUM ('PRE_DEADLINE_NUDGE', 'FLAGGED_SUBMISSION');
 
 -- CreateEnum
@@ -161,6 +176,8 @@ CREATE TABLE "user_group" (
     "inactivityStrikes" INTEGER NOT NULL DEFAULT 0,
     "lastCheckInAt" TIMESTAMP(3),
     "earlyBirdCount" INTEGER NOT NULL DEFAULT 0,
+    "consistencyScore" INTEGER NOT NULL DEFAULT 0,
+    "weeklyConsistency" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "user_group_pkey" PRIMARY KEY ("userId","groupId")
 );
@@ -172,6 +189,8 @@ CREATE TABLE "task" (
     "details" TEXT,
     "category" "TaskCategory" NOT NULL DEFAULT 'CUSTOM',
     "priority" "TaskPriority" NOT NULL DEFAULT 'MEDIUM',
+    "difficulty" "TaskDifficulty" NOT NULL DEFAULT 'MEDIUM',
+    "blockType" "StudyBlock" NOT NULL DEFAULT 'DEEP_WORK',
     "targetMinutes" INTEGER,
     "status" "TaskStatus" NOT NULL DEFAULT 'PENDING',
     "dueAt" TIMESTAMP(3),
@@ -184,6 +203,7 @@ CREATE TABLE "task" (
     "broadcastKey" TEXT,
     "checkInId" TEXT,
     "templateId" TEXT,
+    "trackerEntryId" TEXT,
     "isChallengeMode" BOOLEAN NOT NULL DEFAULT false,
     "earlyBirdCutoff" TIMESTAMP(3),
     "scope" "TaskScope" NOT NULL DEFAULT 'PERSONAL',
@@ -294,6 +314,8 @@ CREATE TABLE "task_template" (
     "title" TEXT NOT NULL,
     "details" TEXT,
     "category" "TaskCategory" NOT NULL DEFAULT 'CUSTOM',
+    "difficulty" "TaskDifficulty" NOT NULL DEFAULT 'MEDIUM',
+    "blockType" "StudyBlock" NOT NULL DEFAULT 'DEEP_WORK',
     "targetMinutes" INTEGER,
     "scope" "TaskScope" NOT NULL DEFAULT 'PERSONAL',
     "isActive" BOOLEAN NOT NULL DEFAULT true,
@@ -499,6 +521,94 @@ CREATE TABLE "system_setting" (
     CONSTRAINT "system_setting_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "tracker_entry" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "normalizedTitle" TEXT NOT NULL,
+    "scope" "TaskScope" NOT NULL DEFAULT 'PERSONAL',
+    "blockType" "StudyBlock" NOT NULL DEFAULT 'DEEP_WORK',
+    "difficulty" "TaskDifficulty" NOT NULL DEFAULT 'MEDIUM',
+    "status" "TrackerLogStatus" NOT NULL DEFAULT 'PENDING',
+    "streakCount" INTEGER NOT NULL DEFAULT 0,
+    "bestStreak" INTEGER NOT NULL DEFAULT 0,
+    "weeklyProgress" INTEGER NOT NULL DEFAULT 0,
+    "consistencyScore" INTEGER NOT NULL DEFAULT 0,
+    "totalCompletions" INTEGER NOT NULL DEFAULT 0,
+    "totalMisses" INTEGER NOT NULL DEFAULT 0,
+    "lateCompletions" INTEGER NOT NULL DEFAULT 0,
+    "lastCompletedOn" TIMESTAMP(3),
+    "lastMissedOn" TIMESTAMP(3),
+    "lastLoggedOn" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
+    "groupId" TEXT NOT NULL,
+
+    CONSTRAINT "tracker_entry_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "tracker_daily_log" (
+    "id" TEXT NOT NULL,
+    "day" TIMESTAMP(3) NOT NULL,
+    "status" "TrackerLogStatus" NOT NULL DEFAULT 'PENDING',
+    "note" TEXT,
+    "completionAt" TIMESTAMP(3),
+    "dueAt" TIMESTAMP(3),
+    "isLate" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "trackerEntryId" TEXT NOT NULL,
+    "taskId" TEXT NOT NULL,
+    "userId" TEXT NOT NULL,
+    "groupId" TEXT NOT NULL,
+
+    CONSTRAINT "tracker_daily_log_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "daily_reflection" (
+    "id" TEXT NOT NULL,
+    "day" TIMESTAMP(3) NOT NULL,
+    "understanding" "ReflectionUnderstanding" NOT NULL,
+    "tomorrowPlan" TEXT NOT NULL,
+    "note" TEXT,
+    "aiSummary" TEXT,
+    "taskSummary" JSONB,
+    "completionRate" INTEGER NOT NULL DEFAULT 0,
+    "consistencyScore" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "userId" TEXT NOT NULL,
+    "groupId" TEXT NOT NULL,
+
+    CONSTRAINT "daily_reflection_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "weekly_report" (
+    "id" TEXT NOT NULL,
+    "weekStart" TIMESTAMP(3) NOT NULL,
+    "weekEnd" TIMESTAMP(3) NOT NULL,
+    "completedTasks" INTEGER NOT NULL DEFAULT 0,
+    "missedTasks" INTEGER NOT NULL DEFAULT 0,
+    "completionRate" INTEGER NOT NULL DEFAULT 0,
+    "consistencyScore" INTEGER NOT NULL DEFAULT 0,
+    "strongAreas" JSONB NOT NULL,
+    "weakAreas" JSONB NOT NULL,
+    "trend" "WeeklyTrend" NOT NULL DEFAULT 'STABLE',
+    "blockSummary" JSONB NOT NULL,
+    "summary" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "generatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "userId" TEXT NOT NULL,
+    "groupId" TEXT NOT NULL,
+
+    CONSTRAINT "weekly_report_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
@@ -533,6 +643,9 @@ CREATE INDEX "user_group_userId_role_idx" ON "user_group"("userId", "role");
 CREATE INDEX "user_group_groupId_role_idx" ON "user_group"("groupId", "role");
 
 -- CreateIndex
+CREATE INDEX "user_group_groupId_consistencyScore_idx" ON "user_group"("groupId", "consistencyScore");
+
+-- CreateIndex
 CREATE INDEX "task_userId_day_idx" ON "task"("userId", "day");
 
 -- CreateIndex
@@ -552,6 +665,15 @@ CREATE INDEX "task_groupId_scope_dueAt_idx" ON "task"("groupId", "scope", "dueAt
 
 -- CreateIndex
 CREATE INDEX "task_userId_status_dueAt_idx" ON "task"("userId", "status", "dueAt");
+
+-- CreateIndex
+CREATE INDEX "task_userId_blockType_day_idx" ON "task"("userId", "blockType", "day");
+
+-- CreateIndex
+CREATE INDEX "task_groupId_blockType_day_idx" ON "task"("groupId", "blockType", "day");
+
+-- CreateIndex
+CREATE INDEX "task_trackerEntryId_idx" ON "task"("trackerEntryId");
 
 -- CreateIndex
 CREATE INDEX "check_in_groupId_day_idx" ON "check_in"("groupId", "day");
@@ -679,6 +801,45 @@ CREATE INDEX "report_status_idx" ON "report"("status");
 -- CreateIndex
 CREATE UNIQUE INDEX "system_setting_key_key" ON "system_setting"("key");
 
+-- CreateIndex
+CREATE INDEX "tracker_entry_groupId_consistencyScore_idx" ON "tracker_entry"("groupId", "consistencyScore");
+
+-- CreateIndex
+CREATE INDEX "tracker_entry_userId_updatedAt_idx" ON "tracker_entry"("userId", "updatedAt");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tracker_entry_userId_groupId_scope_blockType_normalizedTitl_key" ON "tracker_entry"("userId", "groupId", "scope", "blockType", "normalizedTitle");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tracker_daily_log_taskId_key" ON "tracker_daily_log"("taskId");
+
+-- CreateIndex
+CREATE INDEX "tracker_daily_log_trackerEntryId_day_idx" ON "tracker_daily_log"("trackerEntryId", "day");
+
+-- CreateIndex
+CREATE INDEX "tracker_daily_log_userId_day_idx" ON "tracker_daily_log"("userId", "day");
+
+-- CreateIndex
+CREATE INDEX "tracker_daily_log_groupId_day_idx" ON "tracker_daily_log"("groupId", "day");
+
+-- CreateIndex
+CREATE INDEX "daily_reflection_groupId_day_idx" ON "daily_reflection"("groupId", "day");
+
+-- CreateIndex
+CREATE INDEX "daily_reflection_userId_day_idx" ON "daily_reflection"("userId", "day");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "daily_reflection_userId_groupId_day_key" ON "daily_reflection"("userId", "groupId", "day");
+
+-- CreateIndex
+CREATE INDEX "weekly_report_groupId_weekStart_idx" ON "weekly_report"("groupId", "weekStart");
+
+-- CreateIndex
+CREATE INDEX "weekly_report_userId_weekStart_idx" ON "weekly_report"("userId", "weekStart");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "weekly_report_userId_groupId_weekStart_key" ON "weekly_report"("userId", "groupId", "weekStart");
+
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -705,6 +866,9 @@ ALTER TABLE "task" ADD CONSTRAINT "task_checkInId_fkey" FOREIGN KEY ("checkInId"
 
 -- AddForeignKey
 ALTER TABLE "task" ADD CONSTRAINT "task_templateId_fkey" FOREIGN KEY ("templateId") REFERENCES "task_template"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "task" ADD CONSTRAINT "task_trackerEntryId_fkey" FOREIGN KEY ("trackerEntryId") REFERENCES "tracker_entry"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "check_in" ADD CONSTRAINT "check_in_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -828,3 +992,33 @@ ALTER TABLE "report" ADD CONSTRAINT "report_reporterId_fkey" FOREIGN KEY ("repor
 
 -- AddForeignKey
 ALTER TABLE "report" ADD CONSTRAINT "report_resolvedById_fkey" FOREIGN KEY ("resolvedById") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tracker_entry" ADD CONSTRAINT "tracker_entry_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tracker_entry" ADD CONSTRAINT "tracker_entry_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tracker_daily_log" ADD CONSTRAINT "tracker_daily_log_trackerEntryId_fkey" FOREIGN KEY ("trackerEntryId") REFERENCES "tracker_entry"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tracker_daily_log" ADD CONSTRAINT "tracker_daily_log_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tracker_daily_log" ADD CONSTRAINT "tracker_daily_log_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "tracker_daily_log" ADD CONSTRAINT "tracker_daily_log_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "daily_reflection" ADD CONSTRAINT "daily_reflection_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "daily_reflection" ADD CONSTRAINT "daily_reflection_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "weekly_report" ADD CONSTRAINT "weekly_report_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "weekly_report" ADD CONSTRAINT "weekly_report_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "group"("id") ON DELETE CASCADE ON UPDATE CASCADE;

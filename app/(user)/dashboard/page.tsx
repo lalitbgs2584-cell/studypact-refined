@@ -68,6 +68,7 @@ export default async function DashboardPage() {
   const pendingTasks = (activeTasks as ActiveTask[]).filter((t) => t.status !== "COMPLETED").length;
   const pendingProof = (activeTasks as ActiveTask[]).filter((t) => !t.checkIn || t.checkIn.status !== "APPROVED").length;
   const awaitingReview = (recentSubmissions as RecentSubmission[]).filter((s) => s.status !== "APPROVED" && s.status !== "REJECTED").length;
+  const activeMembership = memberships.find((membership) => membership.groupId === activeGroupId) ?? memberships[0];
 
   const activityFeed = [
     ...(activeTasks as ActiveTask[]).map((task) => ({
@@ -138,6 +139,7 @@ export default async function DashboardPage() {
             <div className="flex flex-wrap gap-2">
               <Link href="/tasks"><Button className="gap-2"><Plus className="h-4 w-4" />Create Task</Button></Link>
               <Link href="/proof-work"><Button variant="outline" className="gap-2"><ShieldCheck className="h-4 w-4" />Submit Proof</Button></Link>
+              <Link href="/tracker"><Button variant="outline" className="gap-2"><Sparkles className="h-4 w-4" />Open Tracker</Button></Link>
               <Link href="/groups"><Button variant="ghost" className="gap-2">Join Group<ArrowRight className="h-4 w-4" /></Button></Link>
             </div>
           </CardContent>
@@ -155,6 +157,8 @@ export default async function DashboardPage() {
                 { label: "Tasks", value: pendingTasks },
                 { label: "Proof", value: pendingProof },
                 { label: "Review", value: awaitingReview },
+                { label: "Score", value: activeMembership?.consistencyScore ?? 0 },
+                { label: "Streak", value: activeMembership?.streak ?? 0 },
               ].map(({ label, value }) => (
                 <div key={label} className="rounded-[4px] border border-border bg-secondary/30 p-4">
                   <div className="text-xs uppercase tracking-[0.2em] text-white/40">{label}</div>

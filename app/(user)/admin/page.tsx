@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { requireAdminAccess } from "@/lib/access";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
@@ -41,6 +40,7 @@ async function getPlatformStats() {
     pendingReports,
     recentPenalties,
     activeUsersToday,
+    averageConsistency,
     topGroups,
     topUsers,
   ] = await Promise.all([
@@ -59,6 +59,9 @@ async function getPlatformStats() {
       by: ["userId"],
       where: { createdAt: { gte: todayStart } },
     }).then((r) => r.length),
+    db.userGroup.aggregate({
+      _avg: { consistencyScore: true },
+    }).then((result) => Math.round(result._avg.consistencyScore ?? 0)),
     db.group.findMany({
       select: {
         id: true,
@@ -71,13 +74,19 @@ async function getPlatformStats() {
     db.userGroup.findMany({
       select: {
         userId: true,
+        consistencyScore: true,
+        weeklyConsistency: true,
         completions: true,
         streak: true,
         points: true,
         user: { select: { name: true, image: true } },
         group: { select: { name: true } },
       },
-      orderBy: { completions: "desc" },
+      orderBy: [
+        { consistencyScore: "desc" },
+        { weeklyConsistency: "desc" },
+        { completions: "desc" },
+      ],
       take: 5,
     }),
   ]);
@@ -98,6 +107,7 @@ async function getPlatformStats() {
     pendingReports,
     recentPenalties,
     activeUsersToday,
+    averageConsistency,
     rejectionRate,
     topGroups,
     topUsers,
@@ -114,6 +124,7 @@ export default async function AdminDashboardPage() {
     { label: "Total Groups", value: stats.totalGroups, icon: Users, color: "text-violet-400" },
     { label: "Total Tasks", value: stats.totalTasks, icon: TrendingUp, color: "text-amber-400" },
     { label: "Proofs Today", value: stats.todayCheckIns, icon: ShieldCheck, color: "text-primary" },
+    { label: "Avg Consistency", value: stats.averageConsistency, icon: TrendingUp, color: "text-amber-300" },
     { label: "Rejection Rate", value: `${stats.rejectionRate}%`, icon: FileWarning, color: "text-red-400" },
     { label: "Disputed", value: stats.disputedCheckIns, icon: AlertTriangle, color: "text-orange-400" },
     { label: "Open Reports", value: stats.pendingReports, icon: Flag, color: "text-rose-400" },
@@ -229,7 +240,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Top Performers</CardTitle>
-            <CardDescription className="text-white/50">By completions across all groups</CardDescription>
+            <CardDescription className="text-white/50">By live consistency score across all groups</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {stats.topUsers.length === 0 ? (

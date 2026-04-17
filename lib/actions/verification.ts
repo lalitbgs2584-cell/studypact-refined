@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getPeerReviewMetrics } from "@/lib/peer-review";
 import { emitGroupEvent } from "@/lib/pusher";
+import { syncTaskTracker } from "@/lib/tracker";
 
 const FINAL_STATUSES = new Set<CheckInStatus>([CheckInStatus.APPROVED, CheckInStatus.REJECTED]);
 
@@ -204,9 +205,11 @@ export async function submitVerification(formData: FormData) {
   revalidatePath("/dashboard");
   revalidatePath("/tasks");
   revalidatePath("/proof-work");
+  revalidatePath("/tracker");
   revalidatePath("/uploads");
 
   if (outcome.taskId) {
+    await syncTaskTracker(outcome.taskId);
     revalidatePath(`/groups/${outcome.groupId}/task/${outcome.taskId}`);
   }
 

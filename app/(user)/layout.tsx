@@ -1,9 +1,8 @@
 import { Suspense } from "react";
 import { UserNavigation } from "@/components/user-navigation";
-import { requirePortalSession } from "@/lib/access";
-
+import { getSidebarAccess } from "@/lib/access";
 async function SidebarServer() {
-  const { access } = await requirePortalSession();
+  const access = await getSidebarAccess();
   return (
     <UserNavigation
       showLeaderPortal={access.isLeader}

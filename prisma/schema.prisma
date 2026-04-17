@@ -9,7 +9,7 @@ datasource db {
 
 enum TaskStatus {
   PENDING
-IN_PROGRESS
+  IN_PROGRESS
   COMPLETED
   MISSED
 }
@@ -88,6 +88,37 @@ enum TaskPriority {
   HIGH
 }
 
+enum TaskDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum StudyBlock {
+  DEEP_WORK
+  LEARNING
+  PROJECTS
+}
+
+enum TrackerLogStatus {
+  PENDING
+  COMPLETED
+  MISSED
+  LATE
+}
+
+enum ReflectionUnderstanding {
+  UNDERSTOOD
+  PARTIALLY_UNDERSTOOD
+  NOT_UNDERSTOOD
+}
+
+enum WeeklyTrend {
+  IMPROVING
+  STABLE
+  DECLINING
+}
+
 enum NotificationKind {
   PRE_DEADLINE_NUDGE
   FLAGGED_SUBMISSION
@@ -143,16 +174,16 @@ enum RedemptionStatus {
 }
 
 model User {
-  id                      String                  @id
+  id                      String                   @id
   name                    String
   email                   String
-  emailVerified           Boolean                 @default(false)
+  emailVerified           Boolean                  @default(false)
   image                   String?
-  createdAt               DateTime                @default(now())
-  updatedAt               DateTime                @updatedAt
-  role                    UserRole                @default(member)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  role                    UserRole                 @default(member)
   isBlocked               Boolean?
-  penaltyCount            Int                     @default(0)
+  penaltyCount            Int                      @default(0)
   sessions                Session[]
   checkInReactions        CheckInReaction[]
   milestoneBadges         MilestoneBadge[]
@@ -160,13 +191,13 @@ model User {
   confessionUpvotes       ConfessionUpvote[]
   accounts                Account[]
   groups                  UserGroup[]
-  createdGroups           Group[]                 @relation("GroupCreator")
+  createdGroups           Group[]                  @relation("GroupCreator")
   tasks                   Task[]
-  globalTrustScore        Int                     @default(100)
-  totalReviews            Int                     @default(0)
-  accurateReviews         Int                     @default(0)
-  reportsMade             Report[]                @relation("Reporter")
-  resolvedReports         Report[]                @relation("ReportResolver")
+  globalTrustScore        Int                      @default(100)
+  totalReviews            Int                      @default(0)
+  accurateReviews         Int                      @default(0)
+  reportsMade             Report[]                 @relation("Reporter")
+  resolvedReports         Report[]                 @relation("ReportResolver")
   checkIns                CheckIn[]
   messages                GroupMessage[]
   submissionVerifications SubmissionVerification[]
@@ -174,11 +205,15 @@ model User {
   startFiles              StartFile[]
   endFiles                EndFile[]
   notificationLogs        NotificationLog[]
-  taskTemplates           TaskTemplate[]          @relation("UserTaskTemplates")
-  createdTaskTemplates    TaskTemplate[]          @relation("CreatedTaskTemplates")
+  taskTemplates           TaskTemplate[]           @relation("UserTaskTemplates")
+  createdTaskTemplates    TaskTemplate[]           @relation("CreatedTaskTemplates")
   messageReactions        GroupMessageReaction[]
-  createdAssignments      Assignment[]            @relation("AssignmentCreator")
-  reviewedCheckIns        CheckIn[]               @relation("CheckInReviewer")
+  createdAssignments      Assignment[]             @relation("AssignmentCreator")
+  reviewedCheckIns        CheckIn[]                @relation("CheckInReviewer")
+  trackerEntries          TrackerEntry[]
+  trackerDailyLogs        TrackerDailyLog[]
+  reflections             DailyReflection[]
+  weeklyReports           WeeklyReport[]
 
   @@unique([email])
   @@map("user")
@@ -233,22 +268,22 @@ model Verification {
 }
 
 model Group {
-  id                String                  @id @default(cuid())
+  id                String            @id @default(cuid())
   name              String
   description       String?
   link              String?
-  visibility        GroupVisibility         @default(PRIVATE)
-  focusType         GroupFocusType          @default(GENERAL)
-  taskPostingMode   TaskPostingMode         @default(ALL_MEMBERS)
-  penaltyMode       PenaltyMode             @default(BURN)
-  inviteCode        String                  @unique
+  visibility        GroupVisibility   @default(PRIVATE)
+  focusType         GroupFocusType    @default(GENERAL)
+  taskPostingMode   TaskPostingMode   @default(ALL_MEMBERS)
+  penaltyMode       PenaltyMode       @default(BURN)
+  inviteCode        String            @unique
   inviteExpiresAt   DateTime
-  maxMembers        Int                     @default(8)
-  dailyPenalty      Int                     @default(10)
+  maxMembers        Int               @default(8)
+  dailyPenalty      Int               @default(10)
   createdById       String
-  createdAt         DateTime                @default(now())
-  updatedAt         DateTime                @updatedAt
-  createdBy         User                    @relation("GroupCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  createdBy         User              @relation("GroupCreator", fields: [createdById], references: [id], onDelete: Cascade)
   users             UserGroup[]
   tasks             Task[]
   checkIns          CheckIn[]
@@ -264,6 +299,10 @@ model Group {
   confessionPosts   ConfessionPost[]
   redemptionTasks   RedemptionTask[]
   assignments       Assignment[]
+  trackerEntries    TrackerEntry[]
+  trackerDailyLogs  TrackerDailyLog[]
+  reflections       DailyReflection[]
+  weeklyReports     WeeklyReport[]
 
   @@index([createdById])
   @@index([visibility, createdAt])
@@ -271,19 +310,21 @@ model Group {
 }
 
 model UserGroup {
-  userId          String
-  groupId         String
-  joinedAt        DateTime @default(now())
-  role            GroupRole @default(member)
-  points          Int      @default(0)
-  streak          Int      @default(0)
-  bestStreak      Int      @default(0)
-  completions     Int      @default(0)
-  misses          Int      @default(0)
-  reputationScore Int      @default(60)
-  inactivityStrikes Int    @default(0)
-  lastCheckInAt  DateTime?
-  earlyBirdCount  Int      @default(0)
+  userId            String
+  groupId           String
+  joinedAt          DateTime  @default(now())
+  role              GroupRole @default(member)
+  points            Int       @default(0)
+  streak            Int       @default(0)
+  bestStreak        Int       @default(0)
+  completions       Int       @default(0)
+  misses            Int       @default(0)
+  reputationScore   Int       @default(60)
+  inactivityStrikes Int       @default(0)
+  lastCheckInAt     DateTime?
+  earlyBirdCount    Int       @default(0)
+  consistencyScore  Int       @default(0)
+  weeklyConsistency Int       @default(0)
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
@@ -292,34 +333,40 @@ model UserGroup {
   @@index([groupId])
   @@index([userId, role])
   @@index([groupId, role])
+  @@index([groupId, consistencyScore])
   @@map("user_group")
 }
 
 model Task {
-  id          String      @id @default(cuid())
-  title       String
-  details     String?
-  category    TaskCategory @default(CUSTOM)
-  priority    TaskPriority @default(MEDIUM)
-  targetMinutes Int?
-  status      TaskStatus  @default(PENDING)
-  dueAt       DateTime?
-  day         DateTime
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  completedAt DateTime?
-  userId      String
-  groupId     String
-  broadcastKey String?
-  checkInId      String?
-  templateId     String?
-  isChallengeMode Boolean  @default(false)
+  id              String           @id @default(cuid())
+  title           String
+  details         String?
+  category        TaskCategory     @default(CUSTOM)
+  priority        TaskPriority     @default(MEDIUM)
+  difficulty      TaskDifficulty   @default(MEDIUM)
+  blockType       StudyBlock       @default(DEEP_WORK)
+  targetMinutes   Int?
+  status          TaskStatus       @default(PENDING)
+  dueAt           DateTime?
+  day             DateTime
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  completedAt     DateTime?
+  userId          String
+  groupId         String
+  broadcastKey    String?
+  checkInId       String?
+  templateId      String?
+  trackerEntryId  String?
+  isChallengeMode Boolean          @default(false)
   earlyBirdCutoff DateTime?
-  scope           TaskScope @default(PERSONAL)
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group       Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  checkIn     CheckIn?    @relation(fields: [checkInId], references: [id], onDelete: SetNull)
-  template    TaskTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  scope           TaskScope        @default(PERSONAL)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group           Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  checkIn         CheckIn?         @relation(fields: [checkInId], references: [id], onDelete: SetNull)
+  template        TaskTemplate?    @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  trackerEntry    TrackerEntry?    @relation(fields: [trackerEntryId], references: [id], onDelete: SetNull)
+  trackerLog      TrackerDailyLog?
 
   @@index([userId, day])
   @@index([groupId, day])
@@ -328,44 +375,47 @@ model Task {
   @@index([userId, scope, status])
   @@index([groupId, scope, dueAt])
   @@index([userId, status, dueAt])
+  @@index([userId, blockType, day])
+  @@index([groupId, blockType, day])
+  @@index([trackerEntryId])
   @@map("task")
 }
 
 model CheckIn {
-  id            String                  @id @default(cuid())
-  day           DateTime
-  reflection    String?
-  proofText     String?
-  proofLink     String?
-  reviewNote    String?
-  aiSummary     String?
-  aiConfidence  Int?
-  status        CheckInStatus           @default(PENDING)
-  pointsAwarded Int                     @default(0)
-  penaltyApplied Int                    @default(0)
-  isDisputed    Boolean                 @default(false)
-  adminOverride Boolean                 @default(false)
-  finalOutcome  CheckInStatus?
-  createdAt     DateTime                @default(now())
-  updatedAt     DateTime                @updatedAt
-  verifiedAt    DateTime?
-  reviewedAt    DateTime?
-  userId        String
-  groupId       String
+  id                   String                   @id @default(cuid())
+  day                  DateTime
+  reflection           String?
+  proofText            String?
+  proofLink            String?
+  reviewNote           String?
+  aiSummary            String?
+  aiConfidence         Int?
+  status               CheckInStatus            @default(PENDING)
+  pointsAwarded        Int                      @default(0)
+  penaltyApplied       Int                      @default(0)
+  isDisputed           Boolean                  @default(false)
+  adminOverride        Boolean                  @default(false)
+  finalOutcome         CheckInStatus?
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  verifiedAt           DateTime?
+  reviewedAt           DateTime?
+  userId               String
+  groupId              String
   assignmentQuestionId String?
-  reviewedById  String?
-  user          User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group         Group                   @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  assignmentQuestion AssignmentQuestion? @relation(fields: [assignmentQuestionId], references: [id], onDelete: SetNull)
-  reviewedBy    User?                   @relation("CheckInReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
-  tasks         Task[]
-  verifications SubmissionVerification[]
-  penalties     PenaltyEvent[]
-  startFiles    StartFile[]
-  endFiles      EndFile[]
-  notificationLogs NotificationLog[]
-  reactions        CheckInReaction[]
-  isEarlyBird      Boolean  @default(false)
+  reviewedById         String?
+  user                 User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group                Group                    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  assignmentQuestion   AssignmentQuestion?      @relation(fields: [assignmentQuestionId], references: [id], onDelete: SetNull)
+  reviewedBy           User?                    @relation("CheckInReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  tasks                Task[]
+  verifications        SubmissionVerification[]
+  penalties            PenaltyEvent[]
+  startFiles           StartFile[]
+  endFiles             EndFile[]
+  notificationLogs     NotificationLog[]
+  reactions            CheckInReaction[]
+  isEarlyBird          Boolean                  @default(false)
 
   @@index([groupId, day])
   @@index([userId, day])
@@ -374,16 +424,16 @@ model CheckIn {
 }
 
 model Assignment {
-  id          String   @id @default(cuid())
+  id          String               @id @default(cuid())
   title       String
   details     String?
   dueAt       DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
   groupId     String
   createdById String
-  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  createdBy   User     @relation("AssignmentCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  group       Group                @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy   User                 @relation("AssignmentCreator", fields: [createdById], references: [id], onDelete: Cascade)
   questions   AssignmentQuestion[]
 
   @@index([groupId, createdAt])
@@ -392,14 +442,14 @@ model Assignment {
 }
 
 model AssignmentQuestion {
-  id            String   @id @default(cuid())
-  prompt        String
-  order         Int
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  assignmentId  String
-  assignment    Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
-  checkIns      CheckIn[]
+  id           String     @id @default(cuid())
+  prompt       String
+  order        Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  assignmentId String
+  assignment   Assignment @relation(fields: [assignmentId], references: [id], onDelete: Cascade)
+  checkIns     CheckIn[]
 
   @@index([assignmentId, order])
   @@map("assignment_question")
@@ -417,23 +467,23 @@ model SubmissionVerification {
   checkIn        CheckIn             @relation(fields: [checkInId], references: [id], onDelete: Cascade)
   reviewer       User                @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
 
+  @@unique([checkInId, reviewerId])
   @@index([checkInId])
   @@index([reviewerId])
-  @@unique([checkInId, reviewerId])
   @@map("submission_verification")
 }
 
 model PenaltyEvent {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   points    Int
   reason    String
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
   userId    String
   groupId   String
   checkInId String?
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  checkIn   CheckIn?  @relation(fields: [checkInId], references: [id], onDelete: SetNull)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  checkIn   CheckIn? @relation(fields: [checkInId], references: [id], onDelete: SetNull)
 
   @@index([groupId, createdAt])
   @@index([userId, createdAt])
@@ -460,21 +510,23 @@ model GroupMessage {
 }
 
 model TaskTemplate {
-  id            String      @id @default(cuid())
+  id            String         @id @default(cuid())
   title         String
   details       String?
-  category      TaskCategory @default(CUSTOM)
+  category      TaskCategory   @default(CUSTOM)
+  difficulty    TaskDifficulty @default(MEDIUM)
+  blockType     StudyBlock     @default(DEEP_WORK)
   targetMinutes Int?
-  scope         TaskScope   @default(PERSONAL)
-  isActive      Boolean     @default(true)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  scope         TaskScope      @default(PERSONAL)
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   userId        String?
   groupId       String
   createdById   String
-  user          User?       @relation("UserTaskTemplates", fields: [userId], references: [id], onDelete: Cascade)
-  group         Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  createdBy     User        @relation("CreatedTaskTemplates", fields: [createdById], references: [id], onDelete: Cascade)
+  user          User?          @relation("UserTaskTemplates", fields: [userId], references: [id], onDelete: Cascade)
+  group         Group          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy     User           @relation("CreatedTaskTemplates", fields: [createdById], references: [id], onDelete: Cascade)
   tasks         Task[]
 
   @@index([groupId, scope, isActive])
@@ -483,36 +535,36 @@ model TaskTemplate {
 }
 
 model StartFile {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   name       String
   url        String
   storageKey String?
-  uploadedAt DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  uploadedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   userId     String
   groupId    String
   checkInId  String?
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group      Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  checkIn    CheckIn?  @relation(fields: [checkInId], references: [id], onDelete: SetNull)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  checkIn    CheckIn? @relation(fields: [checkInId], references: [id], onDelete: SetNull)
 
   @@index([groupId])
   @@map("start_file")
 }
 
 model EndFile {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   name       String
   url        String
   storageKey String?
-  uploadedAt DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  uploadedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
   userId     String
   groupId    String
   checkInId  String?
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  group      Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  checkIn    CheckIn?  @relation(fields: [checkInId], references: [id], onDelete: SetNull)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  checkIn    CheckIn? @relation(fields: [checkInId], references: [id], onDelete: SetNull)
 
   @@index([groupId])
   @@map("end_file")
@@ -621,12 +673,12 @@ model WeeklyRecap {
 }
 
 model MilestoneBadge {
-  id        String             @id @default(cuid())
-  kind      MilestoneBadgeKind
-  earnedAt  DateTime           @default(now())
-  userId    String
-  groupId   String?
-  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       String             @id @default(cuid())
+  kind     MilestoneBadgeKind
+  earnedAt DateTime           @default(now())
+  userId   String
+  groupId  String?
+  user     User               @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, kind, groupId])
   @@index([userId])
@@ -650,11 +702,11 @@ model ConfessionPost {
 }
 
 model ConfessionUpvote {
-  id           String        @id @default(cuid())
-  createdAt    DateTime      @default(now())
+  id           String         @id @default(cuid())
+  createdAt    DateTime       @default(now())
   userId       String
   confessionId String
-  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   confession   ConfessionPost @relation(fields: [confessionId], references: [id], onDelete: Cascade)
 
   @@unique([confessionId, userId])
@@ -663,19 +715,19 @@ model ConfessionUpvote {
 }
 
 model RedemptionTask {
-  id          String           @id @default(cuid())
-  title       String
-  details     String?
-  status      RedemptionStatus @default(PENDING)
-  startFileUrl String?
-  endFileUrl   String?
-  reflection  String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  targetUserId String
-  groupId     String
+  id             String           @id @default(cuid())
+  title          String
+  details        String?
+  status         RedemptionStatus @default(PENDING)
+  startFileUrl   String?
+  endFileUrl     String?
+  reflection     String?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  targetUserId   String
+  groupId        String
   penaltyEventId String?
-  group       Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  group          Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
   @@index([groupId, targetUserId])
   @@index([targetUserId])
@@ -683,18 +735,18 @@ model RedemptionTask {
 }
 
 model Report {
-  id            String           @id @default(cuid())
-  reason        ReportReason
-  details       String?
-  status        ReportStatus     @default(PENDING)
-  targetType    ReportTargetType
-  targetId      String
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  reporterId    String
-  resolvedById  String?
-  reporter      User             @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
-  resolvedBy    User?            @relation("ReportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+  id           String           @id @default(cuid())
+  reason       ReportReason
+  details      String?
+  status       ReportStatus     @default(PENDING)
+  targetType   ReportTargetType
+  targetId     String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  reporterId   String
+  resolvedById String?
+  reporter     User             @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  resolvedBy   User?            @relation("ReportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
 
   @@index([targetType, targetId])
   @@index([status])
@@ -709,4 +761,112 @@ model SystemSetting {
   updatedAt   DateTime @updatedAt
 
   @@map("system_setting")
+}
+
+model TrackerEntry {
+  id               String            @id @default(cuid())
+  title            String
+  normalizedTitle  String
+  scope            TaskScope         @default(PERSONAL)
+  blockType        StudyBlock        @default(DEEP_WORK)
+  difficulty       TaskDifficulty    @default(MEDIUM)
+  status           TrackerLogStatus  @default(PENDING)
+  streakCount      Int               @default(0)
+  bestStreak       Int               @default(0)
+  weeklyProgress   Int               @default(0)
+  consistencyScore Int               @default(0)
+  totalCompletions Int               @default(0)
+  totalMisses      Int               @default(0)
+  lateCompletions  Int               @default(0)
+  lastCompletedOn  DateTime?
+  lastMissedOn     DateTime?
+  lastLoggedOn     DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  userId           String
+  groupId          String
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group            Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  tasks            Task[]
+  logs             TrackerDailyLog[]
+
+  @@unique([userId, groupId, scope, blockType, normalizedTitle])
+  @@index([groupId, consistencyScore])
+  @@index([userId, updatedAt])
+  @@map("tracker_entry")
+}
+
+model TrackerDailyLog {
+  id             String           @id @default(cuid())
+  day            DateTime
+  status         TrackerLogStatus @default(PENDING)
+  note           String?
+  completionAt   DateTime?
+  dueAt          DateTime?
+  isLate         Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  trackerEntryId String
+  taskId         String           @unique
+  userId         String
+  groupId        String
+  trackerEntry   TrackerEntry     @relation(fields: [trackerEntryId], references: [id], onDelete: Cascade)
+  task           Task             @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group          Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([trackerEntryId, day])
+  @@index([userId, day])
+  @@index([groupId, day])
+  @@map("tracker_daily_log")
+}
+
+model DailyReflection {
+  id               String                  @id @default(cuid())
+  day              DateTime
+  understanding    ReflectionUnderstanding
+  tomorrowPlan     String
+  note             String?
+  aiSummary        String?
+  taskSummary      Json?
+  completionRate   Int                     @default(0)
+  consistencyScore Int                     @default(0)
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  userId           String
+  groupId          String
+  user             User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group            Group                   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId, day])
+  @@index([groupId, day])
+  @@index([userId, day])
+  @@map("daily_reflection")
+}
+
+model WeeklyReport {
+  id               String      @id @default(cuid())
+  weekStart        DateTime
+  weekEnd          DateTime
+  completedTasks   Int         @default(0)
+  missedTasks      Int         @default(0)
+  completionRate   Int         @default(0)
+  consistencyScore Int         @default(0)
+  strongAreas      Json
+  weakAreas        Json
+  trend            WeeklyTrend @default(STABLE)
+  blockSummary     Json
+  summary          String?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+  generatedAt      DateTime    @default(now())
+  userId           String
+  groupId          String
+  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group            Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId, weekStart])
+  @@index([groupId, weekStart])
+  @@index([userId, weekStart])
+  @@map("weekly_report")
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState, useTransition } from "react";
 import {
   LayoutDashboard,
   LogOut,
@@ -10,6 +10,7 @@ import {
   PenTool,
   ShieldCheck,
   Sparkles,
+  Target,
   Trophy,
   Upload,
   Users,
@@ -25,18 +26,29 @@ const baseNavItems: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/groups", label: "Groups", icon: Users },
   { href: "/tasks", label: "Tasks", icon: PenTool },
+  { href: "/tracker", label: "Tracker", icon: Target },
   { href: "/proof-work", label: "Proof of Work", icon: ShieldCheck },
   { href: "/uploads", label: "Uploads", icon: Upload },
   { href: "/profile", label: "Profile", icon: Users },
 ];
 
-function NavLink({ href, label, icon: Icon }: { href: string; label: string; icon: LucideIcon }) {
-  const pathname = usePathname();
-  const active = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
+/* ──────────────────────────── Nav link ──────────────────────────── */
 
+const NavLink = memo(function NavLink({
+  href,
+  label,
+  icon: Icon,
+  active,
+}: {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+  active: boolean;
+}) {
   return (
     <Link
       href={href}
+      prefetch={true}
       style={{
         display: "flex",
         alignItems: "center",
@@ -82,11 +94,13 @@ function NavLink({ href, label, icon: Icon }: { href: string; label: string; ico
       <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis" }}>{label}</span>
     </Link>
   );
-}
+});
+
+/* ──────────────────────────── User footer ──────────────────────── */
 
 type SessionData = ReturnType<typeof useSession>["data"];
 
-function UserFooter({
+const UserFooter = memo(function UserFooter({
   session,
   isLoading,
   onSignOut,
@@ -189,7 +203,9 @@ function UserFooter({
       </button>
     </div>
   );
-}
+});
+
+/* ──────────────────────────── Main navigation ──────────────────── */
 
 export function UserNavigation({
   showLeaderPortal = false,
@@ -201,28 +217,45 @@ export function UserNavigation({
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [, startTransition] = useTransition();
   const { data: session, isPending } = useSession();
   const isLoadingSession = isPending && !session;
-  const navItems = [...baseNavItems];
 
+  // Build nav items once (stable between renders for same props)
+  const navItems = baseNavItems.slice();
   if (showLeaderPortal) {
     navItems.splice(1, 0, { href: "/leader", label: "Leader Hub", icon: ShieldCheck });
   }
-
   if (showAdminPortal) {
     navItems.splice(1, 0, { href: "/admin", label: "Admin Panel", icon: Sparkles });
   }
 
+  // Close mobile nav on route change
   useEffect(() => {
-    const timeout = window.setTimeout(() => setMobileOpen(false), 0);
-    return () => window.clearTimeout(timeout);
+    setMobileOpen(false);
   }, [pathname]);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
     await signOut();
-    router.replace("/");
-    router.refresh();
-  };
+    startTransition(() => {
+      router.replace("/");
+      router.refresh();
+    });
+  }, [router, startTransition]);
+
+  // Compute active state once, not per-link
+  const isActive = useCallback(
+    (href: string) => pathname === href || (href !== "/dashboard" && pathname.startsWith(href)),
+    [pathname],
+  );
+
+  const navContent = (
+    <>
+      {navItems.map((item) => (
+        <NavLink key={item.href} {...item} active={isActive(item.href)} />
+      ))}
+    </>
+  );
 
   return (
     <>
@@ -294,9 +327,7 @@ export function UserNavigation({
           >
             Navigation
           </div>
-          {navItems.map((item) => (
-            <NavLink key={item.href} {...item} />
-          ))}
+          {navContent}
         </div>
 
         <div
@@ -347,7 +378,7 @@ export function UserNavigation({
         {mobileOpen && (
           <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 4 }}>
             {navItems.map((item) => (
-              <NavLink key={item.href} {...item} />
+              <NavLink key={item.href} {...item} active={isActive(item.href)} />
             ))}
             <div style={{ marginTop: 8, paddingTop: 12, borderTop: "1px solid rgba(196,172,120,0.09)" }}>
               <UserFooter session={session} isLoading={isLoadingSession} onSignOut={handleSignOut} />

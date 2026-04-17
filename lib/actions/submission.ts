@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { emitGroupEvent } from "@/lib/pusher";
+import { syncTaskTracker } from "@/lib/tracker";
 
 export async function submitProof(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -65,6 +66,8 @@ export async function submitProof(formData: FormData) {
         where: { id: taskId },
         data: { status: TaskStatus.IN_PROGRESS, checkInId: checkIn.id },
       });
+
+      await syncTaskTracker(taskId);
     }
 
     emitGroupEvent(proofGroupId, "new-submission", {});
@@ -72,6 +75,7 @@ export async function submitProof(formData: FormData) {
     revalidatePath("/dashboard");
     revalidatePath("/tasks");
     revalidatePath("/proof-work");
+    revalidatePath("/tracker");
     revalidatePath("/uploads");
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to submit proof";

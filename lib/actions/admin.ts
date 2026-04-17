@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { emitGroupEvent } from "@/lib/pusher";
+import { syncTaskTracker } from "@/lib/tracker";
 
 async function requireAdminActor() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -74,6 +75,7 @@ function revalidateModerationPaths(groupId?: string | null) {
   revalidatePath("/leader/alerts");
   revalidatePath("/groups");
   revalidatePath("/dashboard");
+  revalidatePath("/tracker");
   revalidatePath("/uploads");
   revalidatePath("/assignments");
 
@@ -395,11 +397,15 @@ export async function resolveSubmissionAsAdmin(formData: FormData) {
 
     return {
       groupId: checkIn.groupId,
+      taskId: task?.id ?? null,
       status,
     };
   });
 
   emitGroupEvent(result.groupId, "new-verification", { checkInId, status: result.status });
+  if (result.taskId) {
+    await syncTaskTracker(result.taskId);
+  }
   revalidateModerationPaths(result.groupId);
   redirect(returnTo);
 }

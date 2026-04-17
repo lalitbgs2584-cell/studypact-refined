@@ -19,7 +19,7 @@ import { reassignGroupLeader } from "@/lib/actions/admin";
 import { calculateTrustScore, formatPercent, getValidatorAccuracy } from "@/lib/role-analytics";
 
 export default async function LeaderMembersPage() {
-  const { session, leaderGroupId, leaderGroup } = await requireLeaderWorkspace();
+  const { leaderGroupId, leaderGroup } = await requireLeaderWorkspace();
 
   const now = new Date();
   const threeDaysAgo = new Date(now);
@@ -144,16 +144,24 @@ export default async function LeaderMembersPage() {
                     <div className="text-[10px] uppercase tracking-wider text-white/40">Trust</div>
                   </div>
                   <div className="rounded-[4px] border border-border bg-secondary/30 px-3 py-2">
+                    <div className="text-sm font-bold text-primary">{m.consistencyScore}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-white/40">Consistency</div>
+                  </div>
+                  <div className="rounded-[4px] border border-border bg-secondary/30 px-3 py-2">
+                    <div className="text-sm font-bold text-amber-300">{m.weeklyConsistency}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-white/40">Weekly</div>
+                  </div>
+                  <div className="rounded-[4px] border border-border bg-secondary/30 px-3 py-2">
                     <div className="text-sm font-bold text-emerald-400">{m.streak}</div>
                     <div className="text-[10px] uppercase tracking-wider text-white/40">Streak</div>
                   </div>
                   <div className="rounded-[4px] border border-border bg-secondary/30 px-3 py-2">
-                    <div className="text-sm font-bold text-white">{m.completions}</div>
-                    <div className="text-[10px] uppercase tracking-wider text-white/40">Done</div>
-                  </div>
-                  <div className="rounded-[4px] border border-border bg-secondary/30 px-3 py-2">
                     <div className="text-sm font-bold text-red-400">{m.misses}</div>
                     <div className="text-[10px] uppercase tracking-wider text-white/40">Missed</div>
+                  </div>
+                  <div className="rounded-[4px] border border-border bg-secondary/30 px-3 py-2">
+                    <div className="text-sm font-bold text-white">{m.completions}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-white/40">Done</div>
                   </div>
                   <div className="rounded-[4px] border border-border bg-secondary/30 px-3 py-2">
                     <div className="text-sm font-bold text-amber-400">{formatPercent(m.accuracy.ratio)}</div>

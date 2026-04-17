@@ -33,6 +33,8 @@ export const getUserGroups = cache(async (userId: string) => {
       inactivityStrikes: true,
       lastCheckInAt: true,
       earlyBirdCount: true,
+      consistencyScore: true,
+      weeklyConsistency: true,
       user: { select: { id: true, name: true, image: true } },
       group: {
         select: {
@@ -58,6 +60,8 @@ export const getUserGroups = cache(async (userId: string) => {
               role: true,
               points: true,
               completions: true,
+              consistencyScore: true,
+              weeklyConsistency: true,
               user: { select: { id: true, name: true, image: true } },
             },
             orderBy: { joinedAt: "asc" },

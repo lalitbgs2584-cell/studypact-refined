@@ -8,19 +8,17 @@ import {
   CheckCircle2,
   Crown,
   ShieldCheck,
-  Sparkles,
   Users,
   XCircle,
 } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { requireLeaderWorkspace } from "@/lib/access";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 
 export default async function LeaderDashboardPage() {
-  const { session, leaderGroupId, leaderGroup } = await requireLeaderWorkspace();
+  const { leaderGroupId, leaderGroup } = await requireLeaderWorkspace();
 
   const now = new Date();
   const todayStart = new Date(now);
@@ -69,6 +67,12 @@ export default async function LeaderDashboardPage() {
   const inactiveMembers = members.filter(
     (m) => !m.lastCheckInAt || m.lastCheckInAt < threeDaysAgo
   );
+  const averageConsistency = members.length > 0
+    ? Math.round(members.reduce((sum, member) => sum + member.consistencyScore, 0) / members.length)
+    : 0;
+  const consistencyRanking = [...members]
+    .sort((a, b) => b.consistencyScore - a.consistencyScore || b.weeklyConsistency - a.weeklyConsistency)
+    .slice(0, 5);
 
   const completionRate = totalCheckIns > 0 ?
     Math.round((approvedCheckIns / totalCheckIns) * 100) : 0;
@@ -108,6 +112,7 @@ export default async function LeaderDashboardPage() {
           { label: "Tasks Today", value: todayTasks, color: "text-blue-400" },
           { label: "Proofs Today", value: todayCheckIns, color: "text-primary" },
           { label: "Completion Rate", value: `${completionRate}%`, color: "text-emerald-400" },
+          { label: "Avg Consistency", value: averageConsistency, color: "text-amber-300" },
           { label: "Approved", value: approvedCheckIns, color: "text-emerald-400" },
           { label: "Rejected", value: rejectedCheckIns, color: "text-red-400" },
           { label: "Disputed/Flagged", value: disputedCheckIns, color: "text-orange-400" },
@@ -186,6 +191,44 @@ export default async function LeaderDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-white">Consistency Pulse</CardTitle>
+          <CardDescription className="text-white/50">
+            Members are ranked by the same score the tracker uses for leaderboards and reports.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {consistencyRanking.length === 0 ? (
+            <div className="rounded-[4px] bg-secondary/30 p-6 text-center text-sm text-white/45">
+              No member activity yet
+            </div>
+          ) : (
+            consistencyRanking.map((member, index) => (
+              <div key={member.userId} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card/70 p-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500/10 text-xs font-bold text-violet-300">
+                    #{index + 1}
+                  </div>
+                  <div>
+                    <div className="text-sm font-medium text-white">{member.user.name}</div>
+                    <div className="text-xs text-white/40">
+                      {member.weeklyConsistency} weekly · {member.completions} done · {member.misses} missed
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-lg font-black text-primary">{member.consistencyScore}</div>
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-white/35">
+                    {member.streak} streak
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </CardContent>
+      </Card>
 
       {/* Recent Activity */}
       <Card>

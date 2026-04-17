@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Settings } from "lucide-react";
+import { LayoutDashboard, Settings, Trophy } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -20,6 +20,12 @@ export function GroupTabs({ groupId, isLeader }: GroupTabsProps) {
       label: "Feed",
       icon: LayoutDashboard,
       active: pathname === feedHref || pathname.startsWith(`/groups/${groupId}/task`),
+    },
+    {
+      href: `/groups/${groupId}/leaderboard`,
+      label: "Leaderboard",
+      icon: Trophy,
+      active: pathname === `/groups/${groupId}/leaderboard`,
     },
   ];
 

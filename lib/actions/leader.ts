@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { emitGroupEvent } from "@/lib/pusher";
+import { syncTaskTracker } from "@/lib/tracker";
 
 async function requireLeaderActor(groupId: string) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -47,6 +48,7 @@ function revalidateLeaderPaths(groupId: string) {
   revalidatePath("/leader/disputes");
   revalidatePath("/leader/tasks");
   revalidatePath("/leader/alerts");
+  revalidatePath("/tracker");
   revalidatePath(`/groups/${groupId}`);
   revalidatePath(`/groups/${groupId}/settings`);
   revalidatePath("/dashboard");
@@ -142,6 +144,9 @@ export async function resolveFlaggedSubmission(formData: FormData) {
   }
 
   emitGroupEvent(result.groupId, "new-verification", { checkInId, status: result.status });
+  if (result.taskId) {
+    await syncTaskTracker(result.taskId);
+  }
   revalidateLeaderPaths(groupId);
   redirect(returnTo);
 }
