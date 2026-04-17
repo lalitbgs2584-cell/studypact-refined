@@ -4,21 +4,40 @@ import { getDb } from "./db";
 
 function createAuth() {
   return betterAuth({
+    baseURL: process.env.BETTER_AUTH_URL, // ✅ REQUIRED
+
+    trustProxy: true, // 🔥 CRITICAL for Render
+
     database: prismaAdapter(getDb(), {
       provider: "postgresql",
     }),
+
     emailAndPassword: {
       enabled: true,
     },
+
     socialProviders: {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID as string,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
       },
     },
+
     session: {
-      expiresIn: 60 * 60 * 24 * 7, // 7 days
-      updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+      expiresIn: 60 * 60 * 24 * 7,
+      updateAge: 60 * 60 * 24,
+    },
+
+    cookies: {
+      session: {
+        name: "better-auth.session",
+        attributes: {
+          httpOnly: true,
+          secure: true,      // 🔥 THIS FIXES YOUR LOOP
+          sameSite: "lax",
+          path: "/",
+        },
+      },
     },
   });
 }
