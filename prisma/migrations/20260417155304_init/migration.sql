@@ -527,6 +527,12 @@ CREATE INDEX "group_visibility_createdAt_idx" ON "group"("visibility", "createdA
 CREATE INDEX "user_group_groupId_idx" ON "user_group"("groupId");
 
 -- CreateIndex
+CREATE INDEX "user_group_userId_role_idx" ON "user_group"("userId", "role");
+
+-- CreateIndex
+CREATE INDEX "user_group_groupId_role_idx" ON "user_group"("groupId", "role");
+
+-- CreateIndex
 CREATE INDEX "task_userId_day_idx" ON "task"("userId", "day");
 
 -- CreateIndex
@@ -537,6 +543,15 @@ CREATE INDEX "task_template_day_idx" ON "task"("templateId", "day");
 
 -- CreateIndex
 CREATE INDEX "task_broadcastKey_idx" ON "task"("broadcastKey");
+
+-- CreateIndex
+CREATE INDEX "task_userId_scope_status_idx" ON "task"("userId", "scope", "status");
+
+-- CreateIndex
+CREATE INDEX "task_groupId_scope_dueAt_idx" ON "task"("groupId", "scope", "dueAt");
+
+-- CreateIndex
+CREATE INDEX "task_userId_status_dueAt_idx" ON "task"("userId", "status", "dueAt");
 
 -- CreateIndex
 CREATE INDEX "check_in_groupId_day_idx" ON "check_in"("groupId", "day");
