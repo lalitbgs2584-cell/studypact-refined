@@ -13,6 +13,8 @@ import { emitGroupEvent } from "@/lib/pusher";
 export async function submitProof(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) throw new Error("Unauthorized");
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
   const taskId = ((formData.get("taskId") as string) || "").trim();
   const assignmentQuestionId = ((formData.get("assignmentQuestionId") as string) || "").trim();
@@ -68,6 +70,9 @@ export async function submitProof(formData: FormData) {
 
   if (taskId) {
     if (!task || task.userId !== session.user.id) throw new Error("Task not found or you are not the owner");
+    if (task.scope === "GROUP" && task.day < today) {
+      throw new Error("This group task has expired for the day");
+    }
     if (task.checkIn && task.checkIn.status !== CheckInStatus.REJECTED) {
       throw new Error("Task already has an active submission");
     }

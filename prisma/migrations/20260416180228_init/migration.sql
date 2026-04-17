@@ -1,11 +1,11 @@
 -- CreateEnum
-CREATE TYPE "TaskStatus" AS ENUM ('PENDING', 'COMPLETED', 'MISSED');
+CREATE TYPE "TaskStatus" AS ENUM ('PENDING', 'IN_PROGRESS', 'COMPLETED', 'MISSED');
 
 -- CreateEnum
-CREATE TYPE "CheckInStatus" AS ENUM ('PENDING', 'APPROVED', 'FLAGGED', 'REJECTED');
+CREATE TYPE "CheckInStatus" AS ENUM ('PENDING', 'APPROVED', 'FLAGGED', 'REJECTED', 'DISPUTED');
 
 -- CreateEnum
-CREATE TYPE "VerificationVerdict" AS ENUM ('APPROVE', 'FLAG');
+CREATE TYPE "VerificationVerdict" AS ENUM ('APPROVE', 'FLAG', 'SPAM', 'IRRELEVANT');
 
 -- CreateEnum
 CREATE TYPE "DisputeOutcome" AS ENUM ('PENALIZED', 'DISMISSED');
@@ -35,6 +35,9 @@ CREATE TYPE "TaskCategory" AS ENUM ('DSA', 'DEVELOPMENT', 'REVISION', 'INTERVIEW
 CREATE TYPE "TaskScope" AS ENUM ('PERSONAL', 'GROUP');
 
 -- CreateEnum
+CREATE TYPE "TaskPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH');
+
+-- CreateEnum
 CREATE TYPE "NotificationKind" AS ENUM ('PRE_DEADLINE_NUDGE', 'FLAGGED_SUBMISSION');
 
 -- CreateEnum
@@ -45,6 +48,15 @@ CREATE TYPE "CheckInReactionKind" AS ENUM ('FIRE', 'STRONG', 'THINKING', 'EYES')
 
 -- CreateEnum
 CREATE TYPE "MilestoneBadgeKind" AS ENUM ('FIRST_COMPLETION', 'STREAK_7', 'ZERO_PENALTIES_MONTH', 'EARLY_BIRD_10', 'REACTIONS_50');
+
+-- CreateEnum
+CREATE TYPE "ReportReason" AS ENUM ('SPAM', 'INAPPROPRIATE', 'FAKE_PROOF', 'HARRASSMENT', 'OTHER');
+
+-- CreateEnum
+CREATE TYPE "ReportStatus" AS ENUM ('PENDING', 'RESOLVED', 'DISMISSED');
+
+-- CreateEnum
+CREATE TYPE "ReportTargetType" AS ENUM ('USER', 'CHECKIN', 'GROUP');
 
 -- CreateEnum
 CREATE TYPE "RedemptionStatus" AS ENUM ('PENDING', 'SUBMITTED', 'APPROVED', 'REJECTED');
@@ -61,6 +73,9 @@ CREATE TABLE "user" (
     "role" "UserRole" NOT NULL DEFAULT 'member',
     "isBlocked" BOOLEAN,
     "penaltyCount" INTEGER NOT NULL DEFAULT 0,
+    "globalTrustScore" INTEGER NOT NULL DEFAULT 100,
+    "totalReviews" INTEGER NOT NULL DEFAULT 0,
+    "accurateReviews" INTEGER NOT NULL DEFAULT 0,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("id")
 );
@@ -156,14 +171,17 @@ CREATE TABLE "task" (
     "title" TEXT NOT NULL,
     "details" TEXT,
     "category" "TaskCategory" NOT NULL DEFAULT 'CUSTOM',
+    "priority" "TaskPriority" NOT NULL DEFAULT 'MEDIUM',
     "targetMinutes" INTEGER,
     "status" "TaskStatus" NOT NULL DEFAULT 'PENDING',
+    "dueAt" TIMESTAMP(3),
     "day" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "completedAt" TIMESTAMP(3),
     "userId" TEXT NOT NULL,
     "groupId" TEXT NOT NULL,
+    "broadcastKey" TEXT,
     "checkInId" TEXT,
     "templateId" TEXT,
     "isChallengeMode" BOOLEAN NOT NULL DEFAULT false,
@@ -180,19 +198,52 @@ CREATE TABLE "check_in" (
     "reflection" TEXT,
     "proofText" TEXT,
     "proofLink" TEXT,
+    "reviewNote" TEXT,
     "aiSummary" TEXT,
     "aiConfidence" INTEGER,
     "status" "CheckInStatus" NOT NULL DEFAULT 'PENDING',
     "pointsAwarded" INTEGER NOT NULL DEFAULT 0,
     "penaltyApplied" INTEGER NOT NULL DEFAULT 0,
+    "isDisputed" BOOLEAN NOT NULL DEFAULT false,
+    "adminOverride" BOOLEAN NOT NULL DEFAULT false,
+    "finalOutcome" "CheckInStatus",
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "verifiedAt" TIMESTAMP(3),
+    "reviewedAt" TIMESTAMP(3),
     "userId" TEXT NOT NULL,
     "groupId" TEXT NOT NULL,
+    "assignmentQuestionId" TEXT,
+    "reviewedById" TEXT,
     "isEarlyBird" BOOLEAN NOT NULL DEFAULT false,
 
     CONSTRAINT "check_in_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "assignment" (
+    "id" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "details" TEXT,
+    "dueAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "groupId" TEXT NOT NULL,
+    "createdById" TEXT NOT NULL,
+
+    CONSTRAINT "assignment_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "assignment_question" (
+    "id" TEXT NOT NULL,
+    "prompt" TEXT NOT NULL,
+    "order" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "assignmentId" TEXT NOT NULL,
+
+    CONSTRAINT "assignment_question_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -421,6 +472,33 @@ CREATE TABLE "redemption_task" (
     CONSTRAINT "redemption_task_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "report" (
+    "id" TEXT NOT NULL,
+    "reason" "ReportReason" NOT NULL,
+    "details" TEXT,
+    "status" "ReportStatus" NOT NULL DEFAULT 'PENDING',
+    "targetType" "ReportTargetType" NOT NULL,
+    "targetId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "reporterId" TEXT NOT NULL,
+    "resolvedById" TEXT,
+
+    CONSTRAINT "report_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "system_setting" (
+    "id" TEXT NOT NULL,
+    "key" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "description" TEXT,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "system_setting_pkey" PRIMARY KEY ("id")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
@@ -458,10 +536,25 @@ CREATE INDEX "task_groupId_day_idx" ON "task"("groupId", "day");
 CREATE INDEX "task_template_day_idx" ON "task"("templateId", "day");
 
 -- CreateIndex
+CREATE INDEX "task_broadcastKey_idx" ON "task"("broadcastKey");
+
+-- CreateIndex
 CREATE INDEX "check_in_groupId_day_idx" ON "check_in"("groupId", "day");
 
 -- CreateIndex
 CREATE INDEX "check_in_userId_day_idx" ON "check_in"("userId", "day");
+
+-- CreateIndex
+CREATE INDEX "check_in_assignmentQuestionId_idx" ON "check_in"("assignmentQuestionId");
+
+-- CreateIndex
+CREATE INDEX "assignment_groupId_createdAt_idx" ON "assignment"("groupId", "createdAt");
+
+-- CreateIndex
+CREATE INDEX "assignment_createdById_idx" ON "assignment"("createdById");
+
+-- CreateIndex
+CREATE INDEX "assignment_question_assignmentId_order_idx" ON "assignment_question"("assignmentId", "order");
 
 -- CreateIndex
 CREATE INDEX "submission_verification_checkInId_idx" ON "submission_verification"("checkInId");
@@ -562,6 +655,15 @@ CREATE INDEX "redemption_task_groupId_targetUserId_idx" ON "redemption_task"("gr
 -- CreateIndex
 CREATE INDEX "redemption_task_targetUserId_idx" ON "redemption_task"("targetUserId");
 
+-- CreateIndex
+CREATE INDEX "report_targetType_targetId_idx" ON "report"("targetType", "targetId");
+
+-- CreateIndex
+CREATE INDEX "report_status_idx" ON "report"("status");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "system_setting_key_key" ON "system_setting"("key");
+
 -- AddForeignKey
 ALTER TABLE "session" ADD CONSTRAINT "session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -594,6 +696,21 @@ ALTER TABLE "check_in" ADD CONSTRAINT "check_in_userId_fkey" FOREIGN KEY ("userI
 
 -- AddForeignKey
 ALTER TABLE "check_in" ADD CONSTRAINT "check_in_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "check_in" ADD CONSTRAINT "check_in_assignmentQuestionId_fkey" FOREIGN KEY ("assignmentQuestionId") REFERENCES "assignment_question"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "check_in" ADD CONSTRAINT "check_in_reviewedById_fkey" FOREIGN KEY ("reviewedById") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "assignment" ADD CONSTRAINT "assignment_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "assignment" ADD CONSTRAINT "assignment_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "assignment_question" ADD CONSTRAINT "assignment_question_assignmentId_fkey" FOREIGN KEY ("assignmentId") REFERENCES "assignment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "submission_verification" ADD CONSTRAINT "submission_verification_checkInId_fkey" FOREIGN KEY ("checkInId") REFERENCES "check_in"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -690,3 +807,9 @@ ALTER TABLE "confession_upvote" ADD CONSTRAINT "confession_upvote_confessionId_f
 
 -- AddForeignKey
 ALTER TABLE "redemption_task" ADD CONSTRAINT "redemption_task_groupId_fkey" FOREIGN KEY ("groupId") REFERENCES "group"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "report" ADD CONSTRAINT "report_reporterId_fkey" FOREIGN KEY ("reporterId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "report" ADD CONSTRAINT "report_resolvedById_fkey" FOREIGN KEY ("resolvedById") REFERENCES "user"("id") ON DELETE SET NULL ON UPDATE CASCADE;

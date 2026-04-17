@@ -1,124 +1,81 @@
-# StudyPact — Deployment Guide
+# StudyPact
 
-## Prerequisites
-- GitHub account
-- Vercel account (free tier works)
-- Neon database already set up (you have this)
-- Google OAuth app already set up (you have this)
-- UploadThing account already set up (you have this)
+StudyPact is a Next.js app with:
 
----
+- Better Auth
+- Prisma + Neon Postgres
+- UploadThing uploads
+- Socket.IO on a custom Node server
 
-## Step 1 — Push to GitHub
+This repo is set up to run on a regular Node server such as AWS EC2.
 
-Make sure your `.env` file is NOT committed (it's in `.gitignore`).
+## Production Environment
+
+Create a `.env` file with:
+
+```env
+NODE_ENV=production
+PORT=3000
+TZ=Asia/Kolkata
+NEXT_PUBLIC_APP_URL=https://your-domain.com
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+BETTER_AUTH_SECRET=your-secret-here
+BETTER_AUTH_URL=https://your-domain.com
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+UPLOADTHING_TOKEN=your-uploadthing-token
+```
+
+## Build
 
 ```bash
-git init                        # if not already a git repo
-git add .
-git commit -m "initial commit"
-git remote add origin https://github.com/YOUR_USERNAME/studypact.git
-git push -u origin main
+pnpm install
+pnpm build
 ```
 
----
+`pnpm build` runs:
 
-## Step 2 — Import to Vercel
+1. `prisma generate`
+2. `next build`
+3. `tsc --project tsconfig.server.json`
 
-1. Go to [vercel.com/new](https://vercel.com/new)
-2. Click **"Import Git Repository"** and select your repo
-3. Framework preset will auto-detect as **Next.js** — leave it
-4. **Do NOT deploy yet** — set env vars first (Step 3)
+The custom server output is written to `.server-dist/server.js`.
 
----
+## Start
 
-## Step 3 — Set Environment Variables in Vercel
-
-In the Vercel project settings → **Environment Variables**, add ALL of these:
-
-| Variable | Value |
-|---|---|
-| `DATABASE_URL` | Your Neon connection string (with `?sslmode=require`) |
-| `BETTER_AUTH_SECRET` | Your secret (run `openssl rand -base64 32` to generate) |
-| `BETTER_AUTH_URL` | `https://your-app.vercel.app` (your actual Vercel URL) |
-| `GOOGLE_CLIENT_ID` | From Google Cloud Console |
-| `GOOGLE_CLIENT_SECRET` | From Google Cloud Console |
-| `UPLOADTHING_TOKEN` | From UploadThing dashboard |
-| `CRON_SECRET` | Any random string (run `openssl rand -base64 32`) |
-| *(no Pusher needed)* | Realtime uses built-in SSE — no external service required |
-
-> Set all variables for **Production**, **Preview**, and **Development** environments.
-
----
-
-## Step 4 — Fix Google OAuth Redirect URI
-
-In [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → your OAuth client:
-
-Add to **Authorized redirect URIs**:
-```
-https://your-app.vercel.app/api/auth/callback/google
+```bash
+pnpm start
 ```
 
-Also add your Vercel preview URL pattern if you want previews to work:
-```
-https://studypact-*.vercel.app/api/auth/callback/google
-```
+Production startup uses `start-server.cjs`, which:
 
----
+- forces `NODE_ENV=production`
+- defaults `TZ` to `Asia/Kolkata` if it is not already set
+- runs the compiled custom server from `.server-dist/server.js`
 
-## Step 5 — Deploy
+## EC2 Notes
 
-Click **Deploy** in Vercel. The build runs:
-1. `npm install` → triggers `postinstall` → runs `prisma generate`
-2. `next build` → compiles the app
+- Use Node 20 LTS
+- Put Nginx in front of the app
+- Proxy both normal HTTP traffic and WebSocket traffic to port `3000`
+- Keep `NEXT_PUBLIC_APP_URL` and `BETTER_AUTH_URL` on the same public domain
+- Add the Google OAuth callback:
 
-Build should complete in ~2 minutes.
-
----
-
-## Step 6 — Update BETTER_AUTH_URL
-
-After your first deploy, Vercel gives you a URL like `studypact-abc123.vercel.app`.
-
-Go back to **Environment Variables** and update:
-```
-BETTER_AUTH_URL=https://studypact-abc123.vercel.app
+```text
+https://your-domain.com/api/auth/callback/google
 ```
 
-Then **Redeploy** (Deployments tab → three dots → Redeploy).
+## Realtime
 
----
+Realtime is handled by the app's built-in Socket.IO server at `/api/socketio`.
+No cron worker, Docker container, or third-party realtime service is required.
 
-## Step 7 — Add a Custom Domain (optional)
+## Verification
 
-Vercel dashboard → your project → **Settings → Domains** → add your domain.
+Before deploying, run:
 
-Update `BETTER_AUTH_URL` and Google OAuth redirect URI to use the custom domain.
-
----
-
-## Cron Job
-
-The `/api/cron` route runs daily at 18:35 UTC (midnight IST) to mark overdue tasks as MISSED.
-
-Vercel automatically calls it on the schedule in `vercel.json`. It's protected by the `CRON_SECRET` env var — Vercel sends it as a Bearer token automatically.
-
----
-
-## Troubleshooting
-
-**Build fails with "Cannot find module '@prisma/client'"**
-→ Make sure `postinstall: prisma generate` is in `package.json` scripts. ✅ Already done.
-
-**"BETTER_AUTH_URL must be set" error**
-→ Add `BETTER_AUTH_URL` env var in Vercel with your production URL.
-
-**Google login redirects to localhost**
-→ Update `BETTER_AUTH_URL` in Vercel env vars to your production URL and redeploy.
-
-**Images not loading from UploadThing**
-→ `next.config.ts` already has `utfs.io` and `ufs.sh` in `remotePatterns`. ✅ Already done.
-
-**Cron not running**
-→ Vercel Cron is only available on Hobby plan and above. Check Vercel dashboard → your project → **Cron Jobs** tab.
+```bash
+pnpm lint
+pnpm exec tsc --noEmit
+pnpm build
+```

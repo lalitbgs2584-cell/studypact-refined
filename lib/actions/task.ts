@@ -120,6 +120,29 @@ export async function createTask(formData: FormData) {
   revalidatePath("/tasks");
   revalidatePath("/proof-work");
   revalidatePath("/uploads");
-  revalidatePath("/assignments");
   redirect("/tasks");
+}
+
+export async function togglePersonalTask(taskId: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const task = await db.task.findUnique({ where: { id: taskId } });
+  if (!task || task.userId !== session.user.id || task.scope !== "PERSONAL") {
+    throw new Error("Not found");
+  }
+
+  const newStatus =
+    task.status === TaskStatus.COMPLETED ? TaskStatus.PENDING : TaskStatus.COMPLETED;
+
+  await db.task.update({
+    where: { id: taskId },
+    data: {
+      status: newStatus,
+      completedAt: newStatus === TaskStatus.COMPLETED ? new Date() : null,
+    },
+  });
+
+  revalidatePath("/tasks");
+  revalidatePath("/dashboard");
 }

@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 
-﻿import { CheckCircle2, ShieldCheck, Sparkles, Upload } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Sparkles, Upload } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ProofWorkForm } from "@/components/proof-work-form";
@@ -17,32 +17,12 @@ type TaskTarget = Prisma.TaskGetPayload<{
   };
 }>;
 
-type AssignmentRow = Prisma.AssignmentGetPayload<{
-  include: {
-    questions: {
-      include: {
-        checkIns: {
-          include: {
-            startFiles: true;
-            endFiles: true;
-          };
-        };
-      };
-    };
-  };
-}>;
-
 type CheckInRow = Prisma.CheckInGetPayload<{
   include: {
     reviewedBy: { select: { name: true } };
     verifications: {
       include: {
         reviewer: { select: { name: true } };
-      };
-    };
-    assignmentQuestion: {
-      include: {
-        assignment: { select: { title: true } };
       };
     };
     tasks: { select: { id: true; title: true } };
@@ -54,18 +34,23 @@ type CheckInRow = Prisma.CheckInGetPayload<{
 export default async function ProofWorkPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ taskId?: string; assignmentQuestionId?: string }>;
+  searchParams?: Promise<{ taskId?: string }>;
 }) {
   const session = await requireSession();
   const { memberships, activeGroupId, activeGroup } = await getWorkspace(session.user.id);
   const params = (await searchParams) ?? {};
   const groupId = activeGroupId ?? memberships[0]?.groupId ?? "";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const totalEligibleReviewers = Math.max((activeGroup?.users.length ?? 0) - 1, 0);
   const quorumThreshold = getPeerReviewThreshold(totalEligibleReviewers);
 
   const taskTargets: TaskTarget[] = groupId
     ? await db.task.findMany({
-        where: { groupId, userId: session.user.id },
+        where: {
+          groupId,
+          userId: session.user.id,
+        },
         include: {
           checkIn: true,
         },
@@ -73,30 +58,9 @@ export default async function ProofWorkPage({
       })
     : [];
 
-  const assignments: AssignmentRow[] = groupId
-    ? await db.assignment.findMany({
-        where: { groupId },
-        include: {
-          questions: {
-            include: {
-              checkIns: {
-                where: { userId: session.user.id },
-                include: {
-                  startFiles: true,
-                  endFiles: true,
-                },
-              },
-            },
-            orderBy: { order: "asc" },
-          },
-        },
-        orderBy: { createdAt: "desc" },
-      })
-    : [];
-
   const recentSubmissions: CheckInRow[] = groupId
     ? await db.checkIn.findMany({
-        where: { groupId, userId: session.user.id },
+        where: { groupId, userId: session.user.id, assignmentQuestionId: null },
         include: {
           reviewedBy: { select: { name: true } },
           verifications: {
@@ -104,11 +68,6 @@ export default async function ProofWorkPage({
               reviewer: { select: { name: true } },
             },
             orderBy: { createdAt: "asc" },
-          },
-          assignmentQuestion: {
-            include: {
-              assignment: { select: { title: true } },
-            },
           },
           tasks: { select: { id: true, title: true } },
           startFiles: true,
@@ -138,16 +97,8 @@ export default async function ProofWorkPage({
     return "badge-muted";
   };
 
-  const questionTargets = assignments.flatMap((assignment) =>
-    assignment.questions.map((question) => ({
-      id: question.id,
-      label: `${assignment.title} - Q${question.order}`,
-      hint: question.prompt,
-    }))
-  );
-
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-6xl space-y-8">
       <div className="grid gap-4 lg:grid-cols-[1.1fr_0.9fr]">
         <Card className="border-l-4 border-l-primary">
           <CardContent className="space-y-4 p-6 md:p-8">
@@ -159,7 +110,7 @@ export default async function ProofWorkPage({
               <h1 className="text-3xl font-black tracking-tight text-white md:text-4xl">Submit before-and-after evidence</h1>
               <p className="max-w-2xl text-white/60">
                 {activeGroup
-                  ? `Everything here is scoped to ${activeGroup.name}. Choose a task or assignment question, upload both photos, and add a short summary.`
+                  ? `Submit proof for group tasks in ${activeGroup.name}. Upload both photos and add a short summary.`
                   : "Join a group to start submitting proof of work."}
               </p>
             </div>
@@ -168,8 +119,8 @@ export default async function ProofWorkPage({
 
         <Card className="border-l-4 border-l-primary/40">
           <CardHeader>
-            <CardTitle className="text-white">Why this page exists</CardTitle>
-            <CardDescription className="text-white/50">The proof workflow is shared by tasks and assignments.</CardDescription>
+            <CardTitle className="text-white">How it works</CardTitle>
+            <CardDescription className="text-white/50">Group tasks require proof submission for completion.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3 text-sm text-white/60">
             <div className="flex items-start gap-3 rounded-[4px] border border-border bg-secondary/20 p-4">
@@ -190,53 +141,28 @@ export default async function ProofWorkPage({
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-white">Task Proof</CardTitle>
-            <CardDescription className="text-white/50">Submit evidence for an active task in the current group.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {groupId && taskFormTargets.length > 0 ? (
-              <ProofWorkForm
-                action={submitProof}
-                groupId={groupId}
-                targetField="taskId"
-                targets={taskFormTargets}
-                defaultTargetId={params.taskId}
-                title="Task submission"
-                description="Pick a task, upload both photos, and summarize the work."
-                submitLabel="Submit task proof"
-              />
-            ) : (
-              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No task targets available right now.</div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-white">Assignment Proof</CardTitle>
-            <CardDescription className="text-white/50">Submit evidence for a specific assignment question.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {groupId && questionTargets.length > 0 ? (
-              <ProofWorkForm
-                action={submitProof}
-                groupId={groupId}
-                targetField="assignmentQuestionId"
-                targets={questionTargets}
-                defaultTargetId={params.assignmentQuestionId}
-                title="Question submission"
-                description="Each question needs its own before photo, after photo, and summary."
-                submitLabel="Submit question proof"
-              />
-            ) : (
-              <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No assignment questions yet.</div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-white">Submit Task Proof</CardTitle>
+          <CardDescription className="text-white/50">Submit evidence for an active group task.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {groupId && taskFormTargets.length > 0 ? (
+            <ProofWorkForm
+              action={submitProof}
+              groupId={groupId}
+              targetField="taskId"
+              targets={taskFormTargets}
+              defaultTargetId={params.taskId}
+              title="Task submission"
+              description="Pick a task, upload both photos, and summarize the work."
+              submitLabel="Submit task proof"
+            />
+          ) : (
+            <div className="rounded-[4px] bg-secondary/30 p-8 text-center text-white/45">No group tasks available right now.</div>
+          )}
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
@@ -249,9 +175,7 @@ export default async function ProofWorkPage({
           ) : (
             recentSubmissions.map((submission) => {
               const metrics = getPeerReviewMetrics(submission.verifications, totalEligibleReviewers);
-              const targetLabel = submission.assignmentQuestion
-                ? `${submission.assignmentQuestion.assignment.title} - Q${submission.assignmentQuestion.order}`
-                : submission.tasks[0]?.title ?? "Task proof";
+              const targetLabel = submission.tasks[0]?.title ?? "Task proof";
               const status =
                 submission.status === "APPROVED"
                   ? "Verified"
@@ -266,7 +190,7 @@ export default async function ProofWorkPage({
                   ? `Rejected by quorum (${metrics.flagVotes}/${metrics.threshold})`
                   : metrics.totalVotes > 0
                     ? `${metrics.approvalVotes} approvals, ${metrics.flagVotes} flags`
-                  : "Awaiting votes";
+                    : "Awaiting votes";
 
               return (
                 <div key={submission.id} className="rounded-[4px] border border-border bg-card/70 p-4">
@@ -327,6 +251,3 @@ export default async function ProofWorkPage({
     </div>
   );
 }
-
-
-

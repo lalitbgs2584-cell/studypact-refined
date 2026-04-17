@@ -20,14 +20,13 @@ import {
 import { Logo } from "@/components/logo";
 import { signOut, useSession } from "@/lib/auth-client";
 
-const navItems: { href: string; label: string; icon: LucideIcon }[] = [
+const baseNavItems: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/groups", label: "Groups", icon: Users },
   { href: "/tasks", label: "Tasks", icon: PenTool },
   { href: "/proof-work", label: "Proof of Work", icon: ShieldCheck },
   { href: "/uploads", label: "Uploads", icon: Upload },
-  { href: "/assignments", label: "Assignments", icon: Sparkles },
   { href: "/profile", label: "Profile", icon: Users },
 ];
 
@@ -192,12 +191,27 @@ function UserFooter({
   );
 }
 
-export function UserNavigation() {
+export function UserNavigation({
+  showLeaderPortal = false,
+  showAdminPortal = false,
+}: {
+  showLeaderPortal?: boolean;
+  showAdminPortal?: boolean;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: session, isPending } = useSession();
   const isLoadingSession = isPending && !session;
+  const navItems = [...baseNavItems];
+
+  if (showLeaderPortal) {
+    navItems.splice(1, 0, { href: "/leader", label: "Leader Hub", icon: ShieldCheck });
+  }
+
+  if (showAdminPortal) {
+    navItems.splice(1, 0, { href: "/admin", label: "Admin Panel", icon: Sparkles });
+  }
 
   useEffect(() => {
     const timeout = window.setTimeout(() => setMobileOpen(false), 0);
@@ -212,21 +226,21 @@ export function UserNavigation() {
 
   return (
     <>
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — fixed so it never repaints on navigation */}
       <aside
         style={{
           width: 232,
           minWidth: 232,
           height: "100vh",
-          position: "sticky",
+          position: "fixed",
           top: 0,
+          left: 0,
           display: "flex",
           flexDirection: "column",
           background: "rgba(14,20,30,0.88)",
           backdropFilter: "blur(24px)",
           WebkitBackdropFilter: "blur(24px)",
           borderRight: "1px solid rgba(196,172,120,0.09)",
-          flexShrink: 0,
           zIndex: 40,
           boxShadow: "2px 0 32px rgba(0,0,0,0.50), inset -1px 0 0 rgba(196,172,120,0.05)",
         }}

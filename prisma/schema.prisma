@@ -19,11 +19,14 @@ enum CheckInStatus {
   APPROVED
   FLAGGED
   REJECTED
+  DISPUTED
 }
 
 enum VerificationVerdict {
   APPROVE
   FLAG
+  SPAM
+  IRRELEVANT
 }
 
 enum DisputeOutcome {
@@ -112,6 +115,26 @@ enum MilestoneBadgeKind {
   REACTIONS_50
 }
 
+enum ReportReason {
+  SPAM
+  INAPPROPRIATE
+  FAKE_PROOF
+  HARRASSMENT
+  OTHER
+}
+
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  DISMISSED
+}
+
+enum ReportTargetType {
+  USER
+  CHECKIN
+  GROUP
+}
+
 enum RedemptionStatus {
   PENDING
   SUBMITTED
@@ -139,6 +162,11 @@ model User {
   groups                  UserGroup[]
   createdGroups           Group[]                 @relation("GroupCreator")
   tasks                   Task[]
+  globalTrustScore        Int                     @default(100)
+  totalReviews            Int                     @default(0)
+  accurateReviews         Int                     @default(0)
+  reportsMade             Report[]                @relation("Reporter")
+  resolvedReports         Report[]                @relation("ReportResolver")
   checkIns                CheckIn[]
   messages                GroupMessage[]
   submissionVerifications SubmissionVerification[]
@@ -262,6 +290,8 @@ model UserGroup {
 
   @@id([userId, groupId])
   @@index([groupId])
+  @@index([userId, role])
+  @@index([groupId, role])
   @@map("user_group")
 }
 
@@ -295,6 +325,9 @@ model Task {
   @@index([groupId, day])
   @@index([templateId, day], map: "task_template_day_idx")
   @@index([broadcastKey])
+  @@index([userId, scope, status])
+  @@index([groupId, scope, dueAt])
+  @@index([userId, status, dueAt])
   @@map("task")
 }
 
@@ -310,6 +343,9 @@ model CheckIn {
   status        CheckInStatus           @default(PENDING)
   pointsAwarded Int                     @default(0)
   penaltyApplied Int                    @default(0)
+  isDisputed    Boolean                 @default(false)
+  adminOverride Boolean                 @default(false)
+  finalOutcome  CheckInStatus?
   createdAt     DateTime                @default(now())
   updatedAt     DateTime                @updatedAt
   verifiedAt    DateTime?
@@ -644,4 +680,33 @@ model RedemptionTask {
   @@index([groupId, targetUserId])
   @@index([targetUserId])
   @@map("redemption_task")
+}
+
+model Report {
+  id            String           @id @default(cuid())
+  reason        ReportReason
+  details       String?
+  status        ReportStatus     @default(PENDING)
+  targetType    ReportTargetType
+  targetId      String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  reporterId    String
+  resolvedById  String?
+  reporter      User             @relation("Reporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  resolvedBy    User?            @relation("ReportResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
+  @@index([status])
+  @@map("report")
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("system_setting")
 }

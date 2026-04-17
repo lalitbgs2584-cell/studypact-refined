@@ -4,7 +4,6 @@ import { PrismaNeon } from "@prisma/adapter-neon";
 import { PrismaClient } from "@prisma/client";
 
 declare global {
-  // eslint-disable-next-line no-var
   var __prismaClient: PrismaClient | undefined;
 }
 
@@ -33,7 +32,7 @@ export function getDb() {
 }
 
 export const db = new Proxy({} as PrismaClient, {
-  get(_target, prop, _receiver) {
+  get(_target, prop) {
     const client = getPrismaClient();
     const value = Reflect.get(client, prop, client);
 

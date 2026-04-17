@@ -1,10 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  // next.config.ts
   serverExternalPackages: [
     "socket.io",
     "socket.io-client",

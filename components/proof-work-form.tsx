@@ -12,24 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 const UploadDropzone = dynamic(
   () => import("@/utils/uploadthing").then((mod) => mod.UploadDropzone),
-  {
-    ssr: false,
-    loading: () => (
-      <div
-        style={{
-          border: "1.5px dashed rgba(196,172,120,0.22)",
-          borderRadius: 10,
-          background: "rgba(196,172,120,0.03)",
-          padding: "24px 16px",
-          color: "#6A7888",
-          fontSize: 12,
-          textAlign: "center",
-        }}
-      >
-        Preparing upload widget...
-      </div>
-    ),
-  }
+  { ssr: false }
 );
 
 type TargetOption = { id: string; label: string; hint?: string };
@@ -37,7 +20,7 @@ type TargetOption = { id: string; label: string; hint?: string };
 type ProofWorkFormProps = {
   action: (formData: FormData) => Promise<void>;
   groupId: string;
-  targetField: "taskId" | "assignmentQuestionId";
+  targetField: "taskId";
   targets: TargetOption[];
   defaultTargetId?: string | null;
   title: string;

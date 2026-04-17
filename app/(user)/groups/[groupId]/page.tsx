@@ -16,12 +16,18 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
   if (!session) redirect("/login");
 
   const { groupId } = await params;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
   const group = await db.group.findUnique({
     where: { id: groupId },
     include: {
       createdBy: { select: { name: true } },
       users: { include: { user: { select: { name: true } } } },
       tasks: {
+        where: {
+          scope: "GROUP",
+          day: { gte: today },
+        },
         orderBy: { createdAt: "desc" },
         include: {
           user: { select: { name: true } },
@@ -97,7 +103,7 @@ export default async function GroupPage({ params }: { params: Promise<{ groupId:
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Recent Tasks</CardTitle>
-            <CardDescription className="text-white/50">Latest posts in this group context.</CardDescription>
+            <CardDescription className="text-white/50">Today&apos;s group broadcasts in this group.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {group.tasks.length === 0 ? (
