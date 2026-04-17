@@ -51,7 +51,9 @@ async function fetchRecentSubmissions(activeGroupId: string) {
 export default async function DashboardPage() {
   const { session, access } = await requirePortalSession();
 
-  if (access.primaryRole !== "member") {
+  // Only redirect site-level admins; group admins (leaders) should still
+  // be able to use the member dashboard alongside the leader portal.
+  if (access.primaryRole === "admin") {
     redirect(access.landingPath);
   }
 
@@ -136,7 +138,7 @@ export default async function DashboardPage() {
             <div className="flex flex-wrap gap-2">
               <Link href="/tasks"><Button className="gap-2"><Plus className="h-4 w-4" />Create Task</Button></Link>
               <Link href="/proof-work"><Button variant="outline" className="gap-2"><ShieldCheck className="h-4 w-4" />Submit Proof</Button></Link>
-              <Link href="/dashboard?join=1"><Button variant="ghost" className="gap-2">Join Group<ArrowRight className="h-4 w-4" /></Button></Link>
+              <Link href="/groups"><Button variant="ghost" className="gap-2">Join Group<ArrowRight className="h-4 w-4" /></Button></Link>
             </div>
           </CardContent>
         </Card>

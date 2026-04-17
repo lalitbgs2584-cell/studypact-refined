@@ -58,13 +58,15 @@ export async function resolveFlaggedSubmission(formData: FormData) {
   const finalVerdict = (formData.get("finalVerdict") as string) || "APPROVE";
   const returnTo = resolveReturnTo(formData, "/leader/disputes");
 
-  if (!checkInId || !groupId) throw new Error("Missing required fields");
+  if (!checkInId || !groupId) redirect("/leader/disputes?error=Missing+required+fields");
 
   const session = await requireLeaderActor(groupId);
   const verdict = finalVerdict === "APPROVE" ? CheckInStatus.APPROVED : CheckInStatus.REJECTED;
   const now = new Date();
 
-  const result = await db.$transaction(async (tx) => {
+  let result: { groupId: string; taskId: string | null; status: CheckInStatus };
+  try {
+    result = await db.$transaction(async (tx) => {
     const checkIn = await tx.checkIn.findUnique({
       where: { id: checkInId },
       select: {
@@ -132,7 +134,12 @@ export async function resolveFlaggedSubmission(formData: FormData) {
     }
 
     return { groupId, taskId: task?.id ?? null, status: verdict };
-  });
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("NEXT_REDIRECT")) throw err;
+    const msg = err instanceof Error ? err.message : "Failed to resolve submission";
+    redirect(`/leader/disputes?error=${encodeURIComponent(msg)}`);
+  }
 
   emitGroupEvent(result.groupId, "new-verification", { checkInId, status: result.status });
   revalidateLeaderPaths(groupId);
@@ -144,23 +151,28 @@ export async function removeGroupMember(formData: FormData) {
   const memberId = ((formData.get("memberId") as string) || "").trim();
   const returnTo = resolveReturnTo(formData, "/leader/members");
 
-  if (!groupId || !memberId) throw new Error("Missing required fields");
+  if (!groupId || !memberId) redirect("/leader/members?error=Missing+required+fields");
 
   await requireLeaderActor(groupId);
 
-  const membership = await db.userGroup.findUnique({
-    where: { userId_groupId: { userId: memberId, groupId } },
-    select: { role: true },
-  });
+  try {
+    const membership = await db.userGroup.findUnique({
+      where: { userId_groupId: { userId: memberId, groupId } },
+      select: { role: true },
+    });
+    if (!membership) redirect("/leader/members?error=Member+not+found");
+    if (membership.role === "admin") redirect("/leader/members?error=Cannot+remove+a+leader");
 
-  if (!membership) throw new Error("Member not found");
-  if (membership.role === "admin") throw new Error("Cannot remove a leader. Transfer leadership first.");
+    await db.userGroup.delete({
+      where: { userId_groupId: { userId: memberId, groupId } },
+    });
+    revalidateLeaderPaths(groupId);
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("NEXT_REDIRECT")) throw err;
+    const msg = err instanceof Error ? err.message : "Failed to remove member";
+    redirect(`/leader/members?error=${encodeURIComponent(msg)}`);
+  }
 
-  await db.userGroup.delete({
-    where: { userId_groupId: { userId: memberId, groupId } },
-  });
-
-  revalidateLeaderPaths(groupId);
   redirect(returnTo);
 }
 
@@ -170,24 +182,24 @@ export async function issueWarning(formData: FormData) {
   const reason = ((formData.get("reason") as string) || "Warning issued by group leader.").trim();
   const returnTo = resolveReturnTo(formData, "/leader/members");
 
-  if (!groupId || !memberId) throw new Error("Missing required fields");
+  if (!groupId || !memberId) redirect("/leader/members?error=Missing+required+fields");
 
   await requireLeaderActor(groupId);
 
-  await db.penaltyEvent.create({
-    data: {
-      points: 0,
-      reason: `⚠️ WARNING: ${reason}`,
-      userId: memberId,
-      groupId,
-    },
-  });
+  try {
+    await db.penaltyEvent.create({
+      data: { points: 0, reason: `⚠️ WARNING: ${reason}`, userId: memberId, groupId },
+    });
+    await db.userGroup.update({
+      where: { userId_groupId: { userId: memberId, groupId } },
+      data: { inactivityStrikes: { increment: 1 } },
+    });
+    revalidateLeaderPaths(groupId);
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("NEXT_REDIRECT")) throw err;
+    const msg = err instanceof Error ? err.message : "Failed to issue warning";
+    redirect(`/leader/members?error=${encodeURIComponent(msg)}`);
+  }
 
-  await db.userGroup.update({
-    where: { userId_groupId: { userId: memberId, groupId } },
-    data: { inactivityStrikes: { increment: 1 } },
-  });
-
-  revalidateLeaderPaths(groupId);
   redirect(returnTo);
 }

@@ -14,7 +14,7 @@ const FINAL_STATUSES = new Set<CheckInStatus>([CheckInStatus.APPROVED, CheckInSt
 
 export async function submitVerification(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) throw new Error("Unauthorized");
+  if (!session) redirect("/login");
 
   const taskId = ((formData.get("taskId") as string) || "").trim();
   const groupId = ((formData.get("groupId") as string) || "").trim();
@@ -22,7 +22,7 @@ export async function submitVerification(formData: FormData) {
   const rawVerdict = ((formData.get("verdict") as string) || "APPROVE").trim().toUpperCase();
   const note = ((formData.get("note") as string) || "").trim();
 
-  if (!checkInId || !groupId) throw new Error("Missing required fields");
+  if (!checkInId || !groupId) redirect("/uploads?error=Missing+required+fields");
 
   const verdict =
     rawVerdict === "APPROVE"
@@ -31,9 +31,11 @@ export async function submitVerification(formData: FormData) {
         ? VerificationVerdict.FLAG
         : null;
 
-  if (!verdict) throw new Error("Invalid verdict");
+  if (!verdict) redirect("/uploads?error=Invalid+verdict");
 
-  const outcome = await db.$transaction(async (tx) => {
+  let outcome: { groupId: string; taskId: string; status: CheckInStatus };
+  try {
+    outcome = await db.$transaction(async (tx) => {
     const group = await tx.group.findUnique({
       where: { id: groupId },
       select: {
@@ -192,7 +194,12 @@ export async function submitVerification(formData: FormData) {
       taskId: linkedTask?.id ?? taskId,
       status: interimStatus,
     };
-  });
+    });
+  } catch (err) {
+    if (err instanceof Error && err.message.includes("NEXT_REDIRECT")) throw err;
+    const msg = err instanceof Error ? err.message : "Failed to submit verification";
+    redirect(`/uploads?error=${encodeURIComponent(msg)}`);
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/tasks");

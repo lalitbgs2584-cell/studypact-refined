@@ -29,7 +29,7 @@ export default async function TasksPage({
   const session = await requireSession();
   const { memberships, activeGroupId } = await getWorkspace(session.user.id);
   const params = (await searchParams) ?? {};
-  const view = params.view === "personal" ? "personal" : "group";
+  const view = params.view === "group" ? "group" : "personal";
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
@@ -42,7 +42,12 @@ export default async function TasksPage({
 
   const groupTasks: TaskRow[] = activeGroupId
     ? await db.task.findMany({
-        where: { userId: session.user.id, groupId: activeGroupId, scope: "GROUP", dueAt: { lte: today } },
+        where: {
+          userId: session.user.id,
+          groupId: activeGroupId,
+          scope: "GROUP",
+          OR: [{ dueAt: { lte: today } }, { dueAt: null }],
+        },
         include: { group: true },
         orderBy: { createdAt: "desc" },
         distinct: ["id"],

@@ -3,4 +3,7 @@ import { ourFileRouter } from "./core";
 
 export const { GET, POST } = createRouteHandler({
   router: ourFileRouter,
+  config: {
+    logLevel: "Debug", // Switch to "Info" once uploads are confirmed working
+  },
 });
