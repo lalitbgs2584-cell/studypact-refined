@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   AlertTriangle,
+  BarChart3,
   Flag,
   Gavel,
   LayoutDashboard,
@@ -25,6 +26,7 @@ const portalItems = {
     { href: "/admin/proofs", label: "Proofs", icon: ListChecks },
     { href: "/admin/disputes", label: "Disputes", icon: Gavel },
     { href: "/admin/reports", label: "Reports", icon: Flag },
+    { href: "/admin/dsa", label: "DSA Vault", icon: BarChart3 },
     { href: "/admin/settings", label: "Settings", icon: Settings },
   ],
   leader: [

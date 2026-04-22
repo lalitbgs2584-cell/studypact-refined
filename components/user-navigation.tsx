@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { memo, useCallback, useEffect, useState, useTransition } from "react";
 import {
+  BarChart3,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -336,6 +337,7 @@ export function UserNavigation({
   }
   if (showAdminPortal) {
     navItems.splice(1, 0, { href: "/admin", label: "Admin Panel", icon: Sparkles });
+    navItems.splice(2, 0, { href: "/admin/dsa", label: "DSA Vault", icon: BarChart3 });
   }
 
   const handleSignOut = useCallback(async () => {
