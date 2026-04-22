@@ -136,6 +136,7 @@ export default async function AdminDashboardPage() {
     { href: "/admin/proofs", label: "Proof Queue", icon: ShieldCheck },
     { href: "/admin/disputes", label: "Disputes", icon: AlertTriangle },
     { href: "/admin/reports", label: "Reports", icon: Flag },
+    { href: "/admin/dsa", label: "DSA Vault History", icon: BarChart3 },
     { href: "/admin/settings", label: "Settings", icon: BarChart3 },
   ];
 

@@ -5,9 +5,18 @@ type TrackerScoreRingProps = {
   label: string;
   helper: string;
   streak?: number;
+  displayValue?: number | string;
+  valueCaption?: string;
 };
 
-export function TrackerScoreRing({ score, label, helper, streak }: TrackerScoreRingProps) {
+export function TrackerScoreRing({
+  score,
+  label,
+  helper,
+  streak,
+  displayValue,
+  valueCaption = "score",
+}: TrackerScoreRingProps) {
   const radius = 52;
   const circumference = 2 * Math.PI * radius;
   const progress = Math.max(0, Math.min(100, score));
@@ -45,8 +54,8 @@ export function TrackerScoreRing({ score, label, helper, streak }: TrackerScoreR
           </defs>
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-3xl font-black text-white">{score}</div>
-          <div className="text-[10px] uppercase tracking-[0.24em] text-white/35">score</div>
+          <div className="text-3xl font-black text-white">{displayValue ?? score}</div>
+          <div className="text-[10px] uppercase tracking-[0.24em] text-white/35">{valueCaption}</div>
         </div>
       </div>
 

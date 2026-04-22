@@ -111,7 +111,7 @@ export default async function DashboardPage() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl space-y-8">
+    <div className="mx-auto max-w-7xl min-h-0 space-y-8">
       <GroupTaskUploadPopup
         userId={session.user.id}
         groupId={activeGroupId}
@@ -170,7 +170,9 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Recent Activity</CardTitle>
@@ -226,7 +228,7 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
         {[
           { icon: Clock3, value: pendingTasks, label: "Pending tasks" },
           { icon: ShieldCheck, value: pendingProof, label: "Pending proof of work" },

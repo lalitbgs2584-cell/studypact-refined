@@ -64,13 +64,16 @@ function UploadSlot({
   }
 
   return (
-    <div style={{
+    <div
+      className="w-full max-w-full min-w-0 overflow-hidden"
+      style={{
       borderRadius: 14,
       border: uploaded ? "1px solid rgba(154,170,120,0.35)" : "1px solid rgba(196,172,120,0.14)",
       background: uploaded ? "rgba(154,170,120,0.06)" : "rgba(196,172,120,0.03)",
       overflow: "hidden",
       transition: "border-color 0.2s ease, background 0.2s ease",
-    }}>
+      }}
+    >
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "12px 14px",
@@ -106,10 +109,14 @@ function UploadSlot({
 
       <div style={{ padding: 12 }}>
         {uploaded && file ? (
-          <div style={{ position: "relative", borderRadius: 10, overflow: "hidden" }}>
+          <div className="min-w-0 overflow-hidden rounded-[10px]" style={{ position: "relative" }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={file.url} alt={file.name}
-              style={{ width: "100%", height: 180, objectFit: "cover", display: "block", borderRadius: 10 }} />
+            <img
+              src={file.url}
+              alt={file.name}
+              className="block max-h-56 h-auto max-w-full w-full object-contain"
+              style={{ borderRadius: 10 }}
+            />
             <button type="button" onClick={onRemove} style={{
               position: "absolute", top: 8, right: 8,
               background: "rgba(13,17,24,0.80)", border: "1px solid rgba(196,172,120,0.20)",
@@ -126,7 +133,7 @@ function UploadSlot({
             <button type="button" disabled={isUploading}
               onClick={() => inputRef.current?.click()}
               style={{
-                width: "100%", display: "flex", flexDirection: "column",
+                width: "100%", maxWidth: "100%", display: "flex", flexDirection: "column",
                 alignItems: "center", justifyContent: "center", gap: 8,
                 padding: "28px 16px",
                 border: "1.5px dashed rgba(196,172,120,0.22)", borderRadius: 10,
@@ -161,12 +168,16 @@ export function ProofWorkForm({
   const selectedHint = targets.find((t) => t.id === selectedTarget)?.hint;
 
   return (
-    <form action={action} style={{
+    <form
+      action={action}
+      className="w-full max-w-full min-w-0 overflow-hidden"
+      style={{
       background: "rgba(196,172,120,0.04)", backdropFilter: "blur(16px)",
       borderTop: "1px solid rgba(196,172,120,0.18)", borderLeft: "1px solid rgba(196,172,120,0.12)",
       borderRight: "1px solid rgba(196,172,120,0.06)", borderBottom: "1px solid rgba(196,172,120,0.04)",
       borderRadius: 18, padding: 24, display: "flex", flexDirection: "column", gap: 20,
-    }}>
+      }}
+    >
       <input type="hidden" name="groupId" value={groupId} />
 
       <div>
@@ -222,7 +233,7 @@ export function ProofWorkForm({
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <UploadSlot label="Before / Start" sublabel="Photo before you began"
             fieldPrefix="startFileUrl" file={startFile}
             onUpload={setStartFile} onRemove={() => setStartFile(null)} />

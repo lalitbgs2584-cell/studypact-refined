@@ -70,6 +70,25 @@ type ReflectionPayload = {
   note?: string | null;
 };
 
+type WeeklySummaryInput = {
+  userName: string;
+  weekStart: Date;
+  completedTasks: number;
+  missedTasks: number;
+  completionRate: number;
+  consistencyScore: number;
+  trend: WeeklyTrend;
+  topStrong: string;
+  topWeak: string;
+  streakDays: number;
+  blockSummary: Array<{
+    label: string;
+    percent: number;
+    completed: number;
+    total: number;
+  }>;
+};
+
 export const STUDY_BLOCK_META: Record<
   StudyBlock,
   { label: string; shortLabel: string; description: string; accent: "green" | "yellow" | "red" }
@@ -608,6 +627,18 @@ export async function reconcileOverdueTasks(filters?: {
   client?: DbClient;
 }) {
   const client = filters?.client ?? db;
+  const cacheKey = `reconcile:${filters?.userId ?? "all"}:${filters?.groupId ?? "all"}`;
+  const lastRun = await client.systemSetting.findUnique({
+    where: { key: cacheKey },
+    select: { value: true },
+  });
+  const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+  const lastRunAt = lastRun ? new Date(lastRun.value) : null;
+
+  if (lastRunAt && !Number.isNaN(lastRunAt.getTime()) && lastRunAt > fifteenMinutesAgo) {
+    return 0;
+  }
+
   const now = new Date();
   const todayStart = startOfDay(now);
 
@@ -625,7 +656,15 @@ export async function reconcileOverdueTasks(filters?: {
     select: { id: true },
   });
 
+  const cacheRun = async () =>
+    client.systemSetting.upsert({
+      where: { key: cacheKey },
+      create: { key: cacheKey, value: new Date().toISOString() },
+      update: { value: new Date().toISOString() },
+    });
+
   if (overdueTasks.length === 0) {
+    await cacheRun();
     return 0;
   }
 
@@ -637,6 +676,7 @@ export async function reconcileOverdueTasks(filters?: {
   });
 
   await syncTaskTrackers(overdueIds, client);
+  await cacheRun();
 
   return overdueIds.length;
 }
@@ -823,6 +863,72 @@ async function buildReflectionSummary(input: {
   }
 }
 
+function getWeeklyTrendSentence(trend: WeeklyTrend) {
+  if (trend === WeeklyTrend.IMPROVING) {
+    return "Keep this momentum - you're clearly building the habit.";
+  }
+
+  if (trend === WeeklyTrend.DECLINING) {
+    return "Rough week. Reset, drop one block, and protect your streak.";
+  }
+
+  return "Solid baseline. Push one block above 80% to break the plateau.";
+}
+
+async function buildWeeklyReportSummary(input: WeeklySummaryInput) {
+  const weekStartFormatted = format(input.weekStart, "MMM d, yyyy");
+  const blockBreakdown =
+    input.blockSummary.length > 0
+      ? input.blockSummary
+          .map((block) => `${block.label} ${block.percent}% (${block.completed}/${block.total})`)
+          .join(" | ")
+      : "No tracked blocks logged yet";
+  const fallback = `${input.userName} closed week of ${weekStartFormatted} with ${input.completedTasks} completions (${input.completionRate}% rate, ${input.consistencyScore} score, ${input.missedTasks} missed). Trend: ${input.trend}. Strongest block: ${input.topStrong}. Most missed: ${input.topWeak}. Best streak this week: ${input.streakDays} days. Blocks: ${blockBreakdown}. ${getWeeklyTrendSentence(input.trend)}`;
+
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    return fallback;
+  }
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/responses", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: process.env.OPENAI_SUMMARY_MODEL || "gpt-4.1-mini",
+        input: [
+          {
+            role: "system",
+            content:
+              "You write personalized weekly study summaries. Keep it under 100 words, motivating, specific, and grounded in the provided metrics. Mention the strongest block, the most missed block, streak context, and the next adjustment.",
+          },
+          {
+            role: "user",
+            content: JSON.stringify(input),
+          },
+        ],
+      }),
+    });
+
+    if (!response.ok) {
+      return fallback;
+    }
+
+    const payload = await response.json();
+    const outputText =
+      payload.output_text ||
+      payload.output?.[0]?.content?.find((item: { type?: string }) => item.type === "output_text")
+        ?.text;
+
+    return typeof outputText === "string" && outputText.trim() ? outputText.trim() : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export async function submitDailyReflection(input: ReflectionPayload) {
   const tomorrowPlan = input.tomorrowPlan.trim();
   const note = input.note?.trim() || null;
@@ -970,15 +1076,21 @@ export async function generateWeeklyReportForMembership(input: {
       percent: block.percent,
     }));
 
-  const previousReport = await db.weeklyReport.findFirst({
-    where: {
-      userId: input.userId,
-      groupId: input.groupId,
-      weekStart: { lt: weekStart },
-    },
-    orderBy: { weekStart: "desc" },
-    select: { consistencyScore: true },
-  });
+  const [user, previousReport] = await Promise.all([
+    db.user.findUnique({
+      where: { id: input.userId },
+      select: { name: true },
+    }),
+    db.weeklyReport.findFirst({
+      where: {
+        userId: input.userId,
+        groupId: input.groupId,
+        weekStart: { lt: weekStart },
+      },
+      orderBy: { weekStart: "desc" },
+      select: { consistencyScore: true },
+    }),
+  ]);
 
   const trendDelta = consistency.score - (previousReport?.consistencyScore ?? consistency.score);
   const trend =
@@ -990,7 +1102,24 @@ export async function generateWeeklyReportForMembership(input: {
 
   const topStrong = strongAreas[0]?.label ?? "No clear strong area yet";
   const topWeak = weakAreas[0]?.label ?? "No major weak area surfaced";
-  const summary = `You completed ${completed + late} task(s) this week with a ${completionRate}% finish rate. Consistency closed at ${consistency.score}, with ${topStrong} acting as your strongest lane and ${topWeak} needing the most cleanup.`;
+  const summary = await buildWeeklyReportSummary({
+    userName: user?.name ?? "You",
+    weekStart,
+    completedTasks: completed + late,
+    missedTasks: missed,
+    completionRate,
+    consistencyScore: consistency.score,
+    trend,
+    topStrong,
+    topWeak,
+    streakDays: streaks.best,
+    blockSummary: blockSummary.map((block) => ({
+      label: block.label,
+      percent: block.percent,
+      completed: block.completed,
+      total: block.total,
+    })),
+  });
 
   return db.weeklyReport.upsert({
     where: {

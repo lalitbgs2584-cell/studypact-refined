@@ -5,12 +5,10 @@ import { CalendarDays, CheckCircle2, Clock3, Plus, Sparkles } from "lucide-react
 import type { Prisma } from "@prisma/client";
 
 import { PersonalTaskItem } from "@/components/personal-task-item";
+import { TaskCreateSheet } from "@/components/task-create-sheet";
+import { TaskFormFields } from "@/components/task-form-fields";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { createTask, setTaskStatus } from "@/lib/actions/task";
 import { db } from "@/lib/db";
 import { getWorkspace, requireSession } from "@/lib/workspace";
@@ -56,21 +54,44 @@ export default async function TasksPage({
     : [];
 
   const taskCards = view === "personal" ? personalTasks : groupTasks;
-  const targetGroups = memberships.map((m) => m.group);
+  const targetGroups = memberships.map((membership) => membership.group);
 
   const todayEnd = new Date();
   todayEnd.setHours(23, 59, 0, 0);
-  const pad = (n: number) => String(n).padStart(2, "0");
+  const pad = (value: number) => String(value).padStart(2, "0");
   const defaultDueDate = `${todayEnd.getFullYear()}-${pad(todayEnd.getMonth() + 1)}-${pad(todayEnd.getDate())}T23:59`;
+  const taskForm = (
+    <TaskFormFields
+      memberships={memberships.map((membership) => ({
+        groupId: membership.groupId,
+        group: {
+          id: membership.group.id,
+          name: membership.group.name,
+        },
+      }))}
+      targetGroups={targetGroups.map((group) => ({ id: group.id, name: group.name }))}
+      activeGroupId={activeGroupId}
+      defaultDueDate={defaultDueDate}
+    />
+  );
 
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      {errorMessage && (
-        <div style={{
-          background: "rgba(160,104,104,0.10)", border: "1px solid rgba(160,104,104,0.24)",
-          borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#C08888",
-        }}>{errorMessage}</div>
-      )}
+    <div className="mx-auto max-w-6xl min-h-0 space-y-8">
+      {errorMessage ? (
+        <div
+          style={{
+            background: "rgba(160,104,104,0.10)",
+            border: "1px solid rgba(160,104,104,0.24)",
+            borderRadius: 12,
+            padding: "12px 16px",
+            fontSize: 13,
+            color: "#C08888",
+          }}
+        >
+          {errorMessage}
+        </div>
+      ) : null}
+
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
           <div
@@ -99,25 +120,38 @@ export default async function TasksPage({
             Click personal tasks to mark done or missed. Every task now feeds your tracker, streaks, and weekly reports.
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        <div className="grid w-full grid-cols-2 rounded-full border border-primary/15 bg-primary/5 p-1 md:flex md:w-auto md:border-none md:bg-transparent md:p-0">
           <Link href="/tasks?view=personal">
-            <Button variant={view === "personal" ? "default" : "outline"} size="sm">
+            <Button
+              variant={view === "personal" ? "default" : "ghost"}
+              size="sm"
+              className="w-full justify-center rounded-full"
+            >
               Personal
             </Button>
           </Link>
           <Link href="/tasks?view=group">
-            <Button variant={view === "group" ? "default" : "outline"} size="sm">
+            <Button
+              variant={view === "group" ? "default" : "ghost"}
+              size="sm"
+              className="w-full justify-center rounded-full"
+            >
               Group
             </Button>
           </Link>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {[
           { icon: CalendarDays, value: personalTasks.length, label: "Personal tasks" },
           { icon: Clock3, value: groupTasks.length, label: "Group tasks" },
-          { icon: CheckCircle2, value: taskCards.filter((t) => t.status === "COMPLETED").length, label: "Completed" },
+          {
+            icon: CheckCircle2,
+            value: taskCards.filter((task) => task.status === "COMPLETED").length,
+            label: "Completed",
+          },
         ].map(({ icon: Icon, value, label }) => (
           <Card key={label}>
             <CardContent className="flex items-center gap-4 p-5">
@@ -145,8 +179,10 @@ export default async function TasksPage({
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <Card>
+      <TaskCreateSheet action={createTask}>{taskForm}</TaskCreateSheet>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+        <Card className="hidden md:block">
           <CardHeader>
             <CardTitle>Create Task</CardTitle>
             <CardDescription>
@@ -155,83 +191,7 @@ export default async function TasksPage({
           </CardHeader>
           <CardContent>
             <form action={createTask} className="space-y-5">
-              <div className="space-y-2">
-                <Label htmlFor="task-group">Group</Label>
-                <Select id="task-group" name="groupId" defaultValue={activeGroupId ?? memberships[0]?.groupId ?? ""}>
-                  {memberships.map((m) => (
-                    <option key={m.groupId} value={m.groupId}>{m.group.name}</option>
-                  ))}
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="task-title">Title</Label>
-                <Input id="task-title" name="title" placeholder="Solve 2 medium Leetcode questions" required />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="task-details">Details</Label>
-                <Textarea id="task-details" name="details" placeholder="What should be done?" />
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="task-due">Due date</Label>
-                  <Input id="task-due" name="dueAt" type="datetime-local" defaultValue={defaultDueDate} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="task-priority">Priority</Label>
-                  <Select id="task-priority" name="priority" defaultValue="MEDIUM">
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="task-difficulty">Difficulty</Label>
-                  <Select id="task-difficulty" name="difficulty" defaultValue="MEDIUM">
-                    <option value="EASY">Easy</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HARD">Hard</option>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="task-block">Study block</Label>
-                  <Select id="task-block" name="blockType" defaultValue="DEEP_WORK">
-                    <option value="DEEP_WORK">Block 1 - Deep Work (DSA)</option>
-                    <option value="LEARNING">Block 2 - Learning</option>
-                    <option value="PROJECTS">Block 3 - Projects</option>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="task-scope">Scope</Label>
-                  <Select id="task-scope" name="scope" defaultValue="PERSONAL">
-                    <option value="PERSONAL">Personal task</option>
-                    <option value="GROUP">Group broadcast</option>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Broadcast groups</Label>
-                  <Select name="groupIds" multiple className="min-h-28">
-                    {targetGroups.map((group) => (
-                      <option key={group.id} value={group.id}>
-                        {group.name}
-                      </option>
-                    ))}
-                  </Select>
-                  <p style={{ fontSize: 11, color: "#6A7888", marginTop: 4 }}>Hold Ctrl / Cmd to select multiple.</p>
-                </div>
-              </div>
-
-              <p style={{ fontSize: 12, color: "#6A7888", marginTop: -4 }}>
-                Repeating the same task name builds a longer tracker stream, so habits like DSA reps or project shipping compound over time.
-              </p>
+              {taskForm}
 
               <div className="flex justify-end">
                 <Button type="submit" className="gap-2">
@@ -286,12 +246,20 @@ export default async function TasksPage({
                 >
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
                     <div style={{ fontSize: 15, fontWeight: 600, color: "#EDE6D6" }}>{task.title}</div>
-                    <span className={task.status === "MISSED" ? "badge-risk" : task.status === "COMPLETED" ? "badge-active" : "badge-muted"}>
+                    <span
+                      className={
+                        task.status === "MISSED"
+                          ? "badge-risk"
+                          : task.status === "COMPLETED"
+                            ? "badge-active"
+                            : "badge-muted"
+                      }
+                    >
                       {task.status}
                     </span>
                   </div>
 
-                  {task.details && <p style={{ fontSize: 13, color: "#A09880", marginTop: 6 }}>{task.details}</p>}
+                  {task.details ? <p style={{ fontSize: 13, color: "#A09880", marginTop: 6 }}>{task.details}</p> : null}
 
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
                     <span className="badge-muted">{task.blockType.replace("_", " ")}</span>
@@ -301,7 +269,7 @@ export default async function TasksPage({
                   <div style={{ marginTop: 12, paddingTop: 12, borderTop: "1px solid rgba(196,172,120,0.07)" }}>
                     <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
                       <Link href={`/proof-work?taskId=${task.id}`} style={{ fontSize: 13, fontWeight: 500, color: "#C4AC78" }}>
-                        Submit proof →
+                        Submit proof -&gt;
                       </Link>
                       {task.status !== "MISSED" ? (
                         <form action={setTaskStatus.bind(null, task.id, "MISSED")}>

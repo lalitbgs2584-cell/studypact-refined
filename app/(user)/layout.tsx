@@ -1,6 +1,8 @@
 import { Suspense } from "react";
+import { BottomNav } from "@/components/bottom-nav";
 import { UserNavigation } from "@/components/user-navigation";
 import { getSidebarAccess } from "@/lib/access";
+
 async function SidebarServer() {
   const access = await getSidebarAccess();
   return (
@@ -11,9 +13,23 @@ async function SidebarServer() {
   );
 }
 
+async function BottomNavServer() {
+  const access = await getSidebarAccess();
+  const extraItems = [
+    { href: "/leaderboard", label: "Leaderboard" },
+    { href: "/proof-work", label: "Proof of Work" },
+    { href: "/uploads", label: "Uploads" },
+    { href: "/profile", label: "Profile" },
+    ...(access.isLeader ? [{ href: "/leader", label: "Leader portal" }] : []),
+    ...(access.isAdmin ? [{ href: "/admin", label: "Admin portal" }] : []),
+  ];
+
+  return <BottomNav extraItems={extraItems} />;
+}
+
 const sidebarFallback = (
   <aside
-    className="hidden md:block"
+    className="hidden lg:block"
     style={{
       width: 232,
       height: "100vh",
@@ -29,7 +45,7 @@ const sidebarFallback = (
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="h-screen overflow-hidden bg-background text-foreground">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground lg:h-screen">
       {/* Grid background */}
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.08]"
@@ -45,15 +61,19 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
         <SidebarServer />
       </Suspense>
 
-      {/* Main content — renders immediately, offset by sidebar width on md+ */}
+      {/* Main content — offset by sidebar width only on lg+ */}
       <main
-        className="relative z-10 h-full overflow-hidden md:ml-[232px]"
+        className="relative z-10 min-h-0 flex-1 overflow-hidden lg:ml-[232px]"
         style={{ willChange: "transform" }}
       >
-        <div className="h-full overflow-y-auto p-4 md:p-6 lg:p-8">
+        <div className="h-full overflow-y-auto p-4 pb-24 md:p-6 md:pb-24 lg:p-8 lg:pb-6">
           {children}
         </div>
       </main>
+
+      <Suspense fallback={null}>
+        <BottomNavServer />
+      </Suspense>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+import { cn } from "@/lib/utils";
+
 type BlockProgressCardProps = {
   label: string;
   shortLabel: string;
@@ -10,19 +12,25 @@ type BlockProgressCardProps = {
 
 const BLOCK_STYLES = {
   green: {
-    ring: "rgba(142,207,155,0.35)",
+    ring: "border-l-emerald-500",
     background: "rgba(142,207,155,0.08)",
     text: "#8ECF9B",
+    progress: "bg-emerald-500",
+    status: "On track",
   },
   yellow: {
-    ring: "rgba(196,172,120,0.35)",
+    ring: "border-l-amber-400",
     background: "rgba(196,172,120,0.08)",
     text: "#D7BF86",
+    progress: "bg-amber-400",
+    status: "Needs work",
   },
   red: {
-    ring: "rgba(225,138,138,0.32)",
+    ring: "border-l-red-500",
     background: "rgba(225,138,138,0.08)",
     text: "#E18A8A",
+    progress: "bg-red-500",
+    status: "Behind",
   },
 } as const;
 
@@ -39,9 +47,8 @@ export function BlockProgressCard({
 
   return (
     <div
-      className="glass-card p-5"
+      className={cn("glass-card border-l-[3px] p-5", style.ring)}
       style={{
-        borderLeft: `3px solid ${style.ring}`,
         background: `linear-gradient(180deg, ${style.background}, rgba(13,17,24,0.12))`,
       }}
     >
@@ -60,10 +67,13 @@ export function BlockProgressCard({
           <div className="text-[10px] uppercase tracking-[0.18em] text-white/35">
             {completed}/{total} tasks
           </div>
+          <div className="mt-2 text-[11px] font-semibold" style={{ color: style.text }}>
+            {style.status}
+          </div>
         </div>
       </div>
       <div className="progress-track mt-4 overflow-hidden">
-        <div className="progress-fill" style={{ width: `${percent}%`, background: style.text }} />
+        <div className={cn("progress-fill", style.progress)} style={{ width: `${percent}%` }} />
       </div>
     </div>
   );

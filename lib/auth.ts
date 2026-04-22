@@ -32,7 +32,7 @@ function createAuth() {
       session_token: {
         attributes: {
           httpOnly: true,
-          secure: true,
+          secure: process.env.NODE_ENV === "production",
           sameSite: "lax",
           path: "/",
         },

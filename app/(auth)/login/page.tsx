@@ -40,10 +40,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div style={{
-      minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center",
-      padding: "0 16px", position: "relative", overflow: "hidden",
-    }}>
+    <div
+      className="min-h-screen w-full px-4"
+      style={{
+        display: "flex", alignItems: "center", justifyContent: "center",
+        paddingTop: 24, paddingBottom: 24, position: "relative", overflow: "hidden",
+      }}
+    >
       {/* Ambient glow */}
       <div style={{
         pointerEvents: "none", position: "absolute", top: "50%", left: "50%",
@@ -53,7 +56,7 @@ export default function LoginPage() {
         zIndex: 0,
       }} />
 
-      <div style={{ position: "relative", zIndex: 1, width: "100%", maxWidth: 420 }}>
+      <div className="mx-auto w-full max-w-md px-4" style={{ position: "relative", zIndex: 1 }}>
         <div style={{
           background: "rgba(196,172,120,0.04)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
           borderTop: "1px solid rgba(196,172,120,0.20)", borderLeft: "1px solid rgba(196,172,120,0.14)",
