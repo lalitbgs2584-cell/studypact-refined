@@ -119,9 +119,14 @@ export type DsaMissionPayload = {
 };
 
 const DSA_VAULT_KEY_PREFIX = "dsa:vault";
+const DSA_JOURNEY_KEY_PREFIX = "dsa:journey-start";
 
 function buildVaultKey(userId: string) {
   return `${DSA_VAULT_KEY_PREFIX}:${userId}`;
+}
+
+function buildJourneyKey(userId: string) {
+  return `${DSA_JOURNEY_KEY_PREFIX}:${userId}`;
 }
 
 function todayKey(date = new Date()) {
@@ -181,6 +186,38 @@ async function loadVault(userId: string) {
   } catch {
     return createEmptyVault();
   }
+}
+
+export async function getDsaJourneyStartedAt(userId: string) {
+  const setting = await db.systemSetting.findUnique({
+    where: { key: buildJourneyKey(userId) },
+    select: { value: true },
+  });
+
+  return setting?.value ?? null;
+}
+
+export async function hasStartedDsaJourney(userId: string) {
+  return (await getDsaJourneyStartedAt(userId)) !== null;
+}
+
+export async function startDsaJourneyForUser(userId: string, date = new Date()) {
+  const existing = await getDsaJourneyStartedAt(userId);
+  if (existing) {
+    return existing;
+  }
+
+  const startedAt = todayKey(date);
+
+  await db.systemSetting.create({
+    data: {
+      key: buildJourneyKey(userId),
+      value: startedAt,
+      description: "StudyPact DSA journey start date",
+    },
+  });
+
+  return startedAt;
 }
 
 async function saveVault(userId: string, vault: DsaVaultStore) {

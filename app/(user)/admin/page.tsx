@@ -5,18 +5,23 @@ import {
   AlertTriangle,
   ArrowRight,
   BarChart3,
+  Brain,
+  FileWarning,
   Flag,
   ShieldCheck,
   Sparkles,
+  TrendingUp,
   Users,
   Activity,
-  TrendingUp,
-  FileWarning,
 } from "lucide-react";
 
+import { DsaDailyMission } from "@/components/dsa-daily-mission";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { startAdminDsaJourney } from "@/lib/actions/dsa";
 import { requireAdminAccess } from "@/lib/access";
 import { db } from "@/lib/db";
+import { getDsaJourneyStartedAt, getTodayDsaMission } from "@/lib/dsa";
 import { cn } from "@/lib/utils";
 
 async function getPlatformStats() {
@@ -114,9 +119,21 @@ async function getPlatformStats() {
   };
 }
 
-export default async function AdminDashboardPage() {
-  await requireAdminAccess();
-  const stats = await getPlatformStats();
+export default async function AdminDashboardPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ success?: string }>;
+}) {
+  const { session } = await requireAdminAccess();
+  const params = (await searchParams) ?? {};
+  const successMessage = params.success ? decodeURIComponent(params.success) : null;
+
+  const [stats, startedAt] = await Promise.all([
+    getPlatformStats(),
+    getDsaJourneyStartedAt(session.user.id),
+  ]);
+
+  const mission = startedAt ? await getTodayDsaMission(session.user.id) : null;
 
   const statCards = [
     { label: "Total Users", value: stats.totalUsers, icon: Users, color: "text-blue-400" },
@@ -142,7 +159,21 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-8">
-      {/* Header */}
+      {successMessage ? (
+        <div
+          style={{
+            background: "rgba(104,160,120,0.10)",
+            border: "1px solid rgba(104,160,120,0.24)",
+            borderRadius: 12,
+            padding: "12px 16px",
+            fontSize: 13,
+            color: "#8BC79A",
+          }}
+        >
+          {successMessage}
+        </div>
+      ) : null}
+
       <Card className="overflow-hidden border-l-4 border-l-primary">
         <CardContent className="space-y-4 p-6 md:p-8">
           <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
@@ -160,7 +191,52 @@ export default async function AdminDashboardPage() {
         </CardContent>
       </Card>
 
-      {/* Stat Grid */}
+      {mission ? (
+        <div className="space-y-3">
+          <div className="text-xs uppercase tracking-[0.22em] text-white/35">
+            DSA journey started on {startedAt}
+          </div>
+          <DsaDailyMission initialMission={mission} />
+        </div>
+      ) : (
+        <Card className="overflow-hidden border-l-4 border-l-primary">
+          <CardHeader>
+            <div className="inline-flex items-center gap-2 rounded-[4px] bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+              <Brain className="h-3.5 w-3.5" />
+              Admin DSA Journey
+            </div>
+            <CardTitle className="text-white">Start your daily 3-question DSA track</CardTitle>
+            <CardDescription className="max-w-2xl text-white/50">
+              Click once to begin. From today onward, the admin panel will surface a structured 3-question daily mission automatically, and the sequence will continue day by day in the existing adaptive order.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-3 sm:grid-cols-3">
+              {[
+                { label: "Questions / day", value: "3" },
+                { label: "Access", value: "Admin only" },
+                { label: "Progression", value: "Automatic" },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[10px] border border-primary/10 bg-primary/5 px-4 py-3"
+                >
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-white/35">{item.label}</div>
+                  <div className="mt-2 text-lg font-black text-white">{item.value}</div>
+                </div>
+              ))}
+            </div>
+
+            <form action={startAdminDsaJourney}>
+              <Button type="submit" className="gap-2">
+                <Brain className="h-4 w-4" />
+                Start DSA Journey
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {statCards.map((stat) => (
           <Card key={stat.label}>
@@ -179,9 +255,7 @@ export default async function AdminDashboardPage() {
         ))}
       </div>
 
-      {/* Quick Links + Top Groups + Top Users */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Quick Actions */}
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Quick Actions</CardTitle>
@@ -202,7 +276,6 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Top Groups */}
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Most Active Groups</CardTitle>
@@ -226,7 +299,7 @@ export default async function AdminDashboardPage() {
                     <div>
                       <div className="text-sm font-semibold text-white">{group.name}</div>
                       <div className="text-xs text-white/40">
-                        {group._count.users} members · {group._count.tasks} tasks
+                        {group._count.users} members - {group._count.tasks} tasks
                       </div>
                     </div>
                   </div>
@@ -237,7 +310,6 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Top Users */}
         <Card>
           <CardHeader>
             <CardTitle className="text-white">Top Performers</CardTitle>
@@ -261,7 +333,7 @@ export default async function AdminDashboardPage() {
                     <div>
                       <div className="text-sm font-semibold text-white">{entry.user.name}</div>
                       <div className="text-xs text-white/40">
-                        {entry.group.name} · {entry.streak} streak
+                        {entry.group.name} - {entry.streak} streak
                       </div>
                     </div>
                   </div>
@@ -276,7 +348,6 @@ export default async function AdminDashboardPage() {
         </Card>
       </div>
 
-      {/* Proof Pipeline Overview */}
       <Card>
         <CardHeader>
           <CardTitle className="text-white">Proof Pipeline</CardTitle>
