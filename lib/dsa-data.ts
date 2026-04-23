@@ -1,5 +1,7 @@
 export type DsaPriority = "MUST DO" | "HIGH";
 
+export type DsaDifficulty = "Easy" | "Medium" | "Hard";
+
 export type DsaVaultState =
   | "NOT_SOLVED"
   | "ATTEMPTED"
@@ -13,7 +15,9 @@ export type DsaProblem = {
   platform: string;
   url: string;
   topic: string;
+  difficulty: DsaDifficulty;
   priority: DsaPriority;
+  tags: string[];
   pattern: string;
 };
 
@@ -23,324 +27,212 @@ export type DsaWeekTheme = {
   topics: string[];
 };
 
-const RAW_DSA_CSV = `ID,Problem,Platform,URL,Topic,Priority
-1,Median of Two Sorted Arrays,LeetCode,https://leetcode.com/problems/median-of-two-sorted-arrays/,Binary Search,MUST DO
-2,Longest Substring Without Repeating Characters,LeetCode,https://leetcode.com/problems/longest-substring-without-repeating-characters/,Sliding Window,MUST DO
-3,Subarray Sum Equals K,LeetCode,https://leetcode.com/problems/subarray-sum-equals-k/,Prefix Sum,MUST DO
-4,Maximum Subarray,LeetCode,https://leetcode.com/problems/maximum-subarray/,Kadane,HIGH
-5,Product of Array Except Self,LeetCode,https://leetcode.com/problems/product-of-array-except-self/,Arrays,HIGH
-6,Longest Consecutive Sequence,LeetCode,https://leetcode.com/problems/longest-consecutive-sequence/,Hashing,HIGH
-7,Merge Intervals,LeetCode,https://leetcode.com/problems/merge-intervals/,Intervals,MUST DO
-8,Insert Interval,LeetCode,https://leetcode.com/problems/insert-interval/,Intervals,HIGH
-9,Sliding Window Maximum,LeetCode,https://leetcode.com/problems/sliding-window-maximum/,Deque,MUST DO
-10,Trapping Rain Water,LeetCode,https://leetcode.com/problems/trapping-rain-water/,Stack,MUST DO
-11,Largest Rectangle in Histogram,LeetCode,https://leetcode.com/problems/largest-rectangle-in-histogram/,Monotonic Stack,MUST DO
-12,Next Greater Element II,LeetCode,https://leetcode.com/problems/next-greater-element-ii/,Stack,HIGH
-13,Daily Temperatures,LeetCode,https://leetcode.com/problems/daily-temperatures/,Stack,HIGH
-14,Valid Parentheses,LeetCode,https://leetcode.com/problems/valid-parentheses/,Stack,HIGH
-15,LRU Cache,LeetCode,https://leetcode.com/problems/lru-cache/,Design,MUST DO
-16,Reverse Nodes in k-Group,LeetCode,https://leetcode.com/problems/reverse-nodes-in-k-group/,Linked List,HIGH
-17,Merge k Sorted Lists,LeetCode,https://leetcode.com/problems/merge-k-sorted-lists/,Heap,MUST DO
-18,Linked List Cycle II,LeetCode,https://leetcode.com/problems/linked-list-cycle-ii/,Linked List,HIGH
-19,Copy List with Random Pointer,LeetCode,https://leetcode.com/problems/copy-list-with-random-pointer/,Linked List,HIGH
-20,Binary Tree Level Order Traversal,LeetCode,https://leetcode.com/problems/binary-tree-level-order-traversal/,Trees,HIGH
-21,Binary Tree Maximum Path Sum,LeetCode,https://leetcode.com/problems/binary-tree-maximum-path-sum/,Trees,MUST DO
-22,Lowest Common Ancestor of a Binary Tree,LeetCode,https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/,Trees,MUST DO
-23,Serialize and Deserialize Binary Tree,LeetCode,https://leetcode.com/problems/serialize-and-deserialize-binary-tree/,Trees,HIGH
-24,Validate Binary Search Tree,LeetCode,https://leetcode.com/problems/validate-binary-search-tree/,BST,HIGH
-25,Kth Smallest Element in a BST,LeetCode,https://leetcode.com/problems/kth-smallest-element-in-a-bst/,BST,HIGH
-26,Diameter of Binary Tree,LeetCode,https://leetcode.com/problems/diameter-of-binary-tree/,Trees,HIGH
-27,Binary Tree Right Side View,LeetCode,https://leetcode.com/problems/binary-tree-right-side-view/,Trees,HIGH
-28,Path Sum III,LeetCode,https://leetcode.com/problems/path-sum-iii/,Trees,MUST DO
-29,Construct Binary Tree from Preorder and Inorder Traversal,LeetCode,https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/,Trees,HIGH
-30,BST Iterator,LeetCode,https://leetcode.com/problems/binary-search-tree-iterator/,BST,HIGH
-31,Number of Islands,LeetCode,https://leetcode.com/problems/number-of-islands/,Graphs,MUST DO
-32,Rotting Oranges,LeetCode,https://leetcode.com/problems/rotting-oranges/,Graphs,HIGH
-33,Pacific Atlantic Water Flow,LeetCode,https://leetcode.com/problems/pacific-atlantic-water-flow/,Graphs,HIGH
-34,Clone Graph,LeetCode,https://leetcode.com/problems/clone-graph/,Graphs,HIGH
-35,Network Delay Time,LeetCode,https://leetcode.com/problems/network-delay-time/,Dijkstra,MUST DO
-36,Cheapest Flights Within K Stops,LeetCode,https://leetcode.com/problems/cheapest-flights-within-k-stops/,Graphs,HIGH
-37,Course Schedule,LeetCode,https://leetcode.com/problems/course-schedule/,Topo Sort,MUST DO
-38,Course Schedule II,LeetCode,https://leetcode.com/problems/course-schedule-ii/,Topo Sort,HIGH
-39,Redundant Connection,LeetCode,https://leetcode.com/problems/redundant-connection/,DSU,HIGH
-40,Number of Connected Components in an Undirected Graph,LeetCode,https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/,DSU,HIGH
-41,Accounts Merge,LeetCode,https://leetcode.com/problems/accounts-merge/,DSU,HIGH
-42,Critical Connections in a Network,LeetCode,https://leetcode.com/problems/critical-connections-in-a-network/,Bridges,MUST DO
-43,Is Graph Bipartite?,LeetCode,https://leetcode.com/problems/is-graph-bipartite/,Graphs,HIGH
-44,Possible Bipartition,LeetCode,https://leetcode.com/problems/possible-bipartition/,Graphs,HIGH
-45,House Robber,LeetCode,https://leetcode.com/problems/house-robber/,DP,MUST DO
-46,House Robber II,LeetCode,https://leetcode.com/problems/house-robber-ii/,DP,HIGH
-47,Coin Change,LeetCode,https://leetcode.com/problems/coin-change/,DP,MUST DO
-48,Minimum Path Sum,LeetCode,https://leetcode.com/problems/minimum-path-sum/,DP,HIGH
-49,Unique Paths,LeetCode,https://leetcode.com/problems/unique-paths/,DP,HIGH
-50,Longest Increasing Subsequence,LeetCode,https://leetcode.com/problems/longest-increasing-subsequence/,DP,MUST DO
-51,Longest Common Subsequence,LeetCode,https://leetcode.com/problems/longest-common-subsequence/,DP,MUST DO
-52,Edit Distance,LeetCode,https://leetcode.com/problems/edit-distance/,DP,HIGH
-53,Partition Equal Subset Sum,LeetCode,https://leetcode.com/problems/partition-equal-subset-sum/,DP,HIGH
-54,Target Sum,LeetCode,https://leetcode.com/problems/target-sum/,DP,HIGH
-55,Jump Game,LeetCode,https://leetcode.com/problems/jump-game/,Greedy,HIGH
-56,Jump Game II,LeetCode,https://leetcode.com/problems/jump-game-ii/,Greedy,MUST DO
-57,Gas Station,LeetCode,https://leetcode.com/problems/gas-station/,Greedy,MUST DO
-58,Non-overlapping Intervals,LeetCode,https://leetcode.com/problems/non-overlapping-intervals/,Greedy,HIGH
-59,Meeting Rooms II,LeetCode,https://leetcode.com/problems/meeting-rooms-ii/,Heap,HIGH
-60,K Closest Points to Origin,LeetCode,https://leetcode.com/problems/k-closest-points-to-origin/,Heap,HIGH
-61,Top K Frequent Elements,LeetCode,https://leetcode.com/problems/top-k-frequent-elements/,Heap,MUST DO
-62,Find Median from Data Stream,LeetCode,https://leetcode.com/problems/find-median-from-data-stream/,Heap,MUST DO
-63,Task Scheduler,LeetCode,https://leetcode.com/problems/task-scheduler/,Greedy,HIGH
-64,Implement Trie (Prefix Tree),LeetCode,https://leetcode.com/problems/implement-trie-prefix-tree/,Trie,HIGH
-65,Word Search II,LeetCode,https://leetcode.com/problems/word-search-ii/,Trie,MUST DO
-66,Maximum XOR of Two Numbers in an Array,LeetCode,https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/,Trie,HIGH
-67,Add and Search Word - Data structure design,LeetCode,https://leetcode.com/problems/design-add-and-search-words-data-structure/,Trie,HIGH
-68,Repeated DNA Sequences,LeetCode,https://leetcode.com/problems/repeated-dna-sequences/,Strings,HIGH
-69,Find All Anagrams in a String,LeetCode,https://leetcode.com/problems/find-all-anagrams-in-a-string/,Sliding Window,HIGH
-70,Valid Anagram,LeetCode,https://leetcode.com/problems/valid-anagram/,Strings,HIGH
-71,Palindrome Partitioning,LeetCode,https://leetcode.com/problems/palindrome-partitioning/,Backtracking,HIGH
-72,Word Search,LeetCode,https://leetcode.com/problems/word-search/,Backtracking,MUST DO
-73,Subsets,LeetCode,https://leetcode.com/problems/subsets/,Backtracking,HIGH
-74,Permutations,LeetCode,https://leetcode.com/problems/permutations/,Backtracking,HIGH
-75,N-Queens,LeetCode,https://leetcode.com/problems/n-queens/,Backtracking,MUST DO
-76,Sudoku Solver,LeetCode,https://leetcode.com/problems/sudoku-solver/,Backtracking,MUST DO
-77,Combination Sum,LeetCode,https://leetcode.com/problems/combination-sum/,Backtracking,HIGH
-78,Subsets II,LeetCode,https://leetcode.com/problems/subsets-ii/,Backtracking,HIGH
-79,Generate Parentheses,LeetCode,https://leetcode.com/problems/generate-parentheses/,Backtracking,HIGH
-80,Decode Ways,LeetCode,https://leetcode.com/problems/decode-ways/,DP,HIGH
-81,Climbing Stairs,LeetCode,https://leetcode.com/problems/climbing-stairs/,DP,HIGH
-82,Maximum Product Subarray,LeetCode,https://leetcode.com/problems/maximum-product-subarray/,DP,HIGH
-83,Best Time to Buy and Sell Stock,LeetCode,https://leetcode.com/problems/best-time-to-buy-and-sell-stock/,Arrays,HIGH
-84,Best Time to Buy and Sell Stock II,LeetCode,https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/,Greedy,HIGH
-85,Maximum Sum Circular Subarray,LeetCode,https://leetcode.com/problems/maximum-sum-circular-subarray/,DP,HIGH
-86,Find Minimum in Rotated Sorted Array,LeetCode,https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/,Binary Search,HIGH
-87,Search in Rotated Sorted Array,LeetCode,https://leetcode.com/problems/search-in-rotated-sorted-array/,Binary Search,MUST DO
-88,Search a 2D Matrix,LeetCode,https://leetcode.com/problems/search-a-2d-matrix/,Binary Search,HIGH
-89,Kth Largest Element in an Array,LeetCode,https://leetcode.com/problems/kth-largest-element-in-an-array/,Heap,MUST DO
-90,Merge Intervals,CodeChef,https://www.codechef.com/,Arrays,HIGH
-91,Chef and Subarrays,CodeChef,https://www.codechef.com/,Arrays,HIGH
-92,Interval Game,CodeChef,https://www.codechef.com/,Greedy,HIGH
-93,Tree Queries,CodeChef,https://www.codechef.com/,Trees,HIGH
-94,DISTINCT?,CodeChef,https://www.codechef.com/,Hashing,HIGH
-95,DSA Learning Series: SUBINC,CodeChef,https://www.codechef.com/,DP,HIGH
-96,Maximize It,CodeChef,https://www.codechef.com/,Greedy,HIGH
-97,Chef and Array,CodeChef,https://www.codechef.com/,Arrays,HIGH
-98,Little Elephant and Array,CodeChef,https://www.codechef.com/,Segment Tree,HIGH
-99,Chef and Reversing,CodeChef,https://www.codechef.com/,Graphs,HIGH
-100,Chef and Icecream,CodeChef,https://www.codechef.com/,Greedy,HIGH
-101,Long Queue,CodeChef,https://www.codechef.com/,Queue,HIGH
-102,Median,CodeChef,https://www.codechef.com/,Heap,HIGH
-103,Prefix Sum Queries,CodeChef,https://www.codechef.com/,Segment Tree,HIGH
-104,Chocolate Distribution,CodeChef,https://www.codechef.com/,Binary Search,HIGH
-105,Codeforces Div2 C Problem Set,Codeforces,https://codeforces.com/problemset,Graphs,HIGH
-106,Codeforces Div2 D Problem Set,Codeforces,https://codeforces.com/problemset,Data Structures,HIGH
-107,Codeforces Div3 D Problem Set,Codeforces,https://codeforces.com/problemset,Greedy,HIGH
-108,Codeforces Div3 E Problem Set,Codeforces,https://codeforces.com/problemset,DP,HIGH
-109,Split Array Largest Sum,LeetCode,https://leetcode.com/problems/split-array-largest-sum/,Binary Search,MUST DO
-110,Koko Eating Bananas,LeetCode,https://leetcode.com/problems/koko-eating-bananas/,Binary Search,HIGH
-111,Aggressive Cows,GeeksforGeeks,https://www.geeksforgeeks.org/problems/aggressive-cows/1,Binary Search,MUST DO
-112,Rod Cutting,GeeksforGeeks,https://www.geeksforgeeks.org/problems/rod-cutting0840/1,DP,HIGH
-113,Matrix Chain Multiplication,GeeksforGeeks,https://www.geeksforgeeks.org/problems/matrix-chain-multiplication0303/1,DP,MUST DO
-114,Burst Balloons,LeetCode,https://leetcode.com/problems/burst-balloons/,DP,MUST DO
-115,Palindrome Partitioning II,LeetCode,https://leetcode.com/problems/palindrome-partitioning-ii/,DP,HIGH
-116,Maximum Students Taking Exam,LeetCode,https://leetcode.com/problems/maximum-students-taking-exam/,Bitmask DP,HIGH
-117,Shortest Path Visiting All Nodes,LeetCode,https://leetcode.com/problems/shortest-path-visiting-all-nodes/,Bitmask DP,MUST DO
-118,Travelling Salesman Problem,GeeksforGeeks,https://www.geeksforgeeks.org/problems/travelling-salesman-problem/0,Bitmask DP,HIGH
-119,DP on Trees (Subtree Queries),CodeChef,https://www.codechef.com/,DP on Trees,HIGH
-120,Maximum XOR With an Element From Array,LeetCode,https://leetcode.com/problems/maximum-xor-with-an-element-from-array/,Trie,HIGH
-121,Word Break II,LeetCode,https://leetcode.com/problems/word-break-ii/,DP,HIGH
-122,Palindrome Pairs,LeetCode,https://leetcode.com/problems/palindrome-pairs/,Trie,HIGH
-123,Implement Trie II,LeetCode,https://leetcode.com/problems/design-add-and-search-words-data-structure/,Trie,HIGH
-124,Kth Smallest Number in Multiplication Table,LeetCode,https://leetcode.com/problems/kth-smallest-number-in-multiplication-table/,Binary Search,HIGH
-125,Find Peak Element,LeetCode,https://leetcode.com/problems/find-peak-element/,Binary Search,HIGH
-126,Search in a Sorted Array of Unknown Size,LeetCode,https://leetcode.com/problems/search-in-a-sorted-array-of-unknown-size/,Binary Search,HIGH
-127,Min Cost to Connect All Points,LeetCode,https://leetcode.com/problems/min-cost-to-connect-all-points/,Graphs,HIGH
-128,Pacific Atlantic Water Flow,LeetCode,https://leetcode.com/problems/pacific-atlantic-water-flow/,Graphs,HIGH
-129,Alien Dictionary,LeetCode,https://leetcode.com/problems/alien-dictionary/,Topo Sort,MUST DO
-130,Find Eventual Safe States,LeetCode,https://leetcode.com/problems/find-eventual-safe-states/,Graphs,HIGH
-131,Strongly Connected Components,GeeksforGeeks,https://www.geeksforgeeks.org/problems/strongly-connected-components-kosarajus-algo/1,Graphs,HIGH
-132,Articulation Points,GeeksforGeeks,https://www.geeksforgeeks.org/problems/articulation-point-1/1,Graphs,HIGH
-133,Disjoint Set Union,CodeChef,https://www.codechef.com/,DSU,HIGH
-134,Range Sum Query - Mutable,LeetCode,https://leetcode.com/problems/range-sum-query-mutable/,Segment Tree,MUST DO
-135,Range Sum Query 2D - Mutable,LeetCode,https://leetcode.com/problems/range-sum-query-2d-mutable/,Segment Tree,HIGH
-136,Count of Smaller Numbers After Self,LeetCode,https://leetcode.com/problems/count-of-smaller-numbers-after-self/,Segment Tree,MUST DO
-137,Reverse Pairs,LeetCode,https://leetcode.com/problems/reverse-pairs/,Segment Tree,HIGH
-138,My Calendar III,LeetCode,https://leetcode.com/problems/my-calendar-iii/,Segment Tree,HIGH
-139,Maximum Frequency Stack,LeetCode,https://leetcode.com/problems/maximum-frequency-stack/,Heap,HIGH
-140,Merge k Sorted Lists,CodeChef,https://www.codechef.com/,Heap,HIGH
-141,Rearrange String k Distance Apart,LeetCode,https://leetcode.com/problems/rearrange-string-k-distance-apart/,Greedy,HIGH
-142,Reorganize String,LeetCode,https://leetcode.com/problems/reorganize-string/,Greedy,HIGH
-143,Implement Queue using Stacks,LeetCode,https://leetcode.com/problems/implement-queue-using-stacks/,Stack,HIGH
-144,Design Circular Queue,LeetCode,https://leetcode.com/problems/design-circular-queue/,Queue,HIGH
-145,Minimum Window Substring,LeetCode,https://leetcode.com/problems/minimum-window-substring/,Sliding Window,MUST DO
-146,Longest Repeating Character Replacement,LeetCode,https://leetcode.com/problems/longest-repeating-character-replacement/,Sliding Window,HIGH
-147,String Matching in an Array,LeetCode,https://leetcode.com/problems/string-matching-in-an-array/,Strings,HIGH
-148,Substrings of Size Three with Distinct Characters,LeetCode,https://leetcode.com/problems/substrings-of-size-three-with-distinct-characters/,Sliding Window,HIGH
-149,Rabin-Karp Pattern Search,GeeksforGeeks,https://www.geeksforgeeks.org/problems/rabin-karp-algorithm-problem/1,Strings,HIGH
-150,Implement strStr(),LeetCode,https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/,Strings,HIGH
-151,Count Palindromic Substrings,LeetCode,https://leetcode.com/problems/palindromic-substrings/,Strings,HIGH
-152,Tree Diameter,CodeChef,https://www.codechef.com/,Trees,HIGH
-153,Maximum Subarray Sum with One Deletion,LeetCode,https://leetcode.com/problems/maximum-subarray-sum-with-one-deletion/,DP,HIGH
-154,Maximum Length of Pair Chain,LeetCode,https://leetcode.com/problems/maximum-length-of-pair-chain/,Greedy,HIGH
-155,Smallest Range Covering Elements from K Lists,LeetCode,https://leetcode.com/problems/smallest-range-covering-elements-from-k-lists/,Heap,HIGH
-156,Word Ladder,LeetCode,https://leetcode.com/problems/word-ladder/,Graphs,MUST DO
-157,Word Ladder II,LeetCode,https://leetcode.com/problems/word-ladder-ii/,Graphs,HIGH
-158,Number of Provinces,LeetCode,https://leetcode.com/problems/number-of-provinces/,Graphs,HIGH
-159,Minimum Depth of Binary Tree,LeetCode,https://leetcode.com/problems/minimum-depth-of-binary-tree/,Trees,HIGH
-160,Binary Tree Zigzag Level Order Traversal,LeetCode,https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/,Trees,HIGH
-161,Construct Binary Search Tree from Preorder Traversal,LeetCode,https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/,BST,HIGH
-162,Recover Binary Search Tree,LeetCode,https://leetcode.com/problems/recover-binary-search-tree/,BST,HIGH
-163,Kth Largest Element in a Stream,LeetCode,https://leetcode.com/problems/kth-largest-element-in-a-stream/,Heap,HIGH
-164,Topological Sort,CodeChef,https://www.codechef.com/,Graphs,HIGH
-165,Lazy Propagation Segment Tree,GeeksforGeeks,https://www.geeksforgeeks.org/lazy-propagation-in-segment-tree/,Segment Tree,MUST DO
-166,Minimum Cost of Ropes,GeeksforGeeks,https://www.geeksforgeeks.org/problems/minimum-cost-of-ropes-1587115620/1,Heap,HIGH
-167,Connect N Ropes with Minimum Cost,CodeChef,https://www.codechef.com/,Heap,HIGH
-168,Fractional Knapsack,GeeksforGeeks,https://www.geeksforgeeks.org/problems/fractional-knapsack-1587115620/1,Greedy,HIGH
-169,Activity Selection,GeeksforGeeks,https://www.geeksforgeeks.org/problems/activity-selection-1587115621/1,Greedy,HIGH
-170,Job Sequencing Problem,GeeksforGeeks,https://www.geeksforgeeks.org/problems/job-sequencing-problem-1587115620/1,Greedy,MUST DO
-171,Minimum Number of Platforms,GeeksforGeeks,https://www.geeksforgeeks.org/problems/minimum-platforms-1587115620/1,Greedy,HIGH
-172,Subarray with Given Sum,GeeksforGeeks,https://www.geeksforgeeks.org/problems/subarray-with-given-sum-1587115621/1,Sliding Window,HIGH
-173,Longest Subarray with Sum K,GeeksforGeeks,https://www.geeksforgeeks.org/problems/longest-sub-array-with-sum-k0809/1,Prefix Sum,HIGH
-174,Maximum Size Subarray Sum Equals k,LeetCode,https://leetcode.com/problems/maximum-size-subarray-sum-equals-k/,Prefix Sum,HIGH
-175,0/1 Knapsack,GeeksforGeeks,https://www.geeksforgeeks.org/problems/0-1-knapsack-problem0945/1,DP,MUST DO
-176,Unbounded Knapsack,GeeksforGeeks,https://www.geeksforgeeks.org/problems/knapsack-with-duplicate-items4201/1,DP,HIGH
-177,Longest Palindromic Substring,LeetCode,https://leetcode.com/problems/longest-palindromic-substring/,Strings,HIGH
-178,Count and Say,LeetCode,https://leetcode.com/problems/count-and-say/,Strings,HIGH
-179,Remove Invalid Parentheses,LeetCode,https://leetcode.com/problems/remove-invalid-parentheses/,Backtracking,HIGH
-180,Number of Ways to Wear Different Hats to Each Other,LeetCode,https://leetcode.com/problems/number-of-ways-to-wear-different-hats-to-each-other/,Bitmask DP,HIGH`;
+const RAW_DSA_CSV = `S.No,Topic,Problem Title,Platform,Difficulty,Problem Link,Key Tags,One-Line Hint
+1,Arrays & Strings,Turbo Sort,CodeChef,Easy,https://www.codechef.com/problems/TSORT,Arrays; Sorting,Just sort a large array efficiently - think about which sort runs in O(n log n) within tight constraints.
+2,Arrays & Strings,Chef and Strings,CodeChef,Easy,https://www.codechef.com/problems/CHEFSTR,Arrays; Strings; Frequency Count,Count character frequencies and compare two strings character by character.
+3,Arrays & Strings,The Minimum Number of Moves,CodeChef,Easy,https://www.codechef.com/problems/MOVES,Arrays; Greedy,Think about what the optimal move looks like for each element in the array.
+4,Arrays & Strings,Best Time to Buy and Sell Stock,LeetCode,Easy,https://leetcode.com/problems/best-time-to-buy-and-sell-stock/,Arrays; Greedy; Single Pass,Track the minimum price seen so far and update max profit on every day.
+5,Arrays & Strings,Maximum Subarray,LeetCode,Easy,https://leetcode.com/problems/maximum-subarray/,Arrays; DP; Kadane's Algorithm,Use Kadane's algorithm - extend the current subarray or start fresh.
+6,Arrays & Strings,Rotate Array,LeetCode,Medium,https://leetcode.com/problems/rotate-array/,Arrays; Two Pointers; Reversal,Reverse the whole array then reverse the two parts separately.
+7,Arrays & Strings,Chef and Rainbow Array,CodeChef,Medium,https://www.codechef.com/problems/ACM14KP1,Arrays; Prefix Sum; Observation,Look for a pattern in how values change across the array.
+8,Arrays & Strings,Pangram Check,CodeChef,Easy,https://www.codechef.com/problems/PANGRAM,Strings; Hashing; Bitmask,Use a boolean frequency array of 26 characters.
+9,Arrays & Strings,Longest Common Prefix,LeetCode,Easy,https://leetcode.com/problems/longest-common-prefix/,Strings; Sorting,Sort the array and compare only the first and last strings.
+10,Arrays & Strings,Group Anagrams,LeetCode,Medium,https://leetcode.com/problems/group-anagrams/,Strings; Hashing,Sort each string as a key in a hashmap and group by key.
+11,Arrays & Strings,Anagram Strings,CodeChef,Easy,https://www.codechef.com/problems/ANAGRAM,Strings; Sorting; Frequency Count,Sort both strings and check if they are identical.
+12,Arrays & Strings,Minimum Window Substring,LeetCode,Hard,https://leetcode.com/problems/minimum-window-substring/,Strings; Sliding Window; Hashing,Use a sliding window and frequency map to track when all chars are covered.
+13,Searching & Sorting,Binary Search,CodeChef,Easy,https://www.codechef.com/problems/BSEARCH1,Binary Search,Classic binary search implementation - find the target in a sorted array.
+14,Searching & Sorting,Aggressive Cows,CodeChef,Medium,https://www.codechef.com/problems/AGGRCOW,Binary Search on Answer; Greedy,Binary search on the minimum distance; check feasibility greedily.
+15,Searching & Sorting,Chef and Chessboard,CodeChef,Medium,https://www.codechef.com/problems/CBOARD,Sorting; Greedy; Observation,Think about how to pair chessboard colors after sorting.
+16,Searching & Sorting,Search in Rotated Sorted Array,LeetCode,Medium,https://leetcode.com/problems/search-in-rotated-sorted-array/,Binary Search; Arrays,Determine which half is sorted and decide which half to recurse on.
+17,Searching & Sorting,Median of Two Sorted Arrays,LeetCode,Hard,https://leetcode.com/problems/median-of-two-sorted-arrays/,Binary Search; Arrays; Partitioning,Binary search on the partition point of the smaller array.
+18,Searching & Sorting,Merge Intervals,LeetCode,Medium,https://leetcode.com/problems/merge-intervals/,Sorting; Arrays; Intervals,Sort by start time and merge overlapping intervals greedily.
+19,Searching & Sorting,Kth Largest Element in an Array,LeetCode,Medium,https://leetcode.com/problems/kth-largest-element-in-an-array/,Sorting; Heap; Quickselect,Use a min-heap of size K or the Quickselect algorithm.
+20,Searching & Sorting,Inversion Count,GeeksForGeeks,Medium,https://www.geeksforgeeks.org/problems/inversion-of-array-1587115620/1,Sorting; Merge Sort; Divide and Conquer,Count inversions during the merge step of merge sort.
+21,Recursion & Backtracking,N-Queens,LeetCode,Hard,https://leetcode.com/problems/n-queens/,Backtracking; Recursion,Place queens row by row and backtrack when a conflict is detected.
+22,Recursion & Backtracking,Sudoku Solver,LeetCode,Hard,https://leetcode.com/problems/sudoku-solver/,Backtracking; Recursion,For each empty cell try digits 1-9 and backtrack on violation.
+23,Recursion & Backtracking,Subsets,LeetCode,Medium,https://leetcode.com/problems/subsets/,Recursion; Backtracking; Bit Manipulation,At each step decide to include or exclude the current element.
+24,Recursion & Backtracking,Permutations,LeetCode,Medium,https://leetcode.com/problems/permutations/,Recursion; Backtracking,Swap elements and recurse; backtrack by swapping back.
+25,Recursion & Backtracking,Letter Combinations of a Phone Number,LeetCode,Medium,https://leetcode.com/problems/letter-combinations-of-a-phone-number/,Recursion; Backtracking; Strings,Map each digit to letters and build combinations recursively.
+26,Recursion & Backtracking,Chef and Towers of Hanoi,CodeChef,Easy,https://www.codechef.com/problems/TOWERHAN,Recursion; Math,Classic Tower of Hanoi - the answer is 2^N - 1 moves.
+27,Recursion & Backtracking,Rat in a Maze,GeeksForGeeks,Medium,https://www.geeksforgeeks.org/problems/rat-in-a-maze-problem/1,Backtracking; DFS; Matrix,Try all four directions recursively and backtrack when a path is blocked.
+28,Recursion & Backtracking,Word Search,LeetCode,Medium,https://leetcode.com/problems/word-search/,Backtracking; DFS; Matrix,DFS with backtracking marking visited cells to avoid reuse.
+29,Linked Lists,Reverse Linked List,LeetCode,Easy,https://leetcode.com/problems/reverse-linked-list/,Linked List; Iterative; Recursion,Iteratively reverse the next pointers of each node.
+30,Linked Lists,Linked List Cycle Detection,CodeChef,Easy,https://www.codechef.com/problems/LLCYCLE,Linked List; Floyd's Algorithm,Use Floyd's slow-fast pointer cycle detection algorithm.
+31,Linked Lists,Merge Two Sorted Lists,LeetCode,Easy,https://leetcode.com/problems/merge-two-sorted-lists/,Linked List; Recursion; Two Pointers,Compare heads and recursively build the merged list.
+32,Linked Lists,LRU Cache,LeetCode,Medium,https://leetcode.com/problems/lru-cache/,Doubly Linked List; Hashing; Design,Combine a HashMap with a Doubly Linked List for O(1) get and put.
+33,Linked Lists,Reverse Nodes in k-Group,LeetCode,Hard,https://leetcode.com/problems/reverse-nodes-in-k-group/,Linked List; Recursion,Reverse each group of K nodes then recursively handle the remainder.
+34,Linked Lists,Flatten a Multilevel Doubly Linked List,LeetCode,Medium,https://leetcode.com/problems/flatten-a-multilevel-doubly-linked-list/,Doubly Linked List; DFS; Recursion,Whenever a child exists flatten it into the main list before continuing.
+35,Linked Lists,Circular Linked List Insertion,CodeChef,Medium,https://www.codechef.com/problems/CIRLIST,Circular Linked List; Pointer Manipulation,Handle the wrap-around case carefully when inserting in a sorted circular list.
+36,Linked Lists,Find Middle of Linked List,CodeChef,Easy,https://www.codechef.com/problems/MIDLIST,Linked List; Two Pointers,Use slow and fast pointers - slow stops at the middle when fast reaches the end.
+37,Stacks & Queues,Valid Parentheses,LeetCode,Easy,https://leetcode.com/problems/valid-parentheses/,Stack,Push opening brackets and pop on each closing bracket.
+38,Stacks & Queues,Next Greater Element,GeeksForGeeks,Medium,https://www.geeksforgeeks.org/problems/next-larger-element-1587115620/1,Stack; Monotonic Stack,Use a monotonic decreasing stack and resolve elements when a greater is found.
+39,Stacks & Queues,Largest Rectangle in Histogram,LeetCode,Hard,https://leetcode.com/problems/largest-rectangle-in-histogram/,Stack; Monotonic Stack,Maintain a monotonic stack of indices and compute area when popping.
+40,Stacks & Queues,Sliding Window Maximum,LeetCode,Hard,https://leetcode.com/problems/sliding-window-maximum/,Monotonic Queue; Deque; Sliding Window,Use a deque to maintain indices of useful elements in the current window.
+41,Stacks & Queues,Min Stack,LeetCode,Medium,https://leetcode.com/problems/min-stack/,Stack; Design,Maintain a second stack that tracks the minimum at every level.
+42,Stacks & Queues,Decode String,LeetCode,Medium,https://leetcode.com/problems/decode-string/,Stack; Recursion; Strings,Push current string and repeat count onto stack when you encounter '['.
+43,Stacks & Queues,Stack with Array,CodeChef,Easy,https://www.codechef.com/problems/STACKS,Stack; Implementation,Implement push pop and getMin operations using an array-based stack.
+44,Stacks & Queues,Queue using Two Stacks,GeeksForGeeks,Easy,https://www.geeksforgeeks.org/problems/queue-using-two-stacks/1,Queue; Stack; Design,Use one stack for enqueue and another for dequeue; transfer lazily.
+45,Stacks & Queues,Celebrity Problem,CodeChef,Medium,https://www.codechef.com/problems/CELEB,Stack; Elimination; Graph,Eliminate non-celebrities using a stack; verify the remaining candidate.
+46,Stacks & Queues,Trapping Rain Water,LeetCode,Hard,https://leetcode.com/problems/trapping-rain-water/,Stack; Two Pointers; Arrays,Use a monotonic stack or two-pointer approach tracking max heights.
+47,Hashing & Prefix Sum,Two Sum,LeetCode,Easy,https://leetcode.com/problems/two-sum/,Hashing; Arrays,Store complements in a hashmap and look up each element.
+48,Hashing & Prefix Sum,Subarray Sum Equals K,LeetCode,Medium,https://leetcode.com/problems/subarray-sum-equals-k/,Prefix Sum; Hashing,Store prefix sum frequencies; check if (prefix - k) has been seen.
+49,Hashing & Prefix Sum,DQUERY - D-query,CodeChef,Medium,https://www.codechef.com/problems/DQUERY,Prefix Sum; Offline Queries; BIT,Sort queries by right endpoint and use a BIT to count distinct elements.
+50,Hashing & Prefix Sum,Longest Consecutive Sequence,LeetCode,Medium,https://leetcode.com/problems/longest-consecutive-sequence/,Hashing; Arrays,Use a HashSet; only start counting from elements with no left neighbor.
+51,Hashing & Prefix Sum,Chef and Prefix Sums,CodeChef,Medium,https://www.codechef.com/problems/CHEFSUMS,Prefix Sum; Arrays; Math,Derive original array from prefix sums using simple differences.
+52,Hashing & Prefix Sum,Count Distinct Elements in Every Window,GeeksForGeeks,Medium,https://www.geeksforgeeks.org/problems/count-distinct-elements-in-every-window/1,Hashing; Sliding Window,Use a frequency hashmap and slide the window updating counts.
+53,Hashing & Prefix Sum,4Sum Count,LeetCode,Medium,https://leetcode.com/problems/4sum-ii/,Hashing; Divide and Conquer,Split into two pairs; hash sums of the first pair and look up negatives.
+54,Trees,Invert Binary Tree,LeetCode,Easy,https://leetcode.com/problems/invert-binary-tree/,Binary Tree; Recursion,Swap left and right children at every node recursively.
+55,Trees,Lowest Common Ancestor of BST,LeetCode,Medium,https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/,BST; Recursion; Tree Traversal,Use BST property - if both nodes smaller go left; if both larger go right.
+56,Trees,Binary Tree Level Order Traversal,LeetCode,Medium,https://leetcode.com/problems/binary-tree-level-order-traversal/,BFS; Binary Tree; Queue,BFS level by level using a queue; capture all nodes at each level.
+57,Trees,Diameter of Binary Tree,LeetCode,Easy,https://leetcode.com/problems/diameter-of-binary-tree/,Binary Tree; Recursion; DFS,At each node the diameter is left height + right height; track the global max.
+58,Trees,Validate BST,LeetCode,Medium,https://leetcode.com/problems/validate-binary-search-tree/,BST; DFS; Recursion,Pass valid min and max range for each node and check the BST property.
+59,Trees,Symmetric Tree,CodeChef,Easy,https://www.codechef.com/problems/SYMTREE,Binary Tree; Recursion; BFS,Check if left and right subtrees are mirror images of each other.
+60,Trees,Serialize and Deserialize Binary Tree,LeetCode,Hard,https://leetcode.com/problems/serialize-and-deserialize-binary-tree/,Binary Tree; BFS; Design,BFS serialize with null markers; reconstruct level by level.
+61,Trees,Construct Binary Tree from Preorder and Inorder,LeetCode,Medium,https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/,Binary Tree; Divide and Conquer; Hashing,Preorder root splits inorder into left and right subtrees recursively.
+62,Trees,Chef and Trees,CodeChef,Medium,https://www.codechef.com/problems/CHEFTREE,Binary Tree; DFS; Counting,DFS-based tree traversal with counting conditions along paths.
+63,Trees,Binary Search Tree Operations,CodeChef,Medium,https://www.codechef.com/problems/BSTOPS,BST; Insertion; Deletion; Search,Implement insert delete and search in a BST following standard BST rules.
+64,Trees,Path Sum II,LeetCode,Medium,https://leetcode.com/problems/path-sum-ii/,Binary Tree; Backtracking; DFS,DFS collecting paths and backtrack after visiting each node.
+65,Heaps & Priority Queues,Kth Largest in a Stream,LeetCode,Easy,https://leetcode.com/problems/kth-largest-element-in-a-stream/,Heap; Priority Queue; Design,Maintain a min-heap of size K - the root is always the Kth largest.
+66,Heaps & Priority Queues,Merge K Sorted Lists,LeetCode,Hard,https://leetcode.com/problems/merge-k-sorted-lists/,Heap; Linked List; Priority Queue,Use a min-heap to always extract the global minimum from K lists.
+67,Heaps & Priority Queues,Find Median from Data Stream,LeetCode,Hard,https://leetcode.com/problems/find-median-from-data-stream/,Heap; Two Heaps; Design,Maintain a max-heap for lower half and a min-heap for upper half.
+68,Heaps & Priority Queues,Top K Frequent Elements,LeetCode,Medium,https://leetcode.com/problems/top-k-frequent-elements/,Heap; Hashing; Bucket Sort,Build frequency map then use a min-heap of size K.
+69,Heaps & Priority Queues,CHEFSOC - Chef and Soccer,CodeChef,Medium,https://www.codechef.com/problems/CHEFSOC,Heap; Greedy; Simulation,Use a priority queue to simulate optimal event selection.
+70,Heaps & Priority Queues,Running Median,CodeChef,Hard,https://www.codechef.com/problems/RUNMEDIAN,Heap; Two Heaps; Stream,Balance two heaps dynamically to keep the median accessible in O(log n).
+71,Heaps & Priority Queues,Task Scheduler,LeetCode,Medium,https://leetcode.com/problems/task-scheduler/,Heap; Greedy; Simulation,Use a max-heap by frequency and cooldown queue to schedule optimally.
+72,Graphs,BFS of Graph,GeeksForGeeks,Easy,https://www.geeksforgeeks.org/problems/bfs-traversal-of-graph/1,Graph; BFS; Traversal,Use a queue; mark visited before enqueuing each neighbor.
+73,Graphs,DFS of Graph,GeeksForGeeks,Easy,https://www.geeksforgeeks.org/problems/depth-first-traversal-for-a-graph/1,Graph; DFS; Traversal,Recursively visit each unvisited neighbor using a visited array.
+74,Graphs,Number of Islands,LeetCode,Medium,https://leetcode.com/problems/number-of-islands/,Graph; BFS; DFS; Matrix,Flood-fill each unvisited land cell and count how many fills you do.
+75,Graphs,Dijkstra's Shortest Path,CodeChef,Medium,https://www.codechef.com/problems/DIGJUMP,Graph; Dijkstra; Shortest Path,Relax edges using a min-heap priority queue.
+76,Graphs,Topological Sort,CodeChef,Medium,https://www.codechef.com/problems/TOPOSORT,Graph; DAG; Topological Sort; BFS,Use Kahn's algorithm with in-degree counting and a queue.
+77,Graphs,Minimum Spanning Tree,CodeChef,Medium,https://www.codechef.com/problems/MSTQS,Graph; Kruskal; MST; Union-Find,Sort edges by weight and use Union-Find to avoid cycles.
+78,Graphs,Word Ladder,LeetCode,Hard,https://leetcode.com/problems/word-ladder/,Graph; BFS; Strings,Model as graph where edges connect words differing by one letter; BFS for shortest path.
+79,Graphs,Course Schedule,LeetCode,Medium,https://leetcode.com/problems/course-schedule/,Graph; Topological Sort; Cycle Detection,Detect a cycle in a directed graph using DFS or Kahn's algorithm.
+80,Graphs,Floyd-Warshall All Pairs,CodeChef,Hard,https://www.codechef.com/problems/FWALLP,Graph; Dynamic Programming; Floyd-Warshall,Use triple nested loop - DP[i][j] via intermediate vertex k.
+81,Graphs,Bellman-Ford Negative Cycle,CodeChef,Hard,https://www.codechef.com/problems/NEGCYC,Graph; Bellman-Ford; Shortest Path,Run Bellman-Ford for V-1 iterations; if distance still updates there's a negative cycle.
+82,Graphs,Clone Graph,LeetCode,Medium,https://leetcode.com/problems/clone-graph/,Graph; DFS; Hashing,Use a hashmap from original to clone nodes; DFS to copy edges.
+83,Dynamic Programming,Climbing Stairs,LeetCode,Easy,https://leetcode.com/problems/climbing-stairs/,DP; 1D DP; Fibonacci,dp[i] = dp[i-1] + dp[i-2] - identical to Fibonacci.
+84,Dynamic Programming,0/1 Knapsack,CodeChef,Medium,https://www.codechef.com/problems/KNAP,DP; Knapsack; 2D DP,Classic 0/1 knapsack - dp[i][w] max value with i items and capacity w.
+85,Dynamic Programming,Longest Increasing Subsequence,LeetCode,Medium,https://leetcode.com/problems/longest-increasing-subsequence/,DP; LIS; Binary Search,O(n log n) solution using patience sorting with binary search.
+86,Dynamic Programming,Edit Distance,LeetCode,Hard,https://leetcode.com/problems/edit-distance/,DP; 2D DP; Strings,dp[i][j] = min operations to convert first i chars to first j chars.
+87,Dynamic Programming,Coin Change,LeetCode,Medium,https://leetcode.com/problems/coin-change/,DP; 1D DP; Unbounded Knapsack,dp[i] = min coins for amount i; try every coin for each subproblem.
+88,Dynamic Programming,Matrix Chain Multiplication,CodeChef,Hard,https://www.codechef.com/problems/MATCHAIN,DP; Interval DP,Try every split point k in dp[i][j] and take the minimum cost.
+89,Dynamic Programming,DP on Trees - Tree Diameter,CodeChef,Hard,https://www.codechef.com/problems/TREEROOT,DP on Trees; DFS; Tree,At each node compute max depth of left and right subtrees; track global maximum path.
+90,Dynamic Programming,Longest Common Subsequence,LeetCode,Medium,https://leetcode.com/problems/longest-common-subsequence/,DP; 2D DP; Strings,dp[i][j] = LCS of first i chars of s1 and first j chars of s2.
+91,Dynamic Programming,Partition Equal Subset Sum,LeetCode,Medium,https://leetcode.com/problems/partition-equal-subset-sum/,DP; Subset Sum; 0/1 Knapsack,Check if subset with sum = total/2 exists using boolean DP.
+92,Dynamic Programming,Burst Balloons,LeetCode,Hard,https://leetcode.com/problems/burst-balloons/,DP; Interval DP,Think of the last balloon to burst in each interval - interval DP.
+93,Dynamic Programming,DP on Graphs - Shortest Path DAG,CodeChef,Medium,https://www.codechef.com/problems/DAGSHORT,DP; DAG; Shortest Path,Process vertices in topological order and relax edges.
+94,Greedy Algorithms,Activity Selection,CodeChef,Easy,https://www.codechef.com/problems/ACTSELCT,Greedy; Sorting; Intervals,Sort by end time; always pick the activity that finishes earliest.
+95,Greedy Algorithms,Fractional Knapsack,GeeksForGeeks,Medium,https://www.geeksforgeeks.org/problems/fractional-knapsack-1587115620/1,Greedy; Sorting,Sort by value/weight ratio and greedily fill the knapsack.
+96,Greedy Algorithms,Jump Game,LeetCode,Medium,https://leetcode.com/problems/jump-game/,Greedy; Arrays,Track the farthest reachable index; if you pass it you're stuck.
+97,Greedy Algorithms,Gas Station,LeetCode,Medium,https://leetcode.com/problems/gas-station/,Greedy; Circular Array,If total gas >= total cost a solution exists; start from where balance goes negative.
+98,Greedy Algorithms,Candy,LeetCode,Hard,https://leetcode.com/problems/candy/,Greedy; Two Pass; Arrays,Two passes - left to right then right to left - satisfying neighbor constraints.
+99,Greedy Algorithms,Minimum Number of Platforms,GeeksForGeeks,Medium,https://www.geeksforgeeks.org/problems/minimum-platforms-1587115620/1,Greedy; Sorting; Two Pointers,Sort arrivals and departures; use a two-pointer sweep to count overlaps.
+100,Greedy Algorithms,Chef and Coins,CodeChef,Medium,https://www.codechef.com/problems/COINS,Greedy; Math,Greedily use largest denominations first to minimize coin count.
+101,Bit Manipulation,Single Number,LeetCode,Easy,https://leetcode.com/problems/single-number/,Bit Manipulation; XOR,XOR all elements - pairs cancel out leaving the unique element.
+102,Bit Manipulation,Number of 1 Bits,LeetCode,Easy,https://leetcode.com/problems/number-of-1-bits/,Bit Manipulation,Use n & (n-1) to drop the lowest set bit repeatedly and count.
+103,Bit Manipulation,Subsets using Bitmask,LeetCode,Medium,https://leetcode.com/problems/subsets/,Bit Manipulation; Recursion,Enumerate all 2^N bitmasks to generate every subset.
+104,Bit Manipulation,Reverse Bits,LeetCode,Easy,https://leetcode.com/problems/reverse-bits/,Bit Manipulation,Extract bits right to left and place them left to right.
+105,Bit Manipulation,Maximum XOR of Two Numbers,LeetCode,Medium,https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/,Bit Manipulation; Trie,Build a Trie of binary representations and greedily choose opposite bits.
+106,Bit Manipulation,Chef and Bits,CodeChef,Medium,https://www.codechef.com/problems/CHEFBIT,Bit Manipulation; Greedy,Use bitwise properties to find the optimal combination.
+107,Bit Manipulation,Counting Bits,LeetCode,Easy,https://leetcode.com/problems/counting-bits/,Bit Manipulation; DP,dp[i] = dp[i >> 1] + (i & 1) - halve and check last bit.
+108,Sliding Window & Two Pointers,Container With Most Water,LeetCode,Medium,https://leetcode.com/problems/container-with-most-water/,Two Pointers; Greedy,Move the shorter pointer inward to maximize the area.
+109,Sliding Window & Two Pointers,Longest Substring Without Repeating Characters,LeetCode,Medium,https://leetcode.com/problems/longest-substring-without-repeating-characters/,Sliding Window; Hashing; Strings,Expand right pointer; shrink left when a duplicate enters the window.
+110,Sliding Window & Two Pointers,3Sum,LeetCode,Medium,https://leetcode.com/problems/3sum/,Two Pointers; Sorting; Arrays,Sort the array then use a fixed element with two-pointer search.
+111,Sliding Window & Two Pointers,Fruits Into Baskets,CodeChef,Medium,https://www.codechef.com/problems/FRUIT,Sliding Window; Hashing,Use a sliding window with a frequency map; keep at most 2 distinct types.
+112,Sliding Window & Two Pointers,Minimum Size Subarray Sum,LeetCode,Medium,https://leetcode.com/problems/minimum-size-subarray-sum/,Sliding Window; Two Pointers,Expand the window greedily and shrink from the left when the sum condition is met.
+113,Sliding Window & Two Pointers,Chef and Subarrays,CodeChef,Medium,https://www.codechef.com/problems/CHEFSUBB,Sliding Window; Prefix Sum,Apply sliding window to count subarrays with a condition on the sum.
+114,Sliding Window & Two Pointers,Four Sum,LeetCode,Medium,https://leetcode.com/problems/4sum/,Two Pointers; Sorting,Sort and use two nested loops + two-pointer for the innermost pair.
+115,Tries,Implement Trie,LeetCode,Medium,https://leetcode.com/problems/implement-trie-prefix-tree/,Trie; Design; Strings,Build a 26-child node structure supporting insert search and startsWith.
+116,Tries,Word Search II,LeetCode,Hard,https://leetcode.com/problems/word-search-ii/,Trie; DFS; Backtracking,Insert all words into a Trie then DFS the board pruning with Trie nodes.
+117,Tries,Chef and Trie,CodeChef,Medium,https://www.codechef.com/problems/TRIE2,Trie; Strings,Build a trie and count strings sharing a given prefix.
+118,Tries,Maximum XOR with Trie,CodeChef,Hard,https://www.codechef.com/problems/XORTRIE,Trie; Bit Manipulation,Insert binary representations into a Trie and greedily pick opposite bits for max XOR.
+119,Tries,Palindrome Pairs,LeetCode,Hard,https://leetcode.com/problems/palindrome-pairs/,Trie; Strings; Hashing,For each word check if its reverse exists or if splitting yields palindrome parts.
+120,Segment Trees / Fenwick Trees,Range Sum Query - Mutable,LeetCode,Medium,https://leetcode.com/problems/range-sum-query-mutable/,Segment Tree; BIT; Range Query,Use a Fenwick Tree (BIT) for O(log n) point updates and prefix sum queries.
+121,Segment Trees / Fenwick Trees,Range Minimum Query,CodeChef,Medium,https://www.codechef.com/problems/RMQSQ,Segment Tree; Range Query,Build a segment tree storing minimums; answer queries in O(log n).
+122,Segment Trees / Fenwick Trees,HORRIBLE - Horrible Queries,CodeChef,Hard,https://www.codechef.com/problems/HORRIBLE,Segment Tree; Lazy Propagation; Range Update,Use segment tree with lazy propagation for range add and range sum queries.
+123,Segment Trees / Fenwick Trees,Count of Smaller Numbers After Self,LeetCode,Hard,https://leetcode.com/problems/count-of-smaller-numbers-after-self/,BIT; Merge Sort; Segment Tree,Use a BIT with coordinate compression - for each element count smaller to its right.
+124,Segment Trees / Fenwick Trees,Chef and Queries,CodeChef,Hard,https://www.codechef.com/problems/CHEFQUER,Segment Tree; Range Query; Lazy Propagation,Use lazy segment tree to handle range updates and point queries efficiently.
+125,Disjoint Set Union (Union-Find),Number of Provinces,LeetCode,Medium,https://leetcode.com/problems/number-of-provinces/,DSU; Union-Find; Graph,Union connected cities; count the number of distinct roots.
+126,Disjoint Set Union (Union-Find),Making a Large Island,LeetCode,Hard,https://leetcode.com/problems/making-a-large-island/,DSU; Graph; Matrix,Label islands with DSU; for each 0 cell check union of adjacent island sizes.
+127,Disjoint Set Union (Union-Find),Kruskal MST with DSU,CodeChef,Medium,https://www.codechef.com/problems/KRUSKALMST,DSU; MST; Greedy; Graph,Sort edges by weight and use DSU to build MST without cycles.
+128,Disjoint Set Union (Union-Find),Accounts Merge,LeetCode,Medium,https://leetcode.com/problems/accounts-merge/,DSU; Hashing; Graph,Union emails under the same account; collect and sort each component.
+129,Disjoint Set Union (Union-Find),GERALD07 - Chef and Graph Queries,CodeChef,Hard,https://www.codechef.com/problems/GERALD07,DSU; Offline Queries; Bridge Tree,Use offline query processing with DSU on a bridge tree for connectivity.
+130,Mathematical Algorithms,GCD and LCM,CodeChef,Easy,https://www.codechef.com/problems/GCDLCM,Math; GCD; Number Theory,Apply Euclidean algorithm; use lcm(a,b) = a*b / gcd(a,b).
+131,Mathematical Algorithms,Modular Exponentiation,CodeChef,Easy,https://www.codechef.com/problems/POWMOD,Math; Modular Arithmetic; Fast Power,Use fast exponentiation - square and multiply - with modular reduction.
+132,Mathematical Algorithms,Sieve of Eratosthenes,CodeChef,Medium,https://www.codechef.com/problems/PRIMES1,Math; Sieve; Number Theory,Mark multiples iteratively from 2 upward to find all primes up to N.
+133,Mathematical Algorithms,nCr Modulo Prime,CodeChef,Medium,https://www.codechef.com/problems/NCRYPRIME,Math; Combinatorics; Modular Arithmetic,Precompute factorials and modular inverses using Fermat's little theorem.
+134,Mathematical Algorithms,Catalan Number Applications,CodeChef,Medium,https://www.codechef.com/problems/CATALN,Math; Combinatorics; DP,Use Catalan number formula: C(n) = C(2n,n)/(n+1) with modular arithmetic.
+135,Mathematical Algorithms,Chinese Remainder Theorem,Codeforces,Hard,https://codeforces.com/problemset/problem/687/B,Math; CRT; Number Theory,Apply CRT to merge congruences modulo pairwise coprime moduli.
+136,Mathematical Algorithms,Extended Euclidean Algorithm,CodeChef,Medium,https://www.codechef.com/problems/EXTGCD,Math; GCD; Linear Diophantine,Find Bezout coefficients using the extended Euclidean algorithm.
+137,String Algorithms,KMP Pattern Matching,CodeChef,Medium,https://www.codechef.com/problems/KMPSTR,String Algorithms; KMP; Pattern Matching,Build the failure function and use it to skip unnecessary comparisons.
+138,String Algorithms,Z-Algorithm Applications,CodeChef,Medium,https://www.codechef.com/problems/ZALGSTR,String Algorithms; Z-function,Compute the Z-array to find all occurrences of a pattern in a text.
+139,String Algorithms,Rabin-Karp Rolling Hash,CodeChef,Medium,https://www.codechef.com/problems/RKSTR,String Algorithms; Hashing; Rolling Hash,Use polynomial rolling hash and slide the window to compare substrings in O(1).
+140,String Algorithms,Repeated Substring Pattern,LeetCode,Easy,https://leetcode.com/problems/repeated-substring-pattern/,String Algorithms; KMP,Use KMP failure function - check if the string divides evenly by its period.
+141,String Algorithms,Shortest Palindrome,LeetCode,Hard,https://leetcode.com/problems/shortest-palindrome/,String Algorithms; KMP; Palindrome,Apply KMP on (s + '#' + reverse(s)) to find the longest palindromic prefix.
+142,String Algorithms,Longest Duplicate Substring,LeetCode,Hard,https://leetcode.com/problems/longest-duplicate-substring/,String Algorithms; Binary Search; Rabin-Karp,Binary search on length; use rolling hash to check for duplicates.
+143,String Algorithms,String Matching in Array,LeetCode,Easy,https://leetcode.com/problems/string-matching-in-an-array/,String Algorithms; KMP; Strings,Check if each word is a substring of any longer word using KMP or contains().
+144,Segment Trees / Fenwick Trees,Inversion Count using BIT,GeeksForGeeks,Medium,https://www.geeksforgeeks.org/problems/count-inversions/1,BIT; Fenwick Tree; Merge Sort,Coordinate compress then use BIT to count inversions in O(n log n).
+145,Graphs,Alien Dictionary,LeetCode,Hard,https://leetcode.com/problems/alien-dictionary/,Graph; Topological Sort; Strings,Build a character dependency graph from adjacent words; topological sort gives the order.
+146,Dynamic Programming,Regular Expression Matching,LeetCode,Hard,https://leetcode.com/problems/regular-expression-matching/,DP; 2D DP; Strings,dp[i][j] = whether pattern[0..j] matches string[0..i]; handle '*' carefully.
+147,Graphs,Strongly Connected Components,Codeforces,Hard,https://codeforces.com/problemset/problem/427/C,Graph; Kosaraju; SCC; DFS,Two-pass DFS - first pass records finish times; second pass on reversed graph.
+148,Dynamic Programming,Palindromic Substrings,LeetCode,Medium,https://leetcode.com/problems/palindromic-substrings/,DP; Strings; Expand Around Center,Expand around each center (single char and between chars) and count palindromes.
+149,Graphs,Cheapest Flights Within K Stops,LeetCode,Medium,https://leetcode.com/problems/cheapest-flights-within-k-stops/,Graph; BFS; DP; Bellman-Ford,Run K+1 rounds of Bellman-Ford relaxation on edges.
+150,Disjoint Set Union (Union-Find),Redundant Connection,LeetCode,Medium,https://leetcode.com/problems/redundant-connection/,DSU; Graph; Cycle Detection,Union-Find: the first edge whose endpoints are already in the same set is redundant.`;
 
-const PATTERN_BY_TOPIC: Record<string, string> = {
-  "Binary Search": "search on answer or partition boundary",
-  "Sliding Window": "expand-shrink window with invariant tracking",
-  "Prefix Sum": "prefix accumulation + hashmap lookup",
-  Kadane: "track best ending here vs global best",
-  Arrays: "index-driven invariant maintenance",
-  Hashing: "set/map for O(1) membership and compression",
-  Intervals: "sort by start and merge/greedy scan",
-  Deque: "monotonic deque for window extrema",
-  Stack: "use stack to maintain nearest valid boundary",
-  "Monotonic Stack": "previous/next smaller or greater using monotonic stack",
-  Design: "combine data structure primitives with O(1) operations",
-  "Linked List": "pointer rewiring with dummy/head management",
-  Heap: "min/max heap to keep top-k or streaming order",
-  Queue: "FIFO invariant with circular or amortized implementation",
-  Trees: "postorder/preorder DFS with subtree return values",
-  BST: "inorder ordering + bounds-based validation",
-  Graphs: "BFS/DFS over adjacency with visited state",
-  Dijkstra: "priority queue shortest-path relaxation",
-  "Topo Sort": "indegree or DFS finish-order graph ordering",
-  DSU: "union-find with path compression and rank/size",
-  Bridges: "Tarjan low-link discovery time logic",
-  DP: "state transition over index, choice, or capacity",
-  Greedy: "local best choice proved by invariant or exchange argument",
-  Trie: "prefix tree traversal with pruning",
-  Strings: "counting, matching, or center-expansion string invariant",
-  Backtracking: "choose-explore-unchoose with pruning",
-  "Segment Tree": "range query/update over tree of intervals",
-  "Bitmask DP": "state compression over subsets and transitions",
-  "DP on Trees": "merge child states into parent answer",
-  "Data Structures": "maintain structure invariants under updates",
-};
+type RawDsaProblem = Omit<DsaProblem, "priority">;
 
-const PATTERN_BY_ID: Record<number, string> = {
-  1: "binary search partition on the smaller array",
-  2: "last seen index map to jump the left pointer",
-  3: "prefix sum frequency map to count target hits",
-  7: "sort then coalesce overlapping ranges",
-  9: "deque stores useful indices in decreasing order",
-  10: "two pointers track left/right max walls",
-  11: "previous and next smaller boundaries define width",
-  15: "hash map + doubly linked list for O(1) get/put",
-  17: "merge heads through min-heap of list pointers",
-  21: "drop negative branches in postorder DFS",
-  22: "return node when left and right both report hit",
-  28: "prefix sum on root-to-node paths",
-  31: "grid flood fill with visited marking",
-  35: "dijkstra with min-heap and stale-entry skip",
-  37: "cycle detection through indegree depletion",
-  42: "tarjan bridge detection with low-link values",
-  45: "take or skip current house",
-  47: "unbounded knapsack on amount",
-  50: "patience sorting tails array",
-  51: "2D DP on string prefixes",
-  56: "level-based greedy jump expansion",
-  57: "if total gas is negative impossible; otherwise reset on deficit",
-  61: "bucket or heap on frequencies",
-  62: "two heaps with balancing after every insertion",
-  65: "trie + DFS board pruning",
-  72: "DFS with backtracking and in-place visited marking",
-  75: "column and diagonal occupancy pruning",
-  76: "constraint propagation + backtracking",
-  87: "binary search using sorted half property",
-  89: "quickselect or fixed-size heap",
-  109: "binary search answer with greedy partition count",
-  111: "binary search answer on minimum distance",
-  113: "interval DP over partition points",
-  114: "burst last in interval DP",
-  117: "BFS over node plus visited-mask state",
-  129: "topological order from lexical precedence edges",
-  134: "point update + range sum over segment tree",
-  136: "count greater-right with compressed index tree",
-  145: "need/formed window with exact shrink condition",
-  156: "word graph BFS layer expansion",
-  165: "push lazy tags before descending",
-  170: "sort by profit and place in latest free slot",
-  175: "0/1 capacity DP",
-  180: "assign hats, not people, in bitmask DP",
-};
+function toProblem(line: string): RawDsaProblem {
+  const [id, topic, name, platform, difficulty, url, keyTags, ...hintParts] = line.split(",");
 
-export const DSA_WEEK_THEMES: DsaWeekTheme[] = [
-  {
-    week: 1,
-    theme: "Linear Patterns",
-    topics: ["Binary Search", "Sliding Window", "Prefix Sum", "Kadane", "Arrays", "Hashing", "Intervals"],
-  },
-  {
-    week: 2,
-    theme: "Core Data Structures",
-    topics: ["Deque", "Stack", "Monotonic Stack", "Design", "Linked List", "Heap", "Queue", "Data Structures"],
-  },
-  {
-    week: 3,
-    theme: "Tree Thinking",
-    topics: ["Trees", "BST"],
-  },
-  {
-    week: 4,
-    theme: "Graph Readiness",
-    topics: ["Graphs", "Dijkstra", "Topo Sort", "DSU", "Bridges"],
-  },
-  {
-    week: 5,
-    theme: "Placement DP + Greedy Core",
-    topics: ["DP", "Greedy", "DP on Trees"],
-  },
-  {
-    week: 6,
-    theme: "Advanced Search",
-    topics: ["Trie", "Strings", "Backtracking", "Segment Tree", "Bitmask DP"],
-  },
-];
-
-function toProblem(line: string): DsaProblem {
-  const [id, name, platform, url, topic, priority] = line.split(",");
   return {
     id: Number(id),
-    name,
-    platform,
-    url,
-    topic,
-    priority: priority as DsaPriority,
-    pattern: PATTERN_BY_ID[Number(id)] || PATTERN_BY_TOPIC[topic] || "target the invariant first, then code",
+    name: name.trim(),
+    platform: platform.trim(),
+    url: url.trim(),
+    topic: topic.trim(),
+    difficulty: difficulty.trim() as DsaDifficulty,
+    tags: keyTags.split(";").map((tag) => tag.trim()).filter(Boolean),
+    pattern: hintParts.join(",").trim(),
   };
 }
 
-export const DSA_PROBLEMS: DsaProblem[] = RAW_DSA_CSV.trim()
+const RAW_DSA_PROBLEMS = RAW_DSA_CSV.trim()
   .split(/\r?\n/)
   .slice(1)
   .map(toProblem);
+
+const TOPIC_TOTALS = RAW_DSA_PROBLEMS.reduce((totals, problem) => {
+  totals.set(problem.topic, (totals.get(problem.topic) ?? 0) + 1);
+  return totals;
+}, new Map<string, number>());
+
+const topicOffsets = new Map<string, number>();
+
+export const DSA_PROBLEMS: DsaProblem[] = RAW_DSA_PROBLEMS.map((problem) => {
+  const indexWithinTopic = (topicOffsets.get(problem.topic) ?? 0) + 1;
+  topicOffsets.set(problem.topic, indexWithinTopic);
+
+  const topicAnchorBudget = Math.min(7, TOPIC_TOTALS.get(problem.topic) ?? 7);
+  const priority: DsaPriority =
+    problem.difficulty === "Easy" || indexWithinTopic <= topicAnchorBudget ? "MUST DO" : "HIGH";
+
+  return {
+    ...problem,
+    priority,
+  };
+});
 
 export const DSA_PROBLEM_MAP = new Map(DSA_PROBLEMS.map((problem) => [problem.id, problem]));
 
 export const DSA_TOPIC_ORDER = Array.from(
   new Set(DSA_PROBLEMS.map((problem) => problem.topic)),
 );
+
+export const DSA_WEEK_THEMES: DsaWeekTheme[] = DSA_TOPIC_ORDER.map((topic, index) => ({
+  week: index + 1,
+  theme: topic,
+  topics: [topic],
+}));
 
 export function getWeekForProblem(problem: DsaProblem) {
   const matched = DSA_WEEK_THEMES.find((week) => week.topics.includes(problem.topic));
@@ -353,6 +245,7 @@ export const DSA_WEEKLY_BUCKETS = DSA_WEEK_THEMES.map((week) => ({
     if (a.priority !== b.priority) {
       return a.priority === "MUST DO" ? -1 : 1;
     }
+
     return a.id - b.id;
   }),
 }));

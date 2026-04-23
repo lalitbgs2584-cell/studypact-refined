@@ -42,6 +42,12 @@ function vaultTone(state: DsaMissionPayload["problems"][number]["vaultState"]) {
   return "text-white/45";
 }
 
+function difficultyTone(difficulty: DsaMissionPayload["problems"][number]["difficulty"]) {
+  if (difficulty === "Easy") return "text-emerald-300";
+  if (difficulty === "Medium") return "text-amber-200";
+  return "text-rose-200";
+}
+
 export function DsaDailyMission({ initialMission }: { initialMission: DsaMissionPayload }) {
   const [mission, setMission] = useState(initialMission);
   const [pendingProblemId, setPendingProblemId] = useState<number | null>(null);
@@ -150,6 +156,9 @@ export function DsaDailyMission({ initialMission }: { initialMission: DsaMission
                         <span className={cn("px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.2em]", statusTone(problem.status))}>
                           {problem.status}
                         </span>
+                        <span className={cn("text-xs font-semibold", difficultyTone(problem.difficulty))}>
+                          {problem.difficulty}
+                        </span>
                         <span className={cn("text-xs font-semibold", vaultTone(problem.vaultState))}>
                           Vault: {problem.vaultState}
                         </span>
@@ -164,8 +173,13 @@ export function DsaDailyMission({ initialMission }: { initialMission: DsaMission
 
                       <div className="rounded-[10px] border border-white/8 bg-white/[0.03] px-3 py-2 text-sm text-white/60">
                         <div>
-                          <span className="font-semibold text-white/80">Pattern:</span> {problem.pattern}
+                          <span className="font-semibold text-white/80">Hint:</span> {problem.pattern}
                         </div>
+                        {problem.tags.length > 0 ? (
+                          <div className="mt-1">
+                            <span className="font-semibold text-white/80">Tags:</span> {problem.tags.join(", ")}
+                          </div>
+                        ) : null}
                         <div className="mt-1">
                           <span className="font-semibold text-white/80">Why today:</span> {problem.reason}
                         </div>

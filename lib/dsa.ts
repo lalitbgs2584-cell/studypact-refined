@@ -13,6 +13,7 @@ import {
   DSA_TOPIC_ORDER,
   DSA_WEEK_THEMES,
   DSA_WEEKLY_BUCKETS,
+  type DsaDifficulty,
   type DsaProblem,
   type DsaVaultState,
 } from "@/lib/dsa-data";
@@ -59,7 +60,7 @@ type DsaProblemProgress = {
 };
 
 type DsaVaultStore = {
-  version: 1;
+  version: 2;
   createdAt: string;
   streak: number;
   bestStreak: number;
@@ -89,6 +90,8 @@ export type DsaMissionPayload = {
     platform: string;
     url: string;
     topic: string;
+    difficulty: DsaDifficulty;
+    tags: string[];
     pattern: string;
     priority: DsaMissionSlot;
     reason: string;
@@ -154,7 +157,7 @@ function emptyProgress(): DsaProblemProgress {
 
 function createEmptyVault(): DsaVaultStore {
   return {
-    version: 1,
+    version: 2,
     createdAt: new Date().toISOString(),
     streak: 0,
     bestStreak: 0,
@@ -163,6 +166,33 @@ function createEmptyVault(): DsaVaultStore {
     missions: {},
     problems: {},
   };
+}
+
+function sanitizeVault(vault: DsaVaultStore) {
+  const sanitized: DsaVaultStore = {
+    ...vault,
+    missions: {},
+    problems: {},
+  };
+
+  for (const [problemId, progress] of Object.entries(vault.problems)) {
+    if (DSA_PROBLEM_MAP.has(Number(problemId))) {
+      sanitized.problems[problemId] = progress;
+    }
+  }
+
+  for (const [date, mission] of Object.entries(vault.missions)) {
+    const problems = mission.problems.filter((problem) => DSA_PROBLEM_MAP.has(problem.problemId));
+
+    if (problems.length > 0) {
+      sanitized.missions[date] = {
+        ...mission,
+        problems,
+      };
+    }
+  }
+
+  return sanitized;
 }
 
 async function loadVault(userId: string) {
@@ -176,13 +206,21 @@ async function loadVault(userId: string) {
   }
 
   try {
-    const parsed = JSON.parse(setting.value) as DsaVaultStore;
-    return {
+    const parsed = JSON.parse(setting.value) as Partial<DsaVaultStore>;
+
+    // The sheet was replaced, and IDs are reused across datasets. Reset old vaults
+    // so historical progress never attaches to the wrong problems.
+    if (parsed.version !== 2) {
+      return createEmptyVault();
+    }
+
+    return sanitizeVault({
       ...createEmptyVault(),
       ...parsed,
+      version: 2,
       missions: parsed.missions ?? {},
       problems: parsed.problems ?? {},
-    };
+    });
   } catch {
     return createEmptyVault();
   }
@@ -531,6 +569,8 @@ function toPayload(vault: DsaVaultStore, mission: DsaMissionRecord): DsaMissionP
         platform: problem.platform,
         url: problem.url,
         topic: problem.topic,
+        difficulty: problem.difficulty,
+        tags: problem.tags,
         pattern: problem.pattern,
         priority: entry.priority,
         reason: entry.reason,
