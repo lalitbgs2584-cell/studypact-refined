@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import {
   StudyBlock,
   TaskCategory,
@@ -10,6 +11,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { emitGroupEvent } from "@/lib/pusher";
 import { syncTaskTrackers } from "@/lib/tracker";
 import { getWorkspace } from "@/lib/workspace";
 
@@ -31,93 +33,130 @@ export async function POST(request: Request) {
   const difficulty = resolveEnumValue(body.difficulty, TaskDifficulty, TaskDifficulty.MEDIUM);
   const blockType = resolveEnumValue(body.blockType, StudyBlock, StudyBlock.DEEP_WORK);
   const scope = resolveEnumValue(body.scope, TaskScope, TaskScope.PERSONAL);
+  const assignmentMode = String(body.assignmentMode || "SELF").trim().toUpperCase();
   const dueAt = body.dueAt ? new Date(body.dueAt) : null;
   const explicitGroupId = String(body.groupId || "").trim();
-  const groupIds = Array.isArray(body.groupIds)
-    ? body.groupIds.map((value: unknown) => String(value || "").trim()).filter(Boolean)
+  const assigneeIds: string[] = Array.isArray(body.assigneeIds)
+    ? Array.from(
+        new Set<string>(
+          body.assigneeIds
+            .map((value: unknown) => String(value || "").trim())
+            .filter((value): value is string => Boolean(value)),
+        ),
+      )
     : [];
 
   if (!title) {
     return NextResponse.json({ error: "Title is required" }, { status: 400 });
   }
 
-  const { activeGroupId } = await getWorkspace(session.user.id);
-  const defaultGroupId = explicitGroupId || activeGroupId || "";
-  const targetGroupIds = scope === TaskScope.GROUP ? groupIds : defaultGroupId ? [defaultGroupId] : [];
-
-  if (scope === TaskScope.GROUP && targetGroupIds.length === 0) {
-    return NextResponse.json({ error: "Select at least one group" }, { status: 400 });
+  if (body.dueAt && (!dueAt || Number.isNaN(dueAt.getTime()))) {
+    return NextResponse.json({ error: "Enter a valid due date" }, { status: 400 });
   }
 
-  if (scope === TaskScope.PERSONAL && !defaultGroupId) {
+  const { activeGroupId } = await getWorkspace(session.user.id);
+  const defaultGroupId = explicitGroupId || activeGroupId || "";
+
+  if (!defaultGroupId) {
     return NextResponse.json({ error: "Join a group first" }, { status: 400 });
   }
 
-  const createdTaskIds = await db.$transaction(async (tx) => {
-    const payloads: Array<{
-      title: string;
-      details: string | null;
-      category: TaskCategory;
-      priority: TaskPriority;
-      difficulty: TaskDifficulty;
-      blockType: StudyBlock;
-      day: Date;
-      dueAt: Date | null;
-      status: TaskStatus;
-      userId: string;
-      groupId: string;
-      scope: TaskScope;
-    }> = [];
-
-    if (scope === TaskScope.PERSONAL) {
-      payloads.push({
-        title,
-        details,
-        category,
-        priority,
-        difficulty,
-        blockType,
-        day: dueAt ?? new Date(),
-        dueAt,
-        status: TaskStatus.PENDING,
+  const membership = await db.userGroup.findUnique({
+    where: {
+      userId_groupId: {
         userId: session.user.id,
         groupId: defaultGroupId,
-        scope,
-      });
-    } else {
-      for (const groupId of targetGroupIds) {
-        const members = await tx.userGroup.findMany({
-          where: { groupId },
-          select: { userId: true },
-        });
+      },
+    },
+    select: {
+      role: true,
+      group: {
+        select: {
+          taskPostingMode: true,
+          users: {
+            select: {
+              userId: true,
+            },
+          },
+        },
+      },
+    },
+  });
 
-        if (!members.some((member) => member.userId === session.user.id)) {
-          return [];
-        }
+  if (!membership) {
+    return NextResponse.json(
+      { error: "You can only create tasks inside a group you belong to" },
+      { status: 403 },
+    );
+  }
 
-        for (const member of members) {
-          payloads.push({
-            title,
-            details,
-            category,
-            priority,
-            difficulty,
-            blockType,
-            day: dueAt ?? new Date(),
-            dueAt,
-            status: TaskStatus.PENDING,
-            userId: member.userId,
-            groupId,
-            scope,
-          });
-        }
-      }
-    }
+  const isLeader = membership.role === "admin";
+  const groupMemberIds = membership.group.users.map((member) => member.userId);
+  const taskAssignees: string[] =
+    scope === TaskScope.PERSONAL
+      ? [session.user.id]
+      : assignmentMode === "SELECTED_MEMBERS"
+        ? assigneeIds
+        : groupMemberIds;
 
+  if (scope === TaskScope.GROUP && assignmentMode === "SELECTED_MEMBERS" && !isLeader) {
+    return NextResponse.json(
+      { error: "Only the group leader can assign tasks to selected members" },
+      { status: 403 },
+    );
+  }
+
+  if (
+    scope === TaskScope.GROUP &&
+    assignmentMode !== "SELECTED_MEMBERS" &&
+    !isLeader &&
+    membership.group.taskPostingMode === "ADMINS_ONLY"
+  ) {
+    return NextResponse.json(
+      { error: "Only the group leader can post group tasks in this group" },
+      { status: 403 },
+    );
+  }
+
+  if (scope === TaskScope.GROUP && taskAssignees.length === 0) {
+    return NextResponse.json(
+      {
+        error:
+          assignmentMode === "SELECTED_MEMBERS"
+            ? "Choose at least one member"
+            : "No members found in this group",
+      },
+      { status: 400 },
+    );
+  }
+
+  if (scope === TaskScope.GROUP && taskAssignees.some((userId) => !groupMemberIds.includes(userId))) {
+    return NextResponse.json(
+      { error: "Selected members must belong to the chosen group" },
+      { status: 400 },
+    );
+  }
+
+  const createdTaskIds = await db.$transaction(async (tx) => {
+    const broadcastKey = scope === TaskScope.GROUP ? crypto.randomUUID() : null;
     const createdIds: string[] = [];
-    for (const payload of payloads) {
+    for (const userId of taskAssignees) {
       const task = await tx.task.create({
-        data: payload,
+        data: {
+          title,
+          details,
+          category,
+          priority,
+          difficulty,
+          blockType,
+          day: dueAt ?? new Date(),
+          dueAt,
+          status: TaskStatus.PENDING,
+          userId,
+          groupId: defaultGroupId,
+          scope,
+          broadcastKey,
+        },
         select: { id: true },
       });
       createdIds.push(task.id);
@@ -126,11 +165,12 @@ export async function POST(request: Request) {
     return createdIds;
   });
 
-  if (createdTaskIds.length === 0) {
-    return NextResponse.json({ error: "Unable to create tasks for this group selection" }, { status: 400 });
-  }
-
   await syncTaskTrackers(createdTaskIds);
+  emitGroupEvent(defaultGroupId, "new-task", {
+    title,
+    scope,
+    assigneeCount: taskAssignees.length,
+  });
 
   return NextResponse.json({ taskIds: createdTaskIds }, { status: 201 });
 }

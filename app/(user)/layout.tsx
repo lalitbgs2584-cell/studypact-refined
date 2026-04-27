@@ -1,52 +1,32 @@
 import { Suspense } from "react";
-import { BottomNav } from "@/components/bottom-nav";
-import { UserNavigation } from "@/components/user-navigation";
-import { getSidebarAccess } from "@/lib/access";
 
-async function SidebarServer() {
-  const access = await getSidebarAccess();
+import { UserNavigation } from "@/components/user-navigation";
+import { requirePortalSession } from "@/lib/access";
+
+async function NavigationServer() {
+  const { access } = await requirePortalSession();
+
   return (
     <UserNavigation
+      activeGroupId={access.activeGroupId}
+      groups={access.memberships.map((membership) => ({
+        id: membership.group.id,
+        name: membership.group.name,
+        role: membership.role,
+      }))}
       showLeaderPortal={access.isLeader}
       showAdminPortal={access.isAdmin}
     />
   );
 }
 
-async function BottomNavServer() {
-  const access = await getSidebarAccess();
-  const extraItems = [
-    { href: "/leaderboard", label: "Leaderboard" },
-    { href: "/proof-work", label: "Proof of Work" },
-    { href: "/uploads", label: "Uploads" },
-    { href: "/profile", label: "Profile" },
-    ...(access.isLeader ? [{ href: "/leader", label: "Leader portal" }] : []),
-    ...(access.isAdmin ? [{ href: "/admin", label: "Admin portal" }] : []),
-  ];
-
-  return <BottomNav extraItems={extraItems} />;
-}
-
-const sidebarFallback = (
-  <aside
-    className="hidden lg:block"
-    style={{
-      width: 232,
-      height: "100vh",
-      position: "fixed",
-      top: 0,
-      left: 0,
-      zIndex: 40,
-      background: "rgba(14,20,30,0.88)",
-      borderRight: "1px solid rgba(196,172,120,0.09)",
-    }}
-  />
+const navigationFallback = (
+  <aside className="fixed inset-y-0 left-0 hidden w-[280px] border-r border-primary/10 bg-[rgba(11,16,24,0.92)] lg:block" />
 );
 
 export default function UserLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-background text-foreground lg:h-screen">
-      {/* Grid background */}
+    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div
         className="pointer-events-none fixed inset-0 z-0 opacity-[0.08]"
         style={{
@@ -56,24 +36,15 @@ export default function UserLayout({ children }: { children: React.ReactNode }) 
         }}
       />
 
-      {/* Sidebar streams in independently — does not block main content */}
-      <Suspense fallback={sidebarFallback}>
-        <SidebarServer />
+      <Suspense fallback={navigationFallback}>
+        <NavigationServer />
       </Suspense>
 
-      {/* Main content — offset by sidebar width only on lg+ */}
-      <main
-        className="relative z-10 min-h-0 flex-1 overflow-hidden lg:ml-[232px]"
-        style={{ willChange: "transform" }}
-      >
-        <div className="h-full overflow-y-auto p-4 pb-24 md:p-6 md:pb-24 lg:p-8 lg:pb-6">
+      <main className="relative z-10 min-h-screen lg:ml-[280px]">
+        <div className="min-h-screen px-4 pb-10 pt-20 md:px-6 lg:px-8 lg:pt-8">
           {children}
         </div>
       </main>
-
-      <Suspense fallback={null}>
-        <BottomNavServer />
-      </Suspense>
     </div>
   );
 }

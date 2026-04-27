@@ -1,6 +1,6 @@
 // No imports from socket-server here — even type imports cause Next.js to
 // trace into socket.io during build, which segfaults.
-type GroupEvent = "new-task" | "new-submission" | "new-verification";
+type GroupEvent = "new-task" | "new-submission" | "new-verification" | "new-message";
 
 function emit(groupId: string, event: GroupEvent, data?: unknown): void {
   try {

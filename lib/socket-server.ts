@@ -5,7 +5,7 @@ declare global {
   var __socketIO: SocketIOServer | undefined;
 }
 
-export type GroupEvent = "new-task" | "new-submission" | "new-verification";
+export type GroupEvent = "new-task" | "new-submission" | "new-verification" | "new-message";
 
 let io: SocketIOServer | null = null;
 

@@ -22,13 +22,14 @@ type TaskRow = Prisma.TaskGetPayload<{
 export default async function TasksPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ view?: string; error?: string }>;
+  searchParams?: Promise<{ view?: string; error?: string; success?: string }>;
 }) {
   const session = await requireSession();
   const { memberships, activeGroupId } = await getWorkspace(session.user.id);
   const params = (await searchParams) ?? {};
   const view = params.view === "group" ? "group" : "personal";
   const errorMessage = params.error ? decodeURIComponent(params.error) : null;
+  const successMessage = params.success ? decodeURIComponent(params.success) : null;
   const today = new Date();
   today.setHours(23, 59, 59, 999);
 
@@ -54,7 +55,6 @@ export default async function TasksPage({
     : [];
 
   const taskCards = view === "personal" ? personalTasks : groupTasks;
-  const targetGroups = memberships.map((membership) => membership.group);
 
   const todayEnd = new Date();
   todayEnd.setHours(23, 59, 0, 0);
@@ -64,15 +64,27 @@ export default async function TasksPage({
     <TaskFormFields
       memberships={memberships.map((membership) => ({
         groupId: membership.groupId,
+        role: membership.role,
         group: {
           id: membership.group.id,
           name: membership.group.name,
+          taskPostingMode: membership.group.taskPostingMode,
+          users: membership.group.users.map((member) => ({
+            userId: member.userId,
+            name: member.user.name,
+            role: member.role,
+          })),
         },
       }))}
-      targetGroups={targetGroups.map((group) => ({ id: group.id, name: group.name }))}
       activeGroupId={activeGroupId}
       defaultDueDate={defaultDueDate}
     />
+  );
+  const taskFormWithReturnTo = (
+    <>
+      <input type="hidden" name="returnTo" value="/tasks" />
+      {taskForm}
+    </>
   );
 
   return (
@@ -89,6 +101,21 @@ export default async function TasksPage({
           }}
         >
           {errorMessage}
+        </div>
+      ) : null}
+
+      {successMessage ? (
+        <div
+          style={{
+            background: "rgba(104,160,120,0.10)",
+            border: "1px solid rgba(104,160,120,0.24)",
+            borderRadius: 12,
+            padding: "12px 16px",
+            fontSize: 13,
+            color: "#8BC79A",
+          }}
+        >
+          {successMessage}
         </div>
       ) : null}
 
@@ -179,7 +206,7 @@ export default async function TasksPage({
         ))}
       </div>
 
-      <TaskCreateSheet action={createTask}>{taskForm}</TaskCreateSheet>
+      <TaskCreateSheet action={createTask}>{taskFormWithReturnTo}</TaskCreateSheet>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.05fr_0.95fr]">
         <Card className="hidden md:block">
@@ -191,7 +218,7 @@ export default async function TasksPage({
           </CardHeader>
           <CardContent>
             <form action={createTask} className="space-y-5">
-              {taskForm}
+              {taskFormWithReturnTo}
 
               <div className="flex justify-end">
                 <Button type="submit" className="gap-2">
@@ -209,7 +236,7 @@ export default async function TasksPage({
             <CardDescription>
               {view === "personal"
                 ? "Mark done or missed to keep your tracker honest."
-                : "Submit proof to complete, or explicitly mark a miss."}
+                : "Submit proof for tasks assigned to you, or explicitly mark a miss."}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">

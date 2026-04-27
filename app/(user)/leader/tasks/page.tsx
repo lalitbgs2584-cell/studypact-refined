@@ -12,9 +12,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TaskFormFields } from "@/components/task-form-fields";
 import { Select } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { assignTaskToMember, postDsaGroupTask } from "@/lib/actions/leader";
+import { postDsaGroupTask } from "@/lib/actions/leader";
+import { createTask } from "@/lib/actions/task";
 import { requireLeaderWorkspace } from "@/lib/access";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
@@ -68,15 +69,31 @@ export default async function LeaderTasksPage({
   todayEnd.setHours(23, 59, 0, 0);
   const pad = (value: number) => String(value).padStart(2, "0");
   const defaultDueDate = `${todayEnd.getFullYear()}-${pad(todayEnd.getMonth() + 1)}-${pad(todayEnd.getDate())}T23:59`;
-
-  const assignableMembers = [...leaderGroup.users].sort((left, right) => {
-    if (left.role !== right.role) {
-      return left.role === "member" ? -1 : 1;
-    }
-
-    return left.user.name.localeCompare(right.user.name);
-  });
-  const defaultAssigneeId = assignableMembers[0]?.userId ?? "";
+  const leaderTaskForm = (
+    <>
+      <input type="hidden" name="returnTo" value="/leader/tasks" />
+      <TaskFormFields
+        memberships={[
+          {
+            groupId: leaderGroupId,
+            role: "admin",
+            group: {
+              id: leaderGroup.id,
+              name: leaderGroup.name,
+              taskPostingMode: leaderGroup.taskPostingMode,
+              users: leaderGroup.users.map((member) => ({
+                userId: member.userId,
+                name: member.user.name,
+                role: member.role,
+              })),
+            },
+          },
+        ]}
+        activeGroupId={leaderGroupId}
+        defaultDueDate={defaultDueDate}
+      />
+    </>
+  );
 
   const tasks = await db.task.findMany({
     where: {
@@ -213,74 +230,15 @@ export default async function LeaderTasksPage({
 
         <Card className="border-l-4 border-l-violet-500/40">
           <CardHeader>
-            <CardTitle className="text-white">Optional: Assign A Different Task</CardTitle>
+            <CardTitle className="text-white">Assign Group or Member Tasks</CardTitle>
           </CardHeader>
           <CardContent>
-            <form action={assignTaskToMember} className="space-y-4">
-              <input type="hidden" name="groupId" value={leaderGroupId} />
-
-              <div className="space-y-2">
-                <Select name="memberId" defaultValue={defaultAssigneeId} required>
-                  {assignableMembers.map((member) => (
-                    <option key={member.userId} value={member.userId}>
-                      {member.user.name}{member.role === "admin" ? " (Leader)" : ""}
-                    </option>
-                  ))}
-                </Select>
-                <p className="text-xs text-white/45">
-                  This creates a single group-scoped task for the selected member without changing the main group flow.
-                </p>
-              </div>
-
-              <Input
-                name="title"
-                placeholder="e.g. Finish auth middleware cleanup"
-                required
-              />
-
-              <Textarea
-                name="details"
-                placeholder="Optional details, acceptance notes, or links"
-                className="min-h-[100px]"
-              />
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <Input
-                  name="dueAt"
-                  type="datetime-local"
-                  defaultValue={defaultDueDate}
-                />
-                <Select name="category" defaultValue="CUSTOM">
-                  <option value="DSA">DSA</option>
-                  <option value="DEVELOPMENT">Development</option>
-                  <option value="REVISION">Revision</option>
-                  <option value="INTERVIEW_PREP">Interview Prep</option>
-                  <option value="READING">Reading</option>
-                  <option value="CUSTOM">Custom</option>
-                </Select>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-3">
-                <Select name="priority" defaultValue="MEDIUM">
-                  <option value="LOW">Low priority</option>
-                  <option value="MEDIUM">Medium priority</option>
-                  <option value="HIGH">High priority</option>
-                </Select>
-                <Select name="difficulty" defaultValue="MEDIUM">
-                  <option value="EASY">Easy</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="HARD">Hard</option>
-                </Select>
-                <Select name="blockType" defaultValue="DEEP_WORK">
-                  <option value="DEEP_WORK">Block 1 - Deep Work (DSA)</option>
-                  <option value="LEARNING">Block 2 - Learning</option>
-                  <option value="PROJECTS">Block 3 - Projects</option>
-                </Select>
-              </div>
+            <form action={createTask} className="space-y-4">
+              {leaderTaskForm}
 
               <div className="flex justify-end">
                 <Button type="submit">
-                  Assign Task
+                  Create Assignment
                 </Button>
               </div>
             </form>

@@ -38,6 +38,14 @@ function taskStatusPayload(nextStatus: TaskStatus) {
   };
 }
 
+function withSearchParam(path: string, key: string, value: string) {
+  const [pathname, query = ""] = path.split("?", 2);
+  const params = new URLSearchParams(query);
+  params.set(key, value);
+  const search = params.toString();
+  return search ? `${pathname}?${search}` : pathname;
+}
+
 export async function createTask(formData: FormData) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session) redirect("/login");
@@ -58,90 +66,111 @@ export async function createTask(formData: FormData) {
   const scope = Object.values(TaskScope).includes(scopeInput as TaskScope)
     ? (scopeInput as TaskScope)
     : TaskScope.PERSONAL;
+  const assignmentMode = ((formData.get("assignmentMode") as string) || "SELF").trim().toUpperCase();
   const dueAtRaw = (formData.get("dueAt") as string) || "";
   const groupId = ((formData.get("groupId") as string) || "").trim();
-  const selectedGroupIds = formData.getAll("groupIds").map((v) => String(v).trim()).filter(Boolean);
+  const returnTo = ((formData.get("returnTo") as string) || "/tasks").trim() || "/tasks";
+  const assigneeIds = Array.from(
+    new Set(formData.getAll("assigneeIds").map((value) => String(value).trim()).filter(Boolean)),
+  );
 
-  if (!title) redirect("/tasks?error=Title+is+required");
+  if (!title) redirect(withSearchParam(returnTo, "error", "Title is required"));
 
   const dueAt = dueAtRaw ? new Date(dueAtRaw) : null;
+  if (dueAtRaw && (!dueAt || Number.isNaN(dueAt.getTime()))) {
+    redirect(withSearchParam(returnTo, "error", "Enter a valid due date"));
+  }
+
   const cookieGroupId = (await cookies()).get(ACTIVE_GROUP_COOKIE)?.value || null;
   const activeGroupId = groupId || cookieGroupId || null;
-  const targetGroupIds = scope === "GROUP" ? selectedGroupIds : activeGroupId ? [activeGroupId] : [];
 
-  if (scope === "GROUP" && targetGroupIds.length === 0) redirect("/tasks?error=Select+at+least+one+group");
-  if (!activeGroupId) redirect("/tasks?error=Join+a+group+first");
+  if (!activeGroupId) redirect(withSearchParam(returnTo, "error", "Join a group first"));
+
+  const membership = await db.userGroup.findUnique({
+    where: {
+      userId_groupId: {
+        userId: session.user.id,
+        groupId: activeGroupId,
+      },
+    },
+    select: {
+      role: true,
+      group: {
+        select: {
+          id: true,
+          name: true,
+          taskPostingMode: true,
+          users: {
+            select: {
+              userId: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!membership) {
+    redirect(withSearchParam(returnTo, "error", "You can only create tasks inside a group you belong to"));
+  }
+
+  const isLeader = membership.role === "admin";
+  const groupMemberIds = membership.group.users.map((member) => member.userId);
+  const taskAssignees =
+    scope === TaskScope.PERSONAL
+      ? [session.user.id]
+      : assignmentMode === "SELECTED_MEMBERS"
+        ? assigneeIds
+        : groupMemberIds;
+
+  if (scope === TaskScope.GROUP && assignmentMode === "SELECTED_MEMBERS" && !isLeader) {
+    redirect(withSearchParam(returnTo, "error", "Only the group leader can assign tasks to selected members"));
+  }
+
+  if (
+    scope === TaskScope.GROUP &&
+    assignmentMode !== "SELECTED_MEMBERS" &&
+    !isLeader &&
+    membership.group.taskPostingMode === "ADMINS_ONLY"
+  ) {
+    redirect(withSearchParam(returnTo, "error", "Only the group leader can post group tasks in this group"));
+  }
+
+  if (scope === TaskScope.GROUP && taskAssignees.length === 0) {
+    redirect(
+      withSearchParam(
+        returnTo,
+        "error",
+        assignmentMode === "SELECTED_MEMBERS" ? "Choose at least one member" : "No members found in this group",
+      ),
+    );
+  }
+
+  if (scope === TaskScope.GROUP && taskAssignees.some((userId) => !groupMemberIds.includes(userId))) {
+    redirect(withSearchParam(returnTo, "error", "Selected members must belong to the chosen group"));
+  }
 
   try {
+    const broadcastKey = scope === TaskScope.GROUP ? crypto.randomUUID() : null;
     const createdTaskIds = await db.$transaction(async (tx) => {
-      const taskCopies: Array<{
-        title: string;
-        details: string | null;
-        category: TaskCategory;
-        priority: TaskPriority;
-        difficulty: TaskDifficulty;
-        blockType: StudyBlock;
-        day: Date;
-        dueAt: Date | null;
-        status: TaskStatus;
-        userId: string;
-        groupId: string;
-        scope: TaskScope;
-        broadcastKey: string | null;
-      }> = [];
-
-      if (scope === "PERSONAL") {
-        taskCopies.push({
-          title,
-          details: details || null,
-          category,
-          priority,
-          difficulty,
-          blockType,
-          day: dueAt ?? new Date(),
-          dueAt,
-          status: TaskStatus.PENDING,
-          userId: session.user.id,
-          groupId: activeGroupId!,
-          scope,
-          broadcastKey: null,
-        });
-      } else {
-        const broadcastKey = crypto.randomUUID();
-        for (const targetGroupId of targetGroupIds) {
-          const members = await tx.userGroup.findMany({
-            where: { groupId: targetGroupId },
-            select: { userId: true },
-          });
-
-          if (!members.some((member) => member.userId === session.user.id)) {
-            redirect("/tasks?error=You+can+only+broadcast+to+groups+you+belong+to");
-          }
-
-          for (const member of members) {
-            taskCopies.push({
-              title,
-              details: details || null,
-              category,
-              priority,
-              difficulty,
-              blockType,
-              day: dueAt ?? new Date(),
-              dueAt,
-              status: TaskStatus.PENDING,
-              userId: member.userId,
-              groupId: targetGroupId,
-              scope,
-              broadcastKey,
-            });
-          }
-        }
-      }
-
       const createdIds: string[] = [];
-      for (const taskCopy of taskCopies) {
+      for (const userId of taskAssignees) {
         const task = await tx.task.create({
-          data: taskCopy,
+          data: {
+            title,
+            details: details || null,
+            category,
+            priority,
+            difficulty,
+            blockType,
+            day: dueAt ?? new Date(),
+            dueAt,
+            status: TaskStatus.PENDING,
+            userId,
+            groupId: activeGroupId,
+            scope,
+            broadcastKey,
+          },
           select: { id: true },
         });
         createdIds.push(task.id);
@@ -152,21 +181,33 @@ export async function createTask(formData: FormData) {
 
     await syncTaskTrackers(createdTaskIds);
 
-    for (const targetGroupId of targetGroupIds) {
-      emitGroupEvent(targetGroupId, "new-task", { title });
-    }
+    emitGroupEvent(activeGroupId, "new-task", {
+      title,
+      scope,
+      assigneeCount: taskAssignees.length,
+    });
 
     revalidatePath("/dashboard");
+    revalidatePath("/leader");
+    revalidatePath("/leader/tasks");
     revalidatePath("/tasks");
     revalidatePath("/proof-work");
     revalidatePath("/tracker");
     revalidatePath("/uploads");
+    revalidatePath(`/groups/${activeGroupId}`);
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Failed to create task";
-    redirect(`/tasks?error=${encodeURIComponent(msg)}`);
+    redirect(withSearchParam(returnTo, "error", msg));
   }
 
-  redirect("/tasks");
+  const successMessage =
+    scope === TaskScope.PERSONAL
+      ? "Task created"
+      : assignmentMode === "SELECTED_MEMBERS"
+        ? `Task assigned to ${taskAssignees.length} member(s)`
+        : `Task shared with ${taskAssignees.length} member(s)`;
+
+  redirect(withSearchParam(returnTo, "success", successMessage));
 }
 
 export async function togglePersonalTask(taskId: string) {
